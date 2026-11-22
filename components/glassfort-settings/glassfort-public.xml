@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<zone target="default">
+  <short>Public network</short>
+  <description>For networks you do not trust, such as cafés, hotels and airports. Other devices on the network cannot connect to this computer. This is the default for new networks.</description>
+  <service name="dhcpv6-client"/>
+  <forward/>
+</zone>

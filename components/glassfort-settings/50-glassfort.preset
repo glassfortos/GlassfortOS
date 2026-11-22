@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Services Glassfort enables by default (applied by glassfort-setup).
+enable apparmor.service
+enable firewalld.service
+enable keyd.service
+enable limine-snapper-sync.service
+enable snapper-cleanup.timer

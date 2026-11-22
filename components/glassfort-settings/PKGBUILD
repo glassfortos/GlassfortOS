@@ -2,18 +2,70 @@
 # Maintainer: Glassfort project <https://github.com/jankln/GlassfortOS>
 
 # glassfort-settings: system defaults for Glassfort (snapper, limine,
-# sysctl, firewalld, AppArmor, pacman.conf, zram, keyd).
-# Phase 0: intentionally empty. It only proves that the package builds
-# in a clean chroot in CI. Configuration files follow in Phase 1.
+# sysctl, firewalld, AppArmor, zram, keyd). See README.md and
+# docs/02-system.md. Dependencies: D-32 in docs/DECISIONS.md.
 
 pkgname=glassfort-settings
-pkgver=0.0.1
+pkgver=0.1.0
 pkgrel=1
 pkgdesc='System defaults for Glassfort'
 arch=('any')
 url='https://github.com/jankln/GlassfortOS'
 license=('GPL-3.0-or-later')
+depends=(
+    'apparmor'
+    'btrfs-progs'
+    'firewalld'
+    'keyd'
+    'limine'
+    'limine-mkinitcpio-hook'
+    'limine-snapper-sync'
+    'linux-lts'
+    'linux-lts-headers'
+    'snap-pac'
+    'snapper'
+    'zram-generator'
+)
+backup=(
+    'etc/keyd/glassfort.conf'
+    'etc/limine-entry-tool.d/50-glassfort.conf'
+)
+install=glassfort-settings.install
+source=(
+    'glassfort.conf'
+    '50-glassfort.conf'
+    'glassfort-setup'
+    'glassfort-private.xml'
+    'glassfort-public.xml'
+    '90-glassfort-hardening.conf'
+    '91-glassfort-zram.conf'
+    '50-glassfort.preset'
+    'zram-generator.conf'
+    'glassfort-root'
+)
+sha256sums=(
+    '7f9b827e2b35ebfbd91b03d2cd58f2008c926ce4f1e75e7f704d5547cf3fd550'
+    '098c4089e83fb2d00e69db1cc67b0997bed6035364cf4cb8f3ee242ac09cb6e7'
+    '7a285d938d30b00ae464fec681f688de5a3636441b92b6f99575663b91f8c6d0'
+    '90234b93eca87a89dd9613bfe2203947b3a840d5d40ef3bc9606f3eaa13487fd'
+    'e1464af8d294e5dbf8cdf8d32b04c24d000c4812f8858f83b823f029d737a903'
+    '785a48bf6e86bf5509c5bade5bd98859f25f870c844b6535da64b62c48e90234'
+    '55b77beb78a995b512902f300c61a935fa1e0723e9895e9582610efb713a0db1'
+    'a3672cf377fcdddefa54646281e7c3196044a293cbe11ec9eda10cc4c51b2a85'
+    'e58490387b7d7a6fed0c9b0e9948ce78cb72108bbe0ad46ea98b283c943d1ec9'
+    '77d0ee5b5aef1f5e2732868b9794775c865c978eae8ad852fc6ebdd5e2cc0102'
+)
 
 package() {
-    :
+    cd "${srcdir}"
+    install -Dm644 glassfort.conf "${pkgdir}/etc/keyd/glassfort.conf"
+    install -Dm644 50-glassfort.conf "${pkgdir}/etc/limine-entry-tool.d/50-glassfort.conf"
+    install -Dm755 glassfort-setup "${pkgdir}/usr/bin/glassfort-setup"
+    install -Dm644 glassfort-private.xml "${pkgdir}/usr/lib/firewalld/zones/glassfort-private.xml"
+    install -Dm644 glassfort-public.xml "${pkgdir}/usr/lib/firewalld/zones/glassfort-public.xml"
+    install -Dm644 90-glassfort-hardening.conf "${pkgdir}/usr/lib/sysctl.d/90-glassfort-hardening.conf"
+    install -Dm644 91-glassfort-zram.conf "${pkgdir}/usr/lib/sysctl.d/91-glassfort-zram.conf"
+    install -Dm644 50-glassfort.preset "${pkgdir}/usr/lib/systemd/system-preset/50-glassfort.preset"
+    install -Dm644 zram-generator.conf "${pkgdir}/usr/lib/systemd/zram-generator.conf"
+    install -Dm644 glassfort-root "${pkgdir}/usr/share/snapper/config-templates/glassfort-root"
 }

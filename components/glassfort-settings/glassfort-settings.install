@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+post_install() {
+    echo '==> Applying Glassfort system defaults (glassfort-setup)...'
+    glassfort-setup || echo '==> WARNING: glassfort-setup failed. Run it again with: sudo glassfort-setup'
+    echo '==> Reboot to activate AppArmor, the firewall zone and snapshot boot entries.'
+}
+
+post_upgrade() {
+    glassfort-setup || echo '==> WARNING: glassfort-setup failed. Run it again with: sudo glassfort-setup'
+}
