@@ -49,7 +49,7 @@ The Copilot key sends `Meta+Shift+F23`; KDE's shortcut recorder cannot capture F
 | Effects | Blur behind panels/menus, "magic lamp" minimise, smooth animations, rounded corners |
 | Accent | One accent colour drives GTK (adw-gtk3), Qt (Kvantum), kitty, KWin borders and all widgets |
 | Light/Dark | Switches automatically by time of day; manual override |
-| Fonts | UI: **Inter** (or Geist); monospace: **Geist Mono** or JetBrains Mono. SF Pro is not allowed (licence). |
+| Fonts | UI: **Inter**; monospace: **JetBrains Mono** (both in the official Arch repositories, D-23). SF Pro is not allowed (licence). |
 | Icons/cursor | One consistent icon set, our own over time |
 
 ## Default applications

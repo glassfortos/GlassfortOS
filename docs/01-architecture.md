@@ -95,7 +95,7 @@ Each component folder contains its source, a `PKGBUILD`, a short `README.md` and
 ## Build and publishing pipeline
 
 1. CI builds every changed package in a clean chroot (`extra-x86_64-build`) and runs its tests.
-2. Packages are signed with the repository key. *(Proposed: the key stays offline on a hardware token; CI produces unsigned packages, the maintainer signs and publishes them with `repo/publish`.)*
+2. Packages are signed with the repository key. The key stays offline on a hardware token; CI produces unsigned packages, the maintainer signs and publishes them with `repo/publish` (D-26).
 3. `repo/publish` runs `repo-add --sign`, uploads to the primary server and triggers mirror sync.
 4. The ISO is built with archiso from `iso/` in CI.
 5. ISO hosting: **not** GitHub Releases (2 GiB per-file limit). Use SourceForge and/or our own mirror.

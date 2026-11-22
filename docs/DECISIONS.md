@@ -31,13 +31,15 @@ Claude Code adds new decisions as **Proposed**. Only the maintainer sets **Decid
 | D-19 | Release model | Rolling directly on Arch repos; safety via snapshots, LTS fallback kernel, Arch news check; no held-back channel in v1 | Decided | 2026-11-22 |
 | D-20 | Kernels | `linux` default + `linux-lts` fallback, both always installed with headers | Decided | 2026-11-22 |
 | D-21 | Licences | Code GPL-3.0-or-later; docs/artwork CC BY-SA 4.0; name and logo excluded, governed by `TRADEMARKS.md` | Decided | 2026-11-22 |
-| D-22 | Colour palette | Glacier Teal `#3DD6C6`, Fort Indigo `#4C4FE0`, Midnight `#0E1222`, Frost `#F5F7FA`, Steel `#8B93A7` | Proposed | 2026-11-19 |
-| D-23 | Fonts | Inter (UI), Geist Mono or JetBrains Mono (monospace) | Proposed | 2026-11-19 |
+| D-22 | Colour palette | Glacier Teal `#3DD6C6`, Fort Indigo `#4C4FE0`, Midnight `#0E1222`, Frost `#F5F7FA`, Steel `#8B93A7` | Decided | 2026-11-22 |
+| D-23 | Fonts | Inter (UI, `inter-font`), JetBrains Mono (monospace, `ttf-jetbrains-mono`); both from the official Arch repositories | Decided | 2026-11-22 |
 | D-24 | Logo | Glass fortress tower with three crenellations; simplification and vector redraw pending | Open | 2026-11-22 |
 | D-25 | Versioning | Dated ISO releases `YYYY.MM` | Proposed | 2026-11-22 |
-| D-26 | Signing key | Offline on hardware token; CI builds unsigned, maintainer signs | Proposed | 2026-11-22 |
+| D-26 | Signing key | Offline on hardware token; CI builds unsigned, maintainer signs. Until the real key exists, VM tests use a throwaway key that never leaves the VM | Decided | 2026-11-22 |
 | D-27 | Telemetry | None, or strictly opt-in | Proposed | 2026-11-22 |
 | D-28 | Community channel | Forum, Matrix or Discord | Open | – |
 | D-29 | v0.1 scope | Proposal: Phase 1 complete | Open | – |
 | D-30 | Domains | `glassfort.org` primary, `glassfortos.com` redirect – not yet registered | Open | – |
 | D-31 | Legal (Germany) | Impressum, privacy policy, side-activity check | Open | – |
+| D-32 | `glassfort-settings` dependencies | Hard `depends` on everything its configuration needs: snapper, snap-pac, btrfs-progs, limine, limine-mkinitcpio-hook, limine-snapper-sync, linux-lts + headers, firewalld, apparmor, zram-generator, keyd | Decided | 2026-11-22 |
+| D-33 | `[glassfort]` hosting (Phase 1) | Local only: built and tested via `file://` in VMs; public server decided later (see D-30) | Decided | 2026-11-22 |

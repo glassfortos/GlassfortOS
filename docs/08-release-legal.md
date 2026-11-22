@@ -34,10 +34,11 @@ Every source file carries an SPDX header, e.g. `# SPDX-License-Identifier: GPL-3
 - ISO releases dated `YYYY.MM` like Arch (e.g. `2027.03`), optional codenames for marketing.
 - Packages follow their own semantic versions.
 
-## Signing key *(Proposed)*
+## Signing key (Decided)
 
 - The repository signing key is the most valuable asset of the project: keep it offline (hardware token such as a YubiKey), plus an offline backup and a revocation certificate.
 - CI builds unsigned packages; the maintainer signs and publishes.
+- Until the real key exists, VM tests use a throwaway key generated inside the VM; it is never committed or published.
 
 ## Telemetry and privacy *(Proposed)*
 
