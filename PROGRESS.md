@@ -11,13 +11,13 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 - **Started:** 2026-11-22T22:10:00+01:00
 - **Plan:**
   - [x] Commit 1: LICENSE, LICENSES/CC-BY-SA-4.0.txt, TRADEMARKS.md
-  - [ ] Commit 2: CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md
+  - [x] Commit 2: CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md
   - [ ] Commit 3: repository layout skeleton, .gitignore, scripts/check-links
   - [ ] Commit 4: empty glassfort-settings package (PKGBUILD + README)
   - [ ] Commit 5: CI skeleton (shellcheck, link check, namcap, clean-chroot build)
   - [ ] Verify CI run is green on GitHub
 - **Files expected to change:** LICENSE, LICENSES/, TRADEMARKS.md, CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md, .gitignore, components/, iso/, repo/, scripts/, tests/, .github/workflows/, README.md, PROGRESS.md
-- **Next step if interrupted:** Write CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md (commit 2)
+- **Next step if interrupted:** Create repository layout skeleton, .gitignore and scripts/check-links (commit 3)
 - **Blocked because:** –
 
 ## Unpushed commits
@@ -29,6 +29,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-22 | – | Add contributing guide, security policy and code of conduct |
 | 2026-11-22 | – | Add licences and trademark policy |
 | 2026-11-22 | – | Imported project specification into repository root |
 | 2026-11-22 | – | Project specification created (`CLAUDE.md`, `PROGRESS.md`, `docs/`) |
