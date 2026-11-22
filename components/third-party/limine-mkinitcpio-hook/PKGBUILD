@@ -69,7 +69,7 @@ package() {
     # Glassfort: drop the interactive /usr/local/bin/mkinitcpio wrapper.
     # Packages must not install into /usr/local, and an interactive prompt
     # can hang non-interactive callers (update app, assistant helper).
-    rm -rf "${pkgdir}/usr/local"
+    rm -rf "${pkgdir:?}/usr/local"
 
     ln -sf /usr/bin/limine-reset-enroll "${pkgdir}/etc/boot/hooks/pre.d/10-limine-reset-enroll"
     ln -sf /usr/bin/limine-enroll-config "${pkgdir}/etc/boot/hooks/post.d/90-limine-enroll-config"
