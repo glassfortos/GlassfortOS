@@ -1,0 +1,16 @@
+diff --git a/src/main/java/org/limine/entry/tool/processes/Utility.java b/src/main/java/org/limine/entry/tool/processes/Utility.java
+index 64de451..240363a 100644
+--- a/src/main/java/org/limine/entry/tool/processes/Utility.java
++++ b/src/main/java/org/limine/entry/tool/processes/Utility.java
+@@ -395,7 +395,10 @@ public class Utility {
+         try {
+             // Bugfix: Do not use Runtime.getRuntime() that has a bug to escape some character like '-'
+             // Use ProcessBuilder instead.
+-            Process process = new ProcessBuilder("bash", "-c", "logger -t limine-entry-tool -p " + logLevel.level + " \"" + message + "\"").start();
++            // Glassfort: call logger directly instead of through "bash -c" so
++            // that the message is never interpreted by a shell. "--" ends option
++            // parsing, which also handles messages that start with '-'.
++            Process process = new ProcessBuilder("logger", "-t", "limine-entry-tool", "-p", String.valueOf(logLevel.level), "--", message).start();
+             process.waitFor();
+         } catch (IOException | InterruptedException ignored) {
+         }

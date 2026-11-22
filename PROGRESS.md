@@ -19,7 +19,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [ ] meta package glassfort-desktop
   - [ ] VM test: plain Arch → pacman -S glassfort-desktop → break update → roll back from boot menu
 - **Files expected to change:** components/*, repo/*, docs/DECISIONS.md, PROGRESS.md
-- **Next step if interrupted:** Review AUR sources of limine-mkinitcpio-hook and limine-snapper-sync, then package them in components/third-party/
+- **Next step if interrupted:** Check CI build of the two third-party packages; then build only changed packages in CI
 - **Blocked because:** –
 
 ## Unpushed commits

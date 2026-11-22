@@ -1,0 +1,67 @@
+# Maintainer: Glassfort project <https://github.com/jankln/GlassfortOS>
+# Contributor: Zesko (upstream author and AUR maintainer)
+#
+# Carried in [glassfort] because it is AUR-only (CLAUDE.md §6.6).
+# Based on the AUR PKGBUILD of limine-snapper-sync 1.33.0-1.
+# Glassfort changes: see README.md.
+
+pkgname=limine-snapper-sync
+pkgver=1.33.0
+pkgrel=1
+pkgdesc='Integrates Limine boot entries with Snapper snapshots'
+arch=('x86_64')
+url='https://gitlab.com/Zesko/limine-snapper-sync'
+license=('GPL-3.0-only')
+depends=(
+    'bash'
+    'limine'
+    'snapper'
+    'btrfs-progs'
+    'libnotify'
+)
+makedepends=('git' 'gradle' 'gettext')
+optdepends=(
+    'inotify-tools: watch for created or deleted snapshots'
+    'rsync: alternative method for restoring snapshots'
+)
+conflicts=('limine-snapper-cli' 'limine-snapper-sync-git')
+backup=('etc/limine-snapper-sync.conf')
+options=(!debug !strip)
+_graalvm=graalvm-community-jdk-25i2-25.0.4_linux-x64_bin.tar.gz
+# Tag 1.33.0 = commit 4b4a10badaed00d2f60bd018dfb4a4453819f774
+source=(
+    "${pkgname}::git+${url}.git#tag=${pkgver}"
+    "https://github.com/graalvm/graalvm-ce-builds/releases/download/graal-25.2.4/${_graalvm}"
+    'logger-no-shell.patch'
+)
+sha256sums=('0067777d71156647171d8d909204b038e21fa8b0f519c9758e0d37e1301d58c8'
+            '3f4a89de8eaa96f2ed677f09957c7e872cd8467aad3537f8b5394c1b8c4b942e'
+            '810b7e28b434d8a42ff1a28c6f7d7d3789fc3eb0681bdfc58bde30507b81acb2')
+
+prepare() {
+    rm -rf graalvm
+    mv graalvm-community-*/ graalvm
+    patch -d "${pkgname}" -p1 <logger-no-shell.patch
+}
+
+build() {
+    cd "${pkgname}"
+    export GRAALVM_HOME="${srcdir}/graalvm"
+    export JAVA_HOME="${GRAALVM_HOME}"
+    export NATIVE_IMAGE_OPTIONS='-march=compatibility'
+    gradle --no-daemon clean nativeCompile -Dorg.gradle.java.home="${JAVA_HOME}"
+}
+
+package() {
+    cd "${pkgname}"
+    local src=install/arch-linux
+
+    install -dm755 \
+        "${pkgdir}/etc/boot/hooks/pre.d" \
+        "${pkgdir}/etc/boot/hooks/post.d" \
+        "${pkgdir}/usr/lib/limine"
+    install -Dm644 README.md CHANGELOG.md -t "${pkgdir}/usr/share/doc/${pkgname}/"
+
+    cp -a "${src}/etc" "${src}/usr" "${pkgdir}/"
+    install -Dm755 build/native/nativeCompile/limine-snapper-sync -t "${pkgdir}/usr/lib/limine/"
+}
