@@ -44,6 +44,12 @@ pacman-key --populate archlinux
 # Full upgrade only - never a partial sync (CLAUDE.md §6.4).
 pacman -Syu --noconfirm --needed base-devel devtools namcap sudo
 
+# systemd-nspawn (used by extra-x86_64-build) needs a system bus.
+if [[ ! -S /run/dbus/system_bus_socket ]]; then
+    mkdir -p /run/dbus
+    dbus-daemon --system --fork
+fi
+
 # extra-x86_64-build refuses to run as root.
 if ! id builder &>/dev/null; then
     useradd --create-home builder

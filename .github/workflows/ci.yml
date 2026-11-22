@@ -43,7 +43,7 @@ jobs:
 
       - name: Build in archlinux container
         run: |
-          docker run --rm --privileged \
+          docker run --rm --privileged --tmpfs /run \
             -v "$PWD:/repo" \
             archlinux:latest \
             /repo/scripts/ci-build-packages /repo
