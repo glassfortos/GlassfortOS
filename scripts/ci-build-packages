@@ -35,6 +35,12 @@ if ((${#dirs[@]} == 0)); then
     exit 0
 fi
 
+# The archlinux image ships without an initialised keyring and without a
+# machine ID; mkarchroot and systemd-nspawn need both.
+pacman-key --init
+pacman-key --populate archlinux
+[[ -s /etc/machine-id ]] || systemd-machine-id-setup
+
 # Full upgrade only - never a partial sync (CLAUDE.md §6.4).
 pacman -Syu --noconfirm --needed base-devel devtools namcap sudo
 
