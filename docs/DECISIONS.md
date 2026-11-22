@@ -1,0 +1,43 @@
+# Decisions
+
+Status values:
+
+- **Decided** – fixed; change only after asking the maintainer.
+- **Proposed** – recommendation, not yet confirmed; ask before relying on it for something hard to undo.
+- **Open** – still to be decided.
+
+Claude Code adds new decisions as **Proposed**. Only the maintainer sets **Decided**.
+
+| ID | Topic | Decision | Status | Date |
+|---|---|---|---|---|
+| D-01 | Base | Arch Linux, x86_64 | Decided | 2026-11-19 |
+| D-02 | Desktop | KDE Plasma 6 (instead of Hyprland), heavily curated | Decided | 2026-11-19 |
+| D-03 | Concept | Windows UX + macOS-inspired glass design | Decided | 2026-11-19 |
+| D-04 | Terminal | kitty | Decided | 2026-11-19 |
+| D-05 | Packages | pacman + Flatpak; AUR not enabled by default; AUR-only needs are packaged into `[glassfort]` | Decided | 2026-11-19 |
+| D-06 | Snapshots | Btrfs + snapper + snap-pac + limine-snapper-sync | Decided | 2026-11-19 |
+| D-07 | Bootloader | Limine; GRUB + grub-btrfs only as plan B | Decided | 2026-11-19 |
+| D-08 | Secure Boot | sbctl + limine-enroll-config; hook always handles `limine_x64.efi` and `BOOTX64.EFI`; kernels not signed | Decided | 2026-11-19 |
+| D-09 | Encryption | LUKS2 by default, optional TPM2 unlock | Decided | 2026-11-19 |
+| D-10 | Firewall | firewalld with Windows-like network profiles | Decided | 2026-11-19 |
+| D-11 | Default apps | Firefox, LibreOffice (Tabbed UI), Thunderbird | Decided | 2026-11-19 |
+| D-12 | Installer | QML/Kirigami frontend + archinstall backend; Calamares as interim | Decided | 2026-11-19 |
+| D-13 | Assistant | Chat operates the system via typed tools; "AI plans, system executes"; off by default | Decided | 2026-11-19 |
+| D-14 | Assistant languages | Helper in Rust, assistant service in Python | Decided | 2026-11-19 |
+| D-15 | Settings registry | TOML with schema in `/usr/share/glassfort/settings.d/`, package-owned only; backends kconfig/dbus/exec, never a shell | Decided | 2026-11-19 |
+| D-16 | Windows Apps | Optional; Windows 11 Pro via dockur in Podman, FreeRDP RemoteApp; LTSC only with organisation licence; no ISO/keys shipped | Decided | 2026-11-19 |
+| D-17 | Name | Glassfort – "Beautiful as glass. Strong as a fortress." | Decided | 2026-11-19 |
+| D-18 | Product language | English (name, website, docs, UI, marketing) | Decided | 2026-11-19 |
+| D-19 | Release model | Rolling directly on Arch repos; safety via snapshots, LTS fallback kernel, Arch news check; no held-back channel in v1 | Decided | 2026-11-22 |
+| D-20 | Kernels | `linux` default + `linux-lts` fallback, both always installed with headers | Decided | 2026-11-22 |
+| D-21 | Licences | Code GPL-3.0-or-later; docs/artwork CC BY-SA 4.0; name and logo excluded, governed by `TRADEMARKS.md` | Decided | 2026-11-22 |
+| D-22 | Colour palette | Glacier Teal `#3DD6C6`, Fort Indigo `#4C4FE0`, Midnight `#0E1222`, Frost `#F5F7FA`, Steel `#8B93A7` | Proposed | 2026-11-19 |
+| D-23 | Fonts | Inter (UI), Geist Mono or JetBrains Mono (monospace) | Proposed | 2026-11-19 |
+| D-24 | Logo | Glass fortress tower with three crenellations; simplification and vector redraw pending | Open | 2026-11-22 |
+| D-25 | Versioning | Dated ISO releases `YYYY.MM` | Proposed | 2026-11-22 |
+| D-26 | Signing key | Offline on hardware token; CI builds unsigned, maintainer signs | Proposed | 2026-11-22 |
+| D-27 | Telemetry | None, or strictly opt-in | Proposed | 2026-11-22 |
+| D-28 | Community channel | Forum, Matrix or Discord | Open | – |
+| D-29 | v0.1 scope | Proposal: Phase 1 complete | Open | – |
+| D-30 | Domains | `glassfort.org` primary, `glassfortos.com` redirect – not yet registered | Open | – |
+| D-31 | Legal (Germany) | Impressum, privacy policy, side-activity check | Open | – |
