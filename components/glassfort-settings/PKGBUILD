@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Maintainer: Glassfort project <https://github.com/jankln/GlassfortOS>
+
+# glassfort-settings: system defaults for Glassfort (snapper, limine,
+# sysctl, firewalld, AppArmor, pacman.conf, zram, keyd).
+# Phase 0: intentionally empty. It only proves that the package builds
+# in a clean chroot in CI. Configuration files follow in Phase 1.
+
+pkgname=glassfort-settings
+pkgver=0.0.1
+pkgrel=1
+pkgdesc='System defaults for Glassfort'
+arch=('any')
+url='https://github.com/jankln/GlassfortOS'
+license=('GPL-3.0-or-later')
+
+package() {
+    :
+}
