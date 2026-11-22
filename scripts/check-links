@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Check that every relative link in the repository's Markdown files
+# points to an existing file or directory. External links (with a URL
+# scheme) and pure anchors are ignored. Text inside fenced code blocks
+# is skipped.
+#
+# Usage: scripts/check-links [file.md ...]
+# Without arguments all tracked *.md files are checked.
+
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+if (($# > 0)); then
+    files=("$@")
+else
+    mapfile -t files < <(git ls-files '*.md')
+fi
+
+broken=0
+for file in "${files[@]}"; do
+    dir=$(dirname "$file")
+    while IFS=$'\t' read -r line target; do
+        # Skip external links (scheme:...) and pure anchors.
+        [[ $target =~ ^[a-zA-Z][a-zA-Z0-9+.-]*: ]] && continue
+        [[ $target == \#* ]] && continue
+        path=${target%%#*}
+        [[ -z $path ]] && continue
+        if [[ ! -e "$dir/$path" ]]; then
+            echo "$file:$line: broken link: $target"
+            broken=1
+        fi
+    done < <(awk '
+        /^[[:space:]]*(```|~~~)/ { fence = !fence; next }
+        fence { next }
+        {
+            s = $0
+            while (match(s, /\]\([^) ]+\)/)) {
+                print NR "\t" substr(s, RSTART + 2, RLENGTH - 3)
+                s = substr(s, RSTART + RLENGTH)
+            }
+        }' "$file")
+done
+
+if ((broken)); then
+    echo "Broken relative links found." >&2
+    exit 1
+fi
+echo "All relative links resolve (${#files[@]} files checked)."

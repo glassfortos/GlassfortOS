@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Build artifacts must never be committed (CLAUDE.md §3).
+
+# Packages and makepkg working directories
+*.pkg.tar.zst
+*.pkg.tar.zst.sig
+*.src.tar.gz
+*.log
+components/**/src/
+components/**/pkg/
+
+# ISO and VM images
+*.iso
+*.iso.sig
+*.qcow2
+*.img
+*.raw
+iso/work/
+iso/out/
+
+# Local repository builds
+repo/out/
+
+# Editor and OS clutter
+*~
+*.swp
+.DS_Store
