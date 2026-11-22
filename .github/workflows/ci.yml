@@ -41,6 +41,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache third-party packages
+        uses: actions/cache@v4
+        with:
+          path: cache/third-party
+          key: third-party-${{ hashFiles('components/third-party/**') }}
+          restore-keys: third-party-
+
       - name: Start archlinux container with systemd
         run: |
           docker run -d --name arch --privileged --cgroupns=host \
@@ -57,7 +64,7 @@ jobs:
           echo "systemd state: $state"
 
       - name: Build packages
-        run: docker exec arch /repo/scripts/ci-build-packages /repo
+        run: docker exec arch /repo/scripts/ci-build-packages /repo /repo/cache/third-party
 
       - name: Stop container
         if: always()

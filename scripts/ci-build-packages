@@ -6,10 +6,17 @@
 # as PID 1 (systemd-nspawn needs it). Never run it on a development
 # machine: it creates users and installs packages.
 #
-# Usage: scripts/ci-build-packages <repo-root> [component-dir ...]
-# Without component dirs every components/*/PKGBUILD and
-# components/third-party/*/PKGBUILD is built.
-# Built packages are copied to <repo-root>/out/.
+# Usage: scripts/ci-build-packages <repo-root> [cache-dir]
+#
+# Builds components/third-party/* first, then components/*. Packages
+# built earlier in the run are installed into the chroot of later builds
+# (makechrootpkg -I), because Glassfort packages depend on carried
+# third-party packages that are not in the Arch repositories.
+#
+# If cache-dir is given, third-party packages whose exact file name
+# (name-version-release) is already in it are reused instead of rebuilt,
+# and newly built ones are stored there. Own components are always built.
+# All packages end up in <repo-root>/out/.
 
 set -euo pipefail
 
@@ -18,18 +25,19 @@ if [[ ! -f /etc/arch-release ]] || ((EUID != 0)); then
     exit 1
 fi
 
-root=$(realpath "${1:?usage: $0 <repo-root> [component-dir ...]}")
-shift
+root=$(realpath "${1:?usage: $0 <repo-root> [cache-dir]}")
+cache=${2:-}
 
-if (($# > 0)); then
-    dirs=("$@")
-else
-    shopt -s nullglob
-    dirs=()
-    for pkgbuild in "$root"/components/*/PKGBUILD "$root"/components/third-party/*/PKGBUILD; do
-        dirs+=("$(dirname "$pkgbuild")")
-    done
-fi
+shopt -s nullglob
+dirs=()
+third_party=()
+for pkgbuild in "$root"/components/third-party/*/PKGBUILD; do
+    dirs+=("$(dirname "$pkgbuild")")
+    third_party+=("$(dirname "$pkgbuild")")
+done
+for pkgbuild in "$root"/components/*/PKGBUILD; do
+    dirs+=("$(dirname "$pkgbuild")")
+done
 
 if ((${#dirs[@]} == 0)); then
     echo "No packages to build."
@@ -54,7 +62,19 @@ chmod 0440 /etc/sudoers.d/builder
 
 out="$root/out"
 mkdir -p "$out"
+[[ -n $cache ]] && mkdir -p "$cache"
+
+# Packages built (or restored) so far; installed into later chroots.
+local_pkgs=()
 status=0
+
+is_third_party() {
+    local d
+    for d in "${third_party[@]}"; do
+        [[ $d == "$1" ]] && return 0
+    done
+    return 1
+}
 
 for dir in "${dirs[@]}"; do
     name=$(basename "$dir")
@@ -65,17 +85,44 @@ for dir in "${dirs[@]}"; do
     cp -r "$dir" "$work"
     chown -R builder:builder /home/builder/build
 
+    mapfile -t expected < <(cd "$work" && sudo -u builder makepkg --packagelist)
+
+    # Reuse cached third-party packages with the same name-version-release.
+    if [[ -n $cache ]] && is_third_party "$dir"; then
+        hit=1
+        for pkg in "${expected[@]}"; do
+            [[ -f "$cache/$(basename "$pkg")" ]] || hit=0
+        done
+        if ((hit)); then
+            for pkg in "${expected[@]}"; do
+                echo "Reusing cached $(basename "$pkg")"
+                cp "$cache/$(basename "$pkg")" "$out/"
+                local_pkgs+=("$out/$(basename "$pkg")")
+            done
+            echo "::endgroup::"
+            continue
+        fi
+    fi
+
     namcap "$work/PKGBUILD"
-    if ! (cd "$work" && sudo -u builder extra-x86_64-build); then
+    inject=()
+    for pkg in "${local_pkgs[@]}"; do
+        inject+=(-I "$pkg")
+    done
+    if ! (cd "$work" && sudo -u builder extra-x86_64-build -- "${inject[@]}"); then
         echo "::error::Build failed: $name"
         status=1
         echo "::endgroup::"
         continue
     fi
 
-    for pkg in "$work"/*.pkg.tar.zst; do
+    for pkg in "${expected[@]}"; do
         namcap "$pkg"
         cp "$pkg" "$out/"
+        local_pkgs+=("$out/$(basename "$pkg")")
+        if [[ -n $cache ]] && is_third_party "$dir"; then
+            cp "$pkg" "$cache/"
+        fi
     done
     echo "::endgroup::"
 done
