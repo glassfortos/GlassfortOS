@@ -1,0 +1,56 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: shellcheck
+        run: |
+          mapfile -t scripts < <(git ls-files scripts repo tests | while read -r f; do
+            head -n1 "$f" | grep -qE '^#!.*\b(ba)?sh\b' && echo "$f"
+          done)
+          if ((${#scripts[@]})); then
+            shellcheck "${scripts[@]}"
+          fi
+          # PKGBUILDs are bash without a shebang; check them too.
+          mapfile -t pkgbuilds < <(git ls-files '*PKGBUILD')
+          if ((${#pkgbuilds[@]})); then
+            shellcheck --shell=bash --exclude=SC2034,SC2154,SC2164 "${pkgbuilds[@]}"
+          fi
+
+      - name: Relative Markdown links
+        run: scripts/check-links
+
+  packages:
+    name: Build packages (clean chroot)
+    runs-on: ubuntu-latest
+    needs: lint
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build in archlinux container
+        run: |
+          docker run --rm --privileged \
+            -v "$PWD:/repo" \
+            archlinux:latest \
+            /repo/scripts/ci-build-packages /repo
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages
+          path: out/*.pkg.tar.zst
+          if-no-files-found: error

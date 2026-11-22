@@ -20,6 +20,7 @@ iso/out/
 
 # Local repository builds
 repo/out/
+out/
 
 # Editor and OS clutter
 *~

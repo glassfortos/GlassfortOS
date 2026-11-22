@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Build Glassfort packages in a clean chroot and lint them with namcap.
+# Meant to run as root inside an archlinux container (CI). Never run it
+# on a development machine: it creates users and installs packages.
+#
+# Usage: scripts/ci-build-packages <repo-root> [component-dir ...]
+# Without component dirs every components/*/PKGBUILD and
+# components/third-party/*/PKGBUILD is built.
+# Built packages are copied to <repo-root>/out/.
+
+set -euo pipefail
+
+if [[ ! -f /etc/arch-release ]] || ((EUID != 0)); then
+    echo "This script must run as root inside an Arch Linux container." >&2
+    exit 1
+fi
+
+root=$(realpath "${1:?usage: $0 <repo-root> [component-dir ...]}")
+shift
+
+if (($# > 0)); then
+    dirs=("$@")
+else
+    shopt -s nullglob
+    dirs=()
+    for pkgbuild in "$root"/components/*/PKGBUILD "$root"/components/third-party/*/PKGBUILD; do
+        dirs+=("$(dirname "$pkgbuild")")
+    done
+fi
+
+if ((${#dirs[@]} == 0)); then
+    echo "No packages to build."
+    exit 0
+fi
+
+# Full upgrade only - never a partial sync (CLAUDE.md §6.4).
+pacman -Syu --noconfirm --needed base-devel devtools namcap sudo
+
+# extra-x86_64-build refuses to run as root.
+if ! id builder &>/dev/null; then
+    useradd --create-home builder
+fi
+echo 'builder ALL=(ALL) NOPASSWD: ALL' >/etc/sudoers.d/builder
+chmod 0440 /etc/sudoers.d/builder
+
+out="$root/out"
+mkdir -p "$out"
+status=0
+
+for dir in "${dirs[@]}"; do
+    name=$(basename "$dir")
+    work="/home/builder/build/$name"
+    echo "::group::Build $name"
+    rm -rf "$work"
+    mkdir -p "$(dirname "$work")"
+    cp -r "$dir" "$work"
+    chown -R builder:builder /home/builder/build
+
+    namcap "$work/PKGBUILD"
+    if ! (cd "$work" && sudo -u builder extra-x86_64-build); then
+        echo "::error::Build failed: $name"
+        status=1
+        echo "::endgroup::"
+        continue
+    fi
+
+    for pkg in "$work"/*.pkg.tar.zst; do
+        namcap "$pkg"
+        cp "$pkg" "$out/"
+    done
+    echo "::endgroup::"
+done
+
+exit "$status"

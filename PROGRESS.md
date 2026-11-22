@@ -14,10 +14,10 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [x] Commit 2: CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md
   - [x] Commit 3: repository layout skeleton, .gitignore, scripts/check-links
   - [x] Commit 4: empty glassfort-settings package (PKGBUILD + README)
-  - [ ] Commit 5: CI skeleton (shellcheck, link check, namcap, clean-chroot build)
+  - [x] Commit 5: CI skeleton (shellcheck, link check, namcap, clean-chroot build)
   - [ ] Verify CI run is green on GitHub
 - **Files expected to change:** LICENSE, LICENSES/, TRADEMARKS.md, CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md, .gitignore, components/, iso/, repo/, scripts/, tests/, .github/workflows/, README.md, PROGRESS.md
-- **Next step if interrupted:** Write .github/workflows/ci.yml (lint + clean-chroot build) and push (commit 5)
+- **Next step if interrupted:** Check the CI run on GitHub (gh run list) and fix failures
 - **Blocked because:** –
 
 ## Unpushed commits
@@ -29,6 +29,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-22 | – | Add CI skeleton with lint and clean-chroot package build |
 | 2026-11-22 | – | Add empty glassfort-settings package |
 | 2026-11-22 | – | Add repository layout skeleton and link checker |
 | 2026-11-22 | – | Add contributing guide, security policy and code of conduct |
