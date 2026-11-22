@@ -11,7 +11,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 - **Started:** 2026-11-22T22:25:00+01:00
 - **Plan:**
   - [x] Decisions from maintainer: dependencies of glassfort-settings, repo hosting + signing key, palette/fonts
-  - [ ] third-party: limine-mkinitcpio-hook, limine-snapper-sync (review upstream + licence, package)
+  - [x] third-party: limine-mkinitcpio-hook, limine-snapper-sync (review upstream + licence, package)
   - [ ] glassfort-settings: sysctl, zram, snapper root config, snap-pac, limine defaults, firewalld, AppArmor, keyd, pacman.conf
   - [ ] glassfort-keyring + glassfort-mirrorlist + repo/ scripts (build, sign, publish)
   - [ ] glassfort-theme + glassfort-branding
@@ -19,7 +19,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [ ] meta package glassfort-desktop
   - [ ] VM test: plain Arch → pacman -S glassfort-desktop → break update → roll back from boot menu
 - **Files expected to change:** components/*, repo/*, docs/DECISIONS.md, PROGRESS.md
-- **Next step if interrupted:** Check CI build of the two third-party packages; then build only changed packages in CI
+- **Next step if interrupted:** Commit glassfort-settings content, then make CI build only changed packages
 - **Blocked because:** –
 
 ## Unpushed commits
@@ -31,6 +31,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-22 | – | Package limine-mkinitcpio-hook and limine-snapper-sync (reviewed, patched) |
 | 2026-11-22 | – | Record maintainer decisions D-22, D-23, D-26, D-32, D-33 |
 | 2026-11-22 | – | Phase 0 complete: CI builds glassfort-settings in a clean chroot (fixes for keyring, machine ID, systemd container) |
 | 2026-11-22 | – | Add CI skeleton with lint and clean-chroot package build |

@@ -27,5 +27,6 @@ pinned by SHA-256), only at build time.
 | Change | Why |
 |---|---|
 | `logger-no-shell.patch` | Call `logger` directly instead of via `bash -c`, so log messages are never interpreted by a shell (the tool runs as root). To be reported upstream. |
+| Glassfort defaults in `/etc/limine-snapper-sync.conf` | `MAX_SNAPSHOT_ENTRIES=8`, labels `date│description` (format 8), `kitty` as terminal, `run0` for privileges. The file has no drop-in directory (docs/02-system.md). |
 | `x86_64` only | Glassfort is x86_64 only (D-01). |
 | Optional `b3sum`/`xxhash`/dracut entries dropped | Not used by Glassfort (mkinitcpio, BLAKE2B hashes in `limine.conf`). |

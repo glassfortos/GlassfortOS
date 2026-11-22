@@ -14,9 +14,12 @@ url='https://gitlab.com/Zesko/limine-snapper-sync'
 license=('GPL-3.0-only')
 depends=(
     'bash'
+    'glibc'
+    'zlib'
     'limine'
     'snapper'
     'btrfs-progs'
+    'hicolor-icon-theme'
     'libnotify'
 )
 makedepends=('git' 'gradle' 'gettext')
@@ -63,5 +66,17 @@ package() {
     install -Dm644 README.md CHANGELOG.md -t "${pkgdir}/usr/share/doc/${pkgname}/"
 
     cp -a "${src}/etc" "${src}/usr" "${pkgdir}/"
+
+    # Glassfort defaults (docs/02-system.md, "Snapshots"). The config has no
+    # drop-in directory, so they are set here; /etc/default/limine still
+    # overrides them.
+    sed -i \
+        -e 's/^#MAX_SNAPSHOT_ENTRIES=.*/MAX_SNAPSHOT_ENTRIES=8/' \
+        -e 's/^SNAPSHOT_FORMAT_CHOICE=.*/SNAPSHOT_FORMAT_CHOICE=8/' \
+        -e 's/^#TERMINAL=.*/TERMINAL=kitty/' \
+        -e 's/^#AUTH_METHOD=.*/AUTH_METHOD="run0 --background="/' \
+        "${pkgdir}/etc/limine-snapper-sync.conf"
+    grep -qx 'MAX_SNAPSHOT_ENTRIES=8' "${pkgdir}/etc/limine-snapper-sync.conf"
+    grep -qx 'SNAPSHOT_FORMAT_CHOICE=8' "${pkgdir}/etc/limine-snapper-sync.conf"
     install -Dm755 build/native/nativeCompile/limine-snapper-sync -t "${pkgdir}/usr/lib/limine/"
 }

@@ -15,6 +15,8 @@ url='https://gitlab.com/Zesko/limine-entry-tool'
 license=('GPL-3.0-only')
 depends=(
     'bash'
+    'glibc'
+    'zlib'
     'grep'
     'tar'
     'limine'
