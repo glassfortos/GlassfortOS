@@ -2,8 +2,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # Build Glassfort packages in a clean chroot and lint them with namcap.
-# Meant to run as root inside an archlinux container (CI). Never run it
-# on a development machine: it creates users and installs packages.
+# Meant to run as root inside an archlinux container booted with systemd
+# as PID 1 (systemd-nspawn needs it). Never run it on a development
+# machine: it creates users and installs packages.
 #
 # Usage: scripts/ci-build-packages <repo-root> [component-dir ...]
 # Without component dirs every components/*/PKGBUILD and
@@ -43,12 +44,6 @@ pacman-key --populate archlinux
 
 # Full upgrade only - never a partial sync (CLAUDE.md §6.4).
 pacman -Syu --noconfirm --needed base-devel devtools namcap sudo
-
-# systemd-nspawn (used by extra-x86_64-build) needs a system bus.
-if [[ ! -S /run/dbus/system_bus_socket ]]; then
-    mkdir -p /run/dbus
-    dbus-daemon --system --fork
-fi
 
 # extra-x86_64-build refuses to run as root.
 if ! id builder &>/dev/null; then
