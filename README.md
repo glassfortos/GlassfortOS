@@ -14,4 +14,4 @@ Glassfort is based on Arch Linux but is not affiliated with or endorsed by the A
 
 ## Licence
 
-Code: GPL-3.0-or-later. Documentation and artwork: CC BY-SA 4.0. The Glassfort name and logo are not covered by these licences (see `TRADEMARKS.md`, coming in Phase 0).
+Code: GPL-3.0-or-later ([`LICENSE`](LICENSE)). Documentation and artwork: CC BY-SA 4.0 ([`LICENSES/CC-BY-SA-4.0.txt`](LICENSES/CC-BY-SA-4.0.txt)). The Glassfort name and logo are not covered by these licences (see [`TRADEMARKS.md`](TRADEMARKS.md)).

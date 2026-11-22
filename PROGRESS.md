@@ -5,14 +5,19 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 ## Current task
 
-- **Status:** idle  <!-- idle | in progress | blocked -->
-- **Task:** –
-- **Roadmap item:** –
-- **Started:** –
+- **Status:** in progress  <!-- idle | in progress | blocked -->
+- **Task:** Phase 0 – repository foundation
+- **Roadmap item:** Phase 0
+- **Started:** 2026-11-22T22:10:00+01:00
 - **Plan:**
-  - [ ] –
-- **Files expected to change:** –
-- **Next step if interrupted:** –
+  - [x] Commit 1: LICENSE, LICENSES/CC-BY-SA-4.0.txt, TRADEMARKS.md
+  - [ ] Commit 2: CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md
+  - [ ] Commit 3: repository layout skeleton, .gitignore, scripts/check-links
+  - [ ] Commit 4: empty glassfort-settings package (PKGBUILD + README)
+  - [ ] Commit 5: CI skeleton (shellcheck, link check, namcap, clean-chroot build)
+  - [ ] Verify CI run is green on GitHub
+- **Files expected to change:** LICENSE, LICENSES/, TRADEMARKS.md, CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md, .gitignore, components/, iso/, repo/, scripts/, tests/, .github/workflows/, README.md, PROGRESS.md
+- **Next step if interrupted:** Write CONTRIBUTING.md, SECURITY.md, CODE_OF_CONDUCT.md (commit 2)
 - **Blocked because:** –
 
 ## Unpushed commits
@@ -24,5 +29,6 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-22 | – | Add licences and trademark policy |
 | 2026-11-22 | – | Imported project specification into repository root |
 | 2026-11-22 | – | Project specification created (`CLAUDE.md`, `PROGRESS.md`, `docs/`) |
