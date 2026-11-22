@@ -85,7 +85,9 @@ for dir in "${dirs[@]}"; do
     cp -r "$dir" "$work"
     chown -R builder:builder /home/builder/build
 
-    mapfile -t expected < <(cd "$work" && sudo -u builder makepkg --packagelist)
+    # Debug packages are listed but not produced in the clean chroot
+    # (arch=any, or !debug), so they are not expected.
+    mapfile -t expected < <(cd "$work" && sudo -u builder makepkg --packagelist | grep -v -- '-debug-')
 
     # Reuse cached third-party packages with the same name-version-release.
     if [[ -n $cache ]] && is_third_party "$dir"; then
