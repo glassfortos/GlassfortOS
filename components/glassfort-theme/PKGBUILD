@@ -1,0 +1,47 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Maintainer: Glassfort project <https://github.com/jankln/GlassfortOS>
+
+# glassfort-theme: Glassfort look (colour schemes, kitty, later Kvantum,
+# GTK, wallpapers and the Global Theme). See README.md and
+# docs/03-desktop-design.md. Dependencies: D-34 in docs/DECISIONS.md.
+
+pkgname=glassfort-theme
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='Glassfort colour schemes and application themes'
+arch=('any')
+url='https://github.com/jankln/GlassfortOS'
+license=('GPL-3.0-or-later')
+depends=(
+    'adw-gtk-theme'
+    'inter-font'
+    'kvantum'
+    'ttf-jetbrains-mono'
+)
+backup=('etc/xdg/kitty/kitty.conf')
+source=(
+    'GlassfortDark.colors'
+    'GlassfortLight.colors'
+    'kitty-glassfort-dark.conf'
+    'kitty-glassfort-light.conf'
+    'kitty.conf'
+)
+sha256sums=(
+    '073d208e59ecfb5d078361056d6721f868b9afdf2aee89800bf8f3be9314ae82'
+    'd5a08e5c4f57edd69652776292b9a986768873a50d3cde784588f78960a8b5ef'
+    '2137bee6de9d28d742bddd806ea00269102c997f2c68116fd74cb643c0914ace'
+    '047da308f189550df8d33e652fefb1de48cca74153d2b47ebb3412739b265f78'
+    '0fad157d3df71098b478c89b99d50fe4244807cc458bee8511df5e22b0f95fc3'
+)
+
+package() {
+    cd "${srcdir}"
+    install -Dm644 -t "${pkgdir}/usr/share/color-schemes" GlassfortDark.colors GlassfortLight.colors
+
+    install -Dm644 kitty-glassfort-dark.conf "${pkgdir}/usr/share/glassfort/kitty/glassfort-dark.conf"
+    install -Dm644 kitty-glassfort-light.conf "${pkgdir}/usr/share/glassfort/kitty/glassfort-light.conf"
+    install -Dm644 kitty.conf "${pkgdir}/etc/xdg/kitty/kitty.conf"
+    # kitty 0.38+ switches between these with the desktop colour scheme.
+    ln -s /usr/share/glassfort/kitty/glassfort-dark.conf "${pkgdir}/etc/xdg/kitty/dark-theme.auto.conf"
+    ln -s /usr/share/glassfort/kitty/glassfort-light.conf "${pkgdir}/etc/xdg/kitty/light-theme.auto.conf"
+}

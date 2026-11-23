@@ -19,7 +19,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [ ] glassfort-keyring – deferred by maintainer until the real key exists (D-26); VM tests use repo/vm-test-key
   - [ ] glassfort-theme:
     - [x] record decisions D-34 (theme dependencies), D-35 (placeholder wallpapers)
-    - [ ] package skeleton + colour schemes GlassfortLight/GlassfortDark + kitty themes
+    - [x] package skeleton + colour schemes GlassfortLight/GlassfortDark + kitty themes
     - [ ] Kvantum theme
     - [ ] GTK settings (adw-gtk3, accent colour)
     - [ ] placeholder wallpapers (own SVG, light + dark, no logo)
@@ -29,7 +29,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [ ] meta package glassfort-desktop
   - [ ] VM test: plain Arch → pacman -S glassfort-desktop → break update → roll back from boot menu
 - **Files expected to change:** docs/DECISIONS.md, docs/03-desktop-design.md, components/glassfort-theme/*, PROGRESS.md
-- **Next step if interrupted:** Create components/glassfort-theme with PKGBUILD, colour schemes and kitty themes
+- **Next step if interrupted:** Add the Kvantum theme to components/glassfort-theme
 - **Blocked because:** –
 
 ## Unpushed commits
@@ -41,6 +41,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-23 | – | glassfort-theme: Plasma colour schemes and kitty themes |
 | 2026-11-23 | – | Record maintainer decisions D-34 (theme dependencies), D-35 (placeholder wallpapers); keyring deferred |
 | 2026-11-23 | – | Add repo/publish and repo/vm-test-key (sign, local repo database, throwaway VM key) |
 | 2026-11-23 | – | Add glassfort-mirrorlist (local file:// repository for Phase 1) |
