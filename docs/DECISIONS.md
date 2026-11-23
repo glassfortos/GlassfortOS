@@ -43,3 +43,5 @@ Claude Code adds new decisions as **Proposed**. Only the maintainer sets **Decid
 | D-31 | Legal (Germany) | Impressum, privacy policy, side-activity check | Open | – |
 | D-32 | `glassfort-settings` dependencies | Hard `depends` on everything its configuration needs: snapper, snap-pac, btrfs-progs, limine, limine-mkinitcpio-hook, limine-snapper-sync, linux-lts + headers, firewalld, apparmor, zram-generator, keyd | Decided | 2026-11-22 |
 | D-33 | `[glassfort]` hosting (Phase 1) | Local only: built and tested via `file://` in VMs; public server decided later (see D-30) | Decided | 2026-11-22 |
+| D-34 | `glassfort-theme` dependencies | Hard `depends` on inter-font, ttf-jetbrains-mono, kvantum, adw-gtk-theme; Plasma itself comes from `glassfort-desktop` | Decided | 2026-11-23 |
+| D-35 | Wallpapers (interim) | Own abstract SVG placeholders in the palette (light + dark, no logo) until the final artwork exists (D-24) | Decided | 2026-11-23 |
