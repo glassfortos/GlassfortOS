@@ -5,7 +5,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 ## Current task
 
-- **Status:** in progress  <!-- idle | in progress | blocked -->
+- **Status:** blocked  <!-- idle | in progress | blocked -->
 - **Task:** Phase 1 – foundation on plain Arch (now: glassfort-mirrorlist + repo/ scripts)
 - **Roadmap item:** Phase 1
 - **Started:** 2026-11-22T22:25:00+01:00 (sub-task started 2026-11-23T22:28:56+01:00)
@@ -23,7 +23,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [ ] VM test: plain Arch → pacman -S glassfort-desktop → break update → roll back from boot menu
 - **Files expected to change:** components/glassfort-mirrorlist/*, repo/*, docs/01-architecture.md, components/glassfort-settings/README.md, PROGRESS.md
 - **Next step if interrupted:** Ask maintainer how to handle glassfort-keyring before the real key exists (D-26)
-- **Blocked because:** –
+- **Blocked because:** glassfort-keyring needs the public repository key, which does not exist yet (D-26). Asked maintainer: wait for the real key, or add the package skeleton now and skip it in CI until the key exists. Meanwhile glassfort-theme/branding can proceed.
 
 ## Unpushed commits
 
