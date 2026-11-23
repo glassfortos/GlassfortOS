@@ -72,6 +72,7 @@ Each component folder contains its source, a `PKGBUILD`, a short `README.md` and
 | `glassfort-installer` | Installer UI | QML/Kirigami + Python (archinstall) |
 | `glassfort-firstboot` | First-boot screens | QML |
 | `glassfort-keyring` | Public signing keys | – |
+| `glassfort-mirrorlist` | Server list for `[glassfort]` (Phase 1: local `file://` repo, D-33) | Config |
 | meta `glassfort-desktop` | Pulls in Plasma, default apps and all Glassfort packages | – |
 
 ## Release model (Decided)

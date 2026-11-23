@@ -6,20 +6,23 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 ## Current task
 
 - **Status:** in progress  <!-- idle | in progress | blocked -->
-- **Task:** Phase 1 – foundation on plain Arch
+- **Task:** Phase 1 – foundation on plain Arch (now: glassfort-mirrorlist + repo/ scripts)
 - **Roadmap item:** Phase 1
-- **Started:** 2026-11-22T22:25:00+01:00
+- **Started:** 2026-11-22T22:25:00+01:00 (sub-task started 2026-11-23T22:28:56+01:00)
 - **Plan:**
   - [x] Decisions from maintainer: dependencies of glassfort-settings, repo hosting + signing key, palette/fonts
   - [x] third-party: limine-mkinitcpio-hook, limine-snapper-sync (review upstream + licence, package)
   - [x] glassfort-settings: sysctl, zram, snapper root config, snap-pac, limine defaults, firewalld, AppArmor, keyd, pacman.conf
-  - [ ] glassfort-keyring + glassfort-mirrorlist + repo/ scripts (build, sign, publish)
+  - [x] CI: third-party packages cached, so only own components are rebuilt (verified in run 45074478611)
+  - [x] glassfort-mirrorlist (file:// server for Phase 1, D-33) + docs for adding [glassfort] to pacman.conf
+  - [ ] repo/publish: sign packages and build a local repo database (repo-add --sign)
+  - [ ] glassfort-keyring (needs maintainer decision: real key not yet created, D-26)
   - [ ] glassfort-theme + glassfort-branding
   - [ ] glassfort-shell (Start menu, taskbar/dock, control center)
   - [ ] meta package glassfort-desktop
   - [ ] VM test: plain Arch → pacman -S glassfort-desktop → break update → roll back from boot menu
-- **Files expected to change:** components/*, repo/*, docs/DECISIONS.md, PROGRESS.md
-- **Next step if interrupted:** Make CI build only changed packages; then glassfort-keyring, glassfort-mirrorlist and repo/ scripts
+- **Files expected to change:** components/glassfort-mirrorlist/*, repo/*, docs/01-architecture.md, components/glassfort-settings/README.md, PROGRESS.md
+- **Next step if interrupted:** Write repo/publish (sign packages, repo-add --sign into /srv/glassfort/repo/x86_64 by default) and document it in repo/README.md
 - **Blocked because:** –
 
 ## Unpushed commits
@@ -31,6 +34,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-23 | – | Add glassfort-mirrorlist (local file:// repository for Phase 1) |
 | 2026-11-22 | – | glassfort-settings: system defaults and glassfort-setup |
 | 2026-11-22 | – | Package limine-mkinitcpio-hook and limine-snapper-sync (reviewed, patched) |
 | 2026-11-22 | – | Record maintainer decisions D-22, D-23, D-26, D-32, D-33 |

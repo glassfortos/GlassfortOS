@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Maintainer: Glassfort project <https://github.com/jankln/GlassfortOS>
+
+# glassfort-mirrorlist: server list for the [glassfort] repository.
+# See README.md and docs/01-architecture.md.
+
+pkgname=glassfort-mirrorlist
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='Mirror list for the Glassfort package repository'
+arch=('any')
+url='https://github.com/jankln/GlassfortOS'
+license=('GPL-3.0-or-later')
+backup=('etc/pacman.d/glassfort-mirrorlist')
+source=('glassfort-mirrorlist')
+sha256sums=('de13a32fa8a0f71050186746fc5ef5cf661d8feda4afb54fd7ce9e48d5544c42')
+
+package() {
+    install -Dm644 "${srcdir}/glassfort-mirrorlist" "${pkgdir}/etc/pacman.d/glassfort-mirrorlist"
+}

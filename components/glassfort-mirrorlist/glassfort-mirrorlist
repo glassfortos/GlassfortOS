@@ -1,0 +1,14 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Mirrors for the [glassfort] repository.
+#
+# Phase 1: [glassfort] is local only (D-33 in docs/DECISIONS.md). The
+# repository is built with repo/publish into /srv/glassfort/repo and used
+# through file://. Public mirrors are added here once a server exists.
+#
+# Use it in /etc/pacman.conf, above [core]:
+#
+#   [glassfort]
+#   Include = /etc/pacman.d/glassfort-mirrorlist
+
+Server = file:///srv/glassfort/repo/$arch
