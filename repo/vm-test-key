@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# vm-test-key – create a throwaway signing key for [glassfort] inside a
+# test VM and make pacman trust it.
+#
+# Usage: repo/vm-test-key
+#
+# Until the real repository key exists, VM tests sign with a throwaway
+# key that never leaves the VM (D-26). This script refuses to run
+# outside a virtual machine. It creates the key without a passphrase in
+# /var/lib/glassfort/vm-test-gnupg, adds it to pacman's keyring and
+# locally signs it. Afterwards publish packages with:
+#
+#   GNUPGHOME=/var/lib/glassfort/vm-test-gnupg repo/publish PACKAGE...
+#
+# Running it again reuses the existing key.
+
+set -euo pipefail
+
+readonly GNUPG_DIR=/var/lib/glassfort/vm-test-gnupg
+readonly UID_NAME="Glassfort VM test key (throwaway, never trust outside this VM)"
+
+die() {
+    printf '==> ERROR: %s\n' "$*" >&2
+    exit 1
+}
+
+case ${1:-} in
+"") ;;
+-h | --help)
+    sed -n '4,17s/^# \{0,1\}//p' "$0"
+    exit 0
+    ;;
+*)
+    sed -n '4,17s/^# \{0,1\}//p' "$0" >&2
+    exit 2
+    ;;
+esac
+
+# Containers do not count: the key must stay in a disposable VM.
+systemd-detect-virt --quiet --vm ||
+    die "not running in a virtual machine; the throwaway key must never exist on a real system (D-26)"
+((EUID == 0)) || die "must run as root (pacman-key needs it)"
+
+export GNUPGHOME=$GNUPG_DIR
+install -d -m 0700 "$GNUPGHOME"
+
+fpr() {
+    gpg --batch --with-colons --list-secret-keys "$UID_NAME" 2>/dev/null |
+        awk -F: '$1 == "fpr" { print $10; exit }'
+}
+
+if [[ -z $(fpr) ]]; then
+    printf '==> Creating throwaway key in %s\n' "$GNUPGHOME"
+    gpg --batch --passphrase '' --quick-generate-key "$UID_NAME" ed25519 sign 30d
+fi
+key=$(fpr)
+[[ -n $key ]] || die "key creation failed"
+
+printf '==> Trusting %s in pacman\n' "$key"
+gpg --batch --armor --export "$key" | pacman-key --add -
+pacman-key --lsign-key "$key"
+
+printf '==> Done. Publish with:\n    GNUPGHOME=%s repo/publish PACKAGE...\n' "$GNUPGHOME"

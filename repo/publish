@@ -1,0 +1,161 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# publish – sign Glassfort packages and add them to a [glassfort]
+# repository directory.
+#
+# Usage: repo/publish [--key KEYID] [--dest DIR] PACKAGE...
+#   --key KEYID   GPG key to sign with (default: first secret key)
+#   --dest DIR    repository directory (default: /srv/glassfort/repo/x86_64,
+#                 the server in glassfort-mirrorlist)
+#
+# Packages without a valid detached signature are signed with gpg; the
+# package files and signatures are copied into DIR and added to the
+# signed database glassfort.db with repo-add --sign --verify. Older
+# versions are removed from DIR, downgrades are refused.
+#
+# The maintainer runs this with the offline repository key; CI only
+# builds unsigned packages (D-26). Uploading to a public server follows
+# once one exists (D-33). Uses $GNUPGHOME if set, so VM tests can sign
+# with a throwaway key (repo/vm-test-key).
+
+set -euo pipefail
+
+readonly REPO_NAME=glassfort
+
+key=
+dest=/srv/glassfort/repo/x86_64
+pkgs=()
+
+usage() {
+    sed -n '4,20s/^# \{0,1\}//p' "$0"
+}
+
+die() {
+    printf '==> ERROR: %s\n' "$*" >&2
+    exit 1
+}
+
+while (($#)); do
+    case $1 in
+    --key)
+        key=${2:?--key needs a key ID}
+        shift 2
+        ;;
+    --dest)
+        dest=${2:?--dest needs a directory}
+        shift 2
+        ;;
+    -h | --help)
+        usage
+        exit 0
+        ;;
+    --)
+        shift
+        pkgs+=("$@")
+        break
+        ;;
+    -*)
+        usage >&2
+        exit 2
+        ;;
+    *)
+        pkgs+=("$1")
+        shift
+        ;;
+    esac
+done
+
+((${#pkgs[@]})) || {
+    usage >&2
+    exit 2
+}
+
+for tool in gpg repo-add bsdtar vercmp; do
+    command -v "$tool" &>/dev/null || die "$tool not found"
+done
+
+# Fingerprint of the signing key (the given key, or the first secret key).
+fpr=$(gpg --batch --with-colons --list-secret-keys ${key:+"$key"} 2>/dev/null |
+    awk -F: '$1 == "fpr" { print $10; exit }' || true)
+[[ -n $fpr ]] || die "no secret key ${key:-found} (set --key or \$GNUPGHOME)"
+
+gpg_sign=(gpg --batch --yes --detach-sign --no-armor --local-user "$fpr")
+repo_sign=(--sign --verify --key "$fpr")
+
+# True if $1.sig is a valid signature of $1 by the signing key (or one of
+# its subkeys: VALIDSIG field 12 is the primary key fingerprint).
+signed_by_key() {
+    [[ -f $1.sig ]] || return 1
+    gpg --batch --status-fd 1 --verify "$1.sig" "$1" 2>/dev/null |
+        awk -v fpr="$fpr" '$2 == "VALIDSIG" && ($3 == fpr || $12 == fpr) { ok = 1 } END { exit !ok }'
+}
+
+mkdir -p "$dest" 2>/dev/null || die "cannot create $dest"
+[[ -w $dest ]] || die "$dest is not writable"
+
+db="$dest/$REPO_NAME.db.tar.zst"
+
+# Version of package $1 in the repository database, empty if absent.
+# Entries are directories named pkgname-pkgver-pkgrel; neither pkgver nor
+# pkgrel may contain a dash.
+db_version() {
+    [[ -f $db ]] || return 0
+    bsdtar -tf "$db" | awk -F/ -v name="$1" 'NF > 1 && !seen[$1]++ {
+        n = split($1, part, "-")
+        entry = part[1]
+        for (i = 2; i <= n - 2; i++) entry = entry "-" part[i]
+        if (entry == name) { print part[n - 1] "-" part[n]; exit }
+    }'
+}
+
+pkginfo() {
+    bsdtar -xOf "$1" .PKGINFO | awk -v key="$2" '$1 == key && $2 == "=" { print $3; exit }'
+}
+
+# Check every package before anything in $dest changes.
+for pkg in "${pkgs[@]}"; do
+    [[ -f $pkg ]] || die "$pkg does not exist"
+    [[ $pkg == *.pkg.tar.zst ]] || die "$pkg is not a .pkg.tar.zst package"
+    name=$(pkginfo "$pkg" pkgname 2>/dev/null) || true
+    version=$(pkginfo "$pkg" pkgver 2>/dev/null) || true
+    [[ -n $name && -n $version ]] || die "$pkg has no valid .PKGINFO"
+
+    base=$(basename "$pkg")
+    target="$dest/$base"
+
+    # A published file name stands for exactly one build. Never replace
+    # it with different contents; bump pkgrel instead.
+    if [[ -e $target ]] && ! cmp -s "$pkg" "$target"; then
+        die "$base is already published with different contents (bump pkgrel)"
+    fi
+
+    current=$(db_version "$name")
+    if [[ -n $current ]] && (($(vercmp "$version" "$current") < 0)); then
+        die "$name $version is older than the published $current (downgrade refused)"
+    fi
+done
+
+added=()
+for pkg in "${pkgs[@]}"; do
+    base=$(basename "$pkg")
+    target="$dest/$base"
+
+    if signed_by_key "$pkg"; then
+        printf '==> %s: existing signature is valid\n' "$base"
+    else
+        printf '==> %s: signing\n' "$base"
+        "${gpg_sign[@]}" --output "$pkg.sig" "$pkg"
+    fi
+
+    if [[ ! $pkg -ef $target ]]; then
+        cp -- "$pkg" "$target"
+        cp -- "$pkg.sig" "$target.sig"
+    fi
+    added+=("$target")
+done
+
+printf '==> Updating %s/%s.db\n' "$dest" "$REPO_NAME"
+repo-add "${repo_sign[@]}" --remove --prevent-downgrade "$db" "${added[@]}"
+
+printf '==> Published %d package(s) to %s\n' "${#added[@]}" "$dest"

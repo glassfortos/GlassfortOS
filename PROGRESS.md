@@ -15,14 +15,14 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [x] glassfort-settings: sysctl, zram, snapper root config, snap-pac, limine defaults, firewalld, AppArmor, keyd, pacman.conf
   - [x] CI: third-party packages cached, so only own components are rebuilt (verified in run 45074478611)
   - [x] glassfort-mirrorlist (file:// server for Phase 1, D-33) + docs for adding [glassfort] to pacman.conf
-  - [ ] repo/publish: sign packages and build a local repo database (repo-add --sign)
+  - [x] repo/publish: sign packages and build a local repo database (repo-add --sign)
   - [ ] glassfort-keyring (needs maintainer decision: real key not yet created, D-26)
   - [ ] glassfort-theme + glassfort-branding
   - [ ] glassfort-shell (Start menu, taskbar/dock, control center)
   - [ ] meta package glassfort-desktop
   - [ ] VM test: plain Arch → pacman -S glassfort-desktop → break update → roll back from boot menu
 - **Files expected to change:** components/glassfort-mirrorlist/*, repo/*, docs/01-architecture.md, components/glassfort-settings/README.md, PROGRESS.md
-- **Next step if interrupted:** Write repo/publish (sign packages, repo-add --sign into /srv/glassfort/repo/x86_64 by default) and document it in repo/README.md
+- **Next step if interrupted:** Ask maintainer how to handle glassfort-keyring before the real key exists (D-26)
 - **Blocked because:** –
 
 ## Unpushed commits
@@ -34,6 +34,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-23 | – | Add repo/publish and repo/vm-test-key (sign, local repo database, throwaway VM key) |
 | 2026-11-23 | – | Add glassfort-mirrorlist (local file:// repository for Phase 1) |
 | 2026-11-22 | – | glassfort-settings: system defaults and glassfort-setup |
 | 2026-11-22 | – | Package limine-mkinitcpio-hook and limine-snapper-sync (reviewed, patched) |
