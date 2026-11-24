@@ -20,7 +20,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [ ] glassfort-theme:
     - [x] record decisions D-34 (theme dependencies), D-35 (placeholder wallpapers)
     - [x] package skeleton + colour schemes GlassfortLight/GlassfortDark + kitty themes
-    - [ ] Kvantum theme
+    - [x] Kvantum theme (generated from the colour schemes by kvantum/generate)
     - [ ] GTK settings (adw-gtk3, accent colour)
     - [ ] placeholder wallpapers (own SVG, light + dark, no logo)
     - [ ] Global Theme (look-and-feel) tying colours, fonts, widget style, wallpaper
@@ -28,8 +28,8 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [ ] glassfort-shell (Start menu, taskbar/dock, control center)
   - [ ] meta package glassfort-desktop
   - [ ] VM test: plain Arch → pacman -S glassfort-desktop → break update → roll back from boot menu
-- **Files expected to change:** docs/DECISIONS.md, docs/03-desktop-design.md, components/glassfort-theme/*, PROGRESS.md
-- **Next step if interrupted:** Add the Kvantum theme to components/glassfort-theme
+- **Files expected to change:** components/glassfort-theme/*, PROGRESS.md
+- **Next step if interrupted:** Add GTK settings (adw-gtk3 + Glassfort accent) to components/glassfort-theme. Maintainer uploaded AI drafts to images/ (untracked: logo, app icon, wallpaper) – use as style reference for the D-35 placeholder wallpapers, do not commit them without asking.
 - **Blocked because:** –
 
 ## Unpushed commits
@@ -41,6 +41,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-24 | – | glassfort-theme: Kvantum themes (light + dark) generated from the colour schemes |
 | 2026-11-23 | – | glassfort-theme: Plasma colour schemes and kitty themes |
 | 2026-11-23 | – | Record maintainer decisions D-34 (theme dependencies), D-35 (placeholder wallpapers); keyring deferred |
 | 2026-11-23 | – | Add repo/publish and repo/vm-test-key (sign, local repo database, throwaway VM key) |

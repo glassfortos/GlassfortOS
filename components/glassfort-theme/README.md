@@ -13,6 +13,7 @@ Palette: D-22, dependencies: D-34 in
 | `kitty-glassfort-light.conf`, `kitty-glassfort-dark.conf` | `/usr/share/glassfort/kitty/` | kitty colours |
 | `kitty.conf` | `/etc/xdg/kitty/` | Default kitty config: JetBrains Mono, slight translucency, Glassfort colours |
 | – (symlinks) | `/etc/xdg/kitty/{dark,light}-theme.auto.conf` | kitty follows the desktop's light/dark setting |
+| `kvantum-*.kvconfig`, `kvantum-*.svg` (generated) | `/usr/share/Kvantum/Glassfort/` | Kvantum Qt widget style, light (`Glassfort`) and dark (`GlassfortDark`) |
 
 ## Colours
 
@@ -32,9 +33,36 @@ files must live in the same directory; a user with an own config can
 include `/usr/share/glassfort/kitty/glassfort-dark.conf` or
 `glassfort-light.conf`.
 
+## Kvantum
+
+`kvantum/generate` writes both Kvantum themes from the two `.colors`
+files, so Qt widgets and Plasma share one palette. Never edit the
+`kvantum-*` files by hand; change the generator or the colour
+scheme and run it again:
+
+```sh
+kvantum/generate          # rewrite the theme files
+kvantum/generate --check  # CI: files up to date, SVG objects present, contrast
+```
+
+Look: rounded corners (5 px controls, 6 px menus), flat buttons with a
+thin border, accent-coloured selection, check boxes and focus rings,
+overlay scrollbars, pill-shaped sliders and progress bars. Menus and
+tooltips are translucent; KWin blurs what is behind them. Widgets the
+generator does not draw (dial, MDI title bar buttons, scrollbar grip)
+fall back to Kvantum's built-in default theme.
+
+Kvantum chooses the theme by widget style name: `kvantum` →
+`Glassfort`, `kvantum-dark` → `GlassfortDark`. Selecting the theme in
+`~/.config/Kvantum/kvantum.kvconfig` (`theme=Glassfort`) is the Global
+Theme's job.
+
+After changing the generator, update the four `sha256sums` in the
+PKGBUILD (`updpkgsums`).
+
 ## Planned
 
-Kvantum theme, GTK settings (adw-gtk3 with the accent colour), placeholder
+GTK settings (adw-gtk3 with the accent colour), placeholder
 wallpapers (D-35) and the Global Theme that ties them together.
 
 ## Build

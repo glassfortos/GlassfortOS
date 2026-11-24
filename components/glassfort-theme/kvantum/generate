@@ -1,0 +1,1334 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+"""Generate the Glassfort Kvantum themes from the Plasma colour schemes.
+
+Writes kvantum-Glassfort.{svg,kvconfig} (light) and
+kvantum-GlassfortDark.{svg,kvconfig} (dark) into the package directory. The
+colours come from ../GlassfortLight.colors and ../GlassfortDark.colors, so
+Plasma, Kvantum and kitty share one palette (D-22).
+
+Kvantum picks the light theme for the widget style "kvantum" and the dark
+one for "kvantum-dark". Element names and kvconfig keys follow Kvantum's
+doc/Theme-Making.pdf and doc/Theme-Config; widgets not drawn here fall
+back to Kvantum's built-in default theme.
+
+Usage:
+    generate          write the theme files
+    generate --check  fail if the committed files are out of date or a
+                      referenced SVG element is missing
+"""
+
+from __future__ import annotations
+
+import argparse
+import configparser
+import re
+import sys
+from dataclasses import dataclass
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+OUT = HERE.parent  # makepkg only takes local sources from the PKGBUILD dir
+
+RGB = tuple[int, int, int]
+
+STATES = ("normal", "focused", "pressed", "toggled")
+
+
+# --------------------------------------------------------------------------
+# Palette
+# --------------------------------------------------------------------------
+
+
+def read_scheme(path: Path) -> configparser.ConfigParser:
+    cp = configparser.ConfigParser(interpolation=None)
+    cp.optionxform = str  # keep key case
+    cp.read(path, encoding="utf-8")
+    return cp
+
+
+def rgb(cp: configparser.ConfigParser, section: str, key: str) -> RGB:
+    r, g, b = (int(v) for v in cp[section][key].split(","))
+    return (r, g, b)
+
+
+def mix(a: RGB, b: RGB, t: float) -> RGB:
+    """Blend a towards b by t (0..1)."""
+    return (
+        round(a[0] + (b[0] - a[0]) * t),
+        round(a[1] + (b[1] - a[1]) * t),
+        round(a[2] + (b[2] - a[2]) * t),
+    )
+
+
+def hexc(c: RGB) -> str:
+    return "#{:02X}{:02X}{:02X}".format(*c)
+
+
+def luminance(c: RGB) -> float:
+    def ch(v: int) -> float:
+        s = v / 255
+        return s / 12.92 if s <= 0.04045 else ((s + 0.055) / 1.055) ** 2.4
+
+    return 0.2126 * ch(c[0]) + 0.7152 * ch(c[1]) + 0.0722 * ch(c[2])
+
+
+def contrast(a: RGB, b: RGB) -> float:
+    la, lb = sorted((luminance(a), luminance(b)), reverse=True)
+    return (la + 0.05) / (lb + 0.05)
+
+
+@dataclass(frozen=True)
+class Palette:
+    name: str
+    dark: bool
+    window: RGB
+    view: RGB
+    view_alt: RGB
+    button: RGB
+    button_alt: RGB
+    header: RGB
+    text: RGB
+    text_inactive: RGB
+    accent: RGB
+    accent_text: RGB
+    focus: RGB
+    link: RGB
+    visited: RGB
+    tooltip: RGB
+    tooltip_text: RGB
+    # Derived design colours (not in the Plasma scheme).
+    border: RGB  # buttons, frames, menus
+    input_border: RGB  # line edits, check boxes, radios (>= 3:1)
+    groove: RGB  # slider and progress grooves
+    disabled_text: RGB
+    menu_alpha: float
+
+
+def palette(name: str, scheme: Path, dark: bool) -> Palette:
+    cp = read_scheme(scheme)
+    window = rgb(cp, "Colors:Window", "BackgroundNormal")
+    view = rgb(cp, "Colors:View", "BackgroundNormal")
+    text = rgb(cp, "Colors:View", "ForegroundNormal")
+    steel = (139, 147, 167)  # D-22 neutral
+    if dark:
+        border = (52, 60, 88)
+        input_border = (92, 101, 130)
+        groove = (52, 60, 88)
+    else:
+        border = (197, 203, 216)
+        input_border = steel
+        groove = (213, 218, 228)
+    return Palette(
+        name=name,
+        dark=dark,
+        window=window,
+        view=view,
+        view_alt=rgb(cp, "Colors:View", "BackgroundAlternate"),
+        button=rgb(cp, "Colors:Button", "BackgroundNormal"),
+        button_alt=rgb(cp, "Colors:Button", "BackgroundAlternate"),
+        header=rgb(cp, "Colors:Header", "BackgroundNormal"),
+        text=text,
+        text_inactive=rgb(cp, "Colors:Window", "ForegroundInactive"),
+        accent=rgb(cp, "Colors:Selection", "BackgroundNormal"),
+        accent_text=rgb(cp, "Colors:Selection", "ForegroundNormal"),
+        focus=rgb(cp, "Colors:Button", "DecorationFocus"),
+        link=rgb(cp, "Colors:View", "ForegroundLink"),
+        visited=rgb(cp, "Colors:View", "ForegroundVisited"),
+        tooltip=rgb(cp, "Colors:Tooltip", "BackgroundNormal"),
+        tooltip_text=rgb(cp, "Colors:Tooltip", "ForegroundNormal"),
+        border=border,
+        input_border=input_border,
+        groove=groove,
+        disabled_text=mix(text, window, 0.55),
+        menu_alpha=0.92 if dark else 0.90,
+    )
+
+
+# --------------------------------------------------------------------------
+# SVG building blocks
+# --------------------------------------------------------------------------
+
+
+def fill(c: RGB, alpha: float = 1.0) -> str:
+    s = f"fill:{hexc(c)}"
+    if alpha < 1.0:
+        s += f";fill-opacity:{alpha:.2f}"
+    return s
+
+
+def n(v: float) -> str:
+    """Format a number without trailing zeros."""
+    s = f"{v:.3f}".rstrip("0").rstrip(".")
+    return s if s != "-0" else "0"
+
+
+class Svg:
+    """Collects SVG objects and places them on a grid, one row per widget."""
+
+    def __init__(self) -> None:
+        self.parts: list[str] = []
+        self.defs: list[str] = []
+        self.ids: set[str] = set()
+        self.x = 0.0
+        self.y = 0.0
+        self.row_h = 0.0
+        self.width = 0.0
+
+    # layout -------------------------------------------------------------
+
+    def slot(self, w: float, h: float) -> tuple[float, float]:
+        x, y = self.x, self.y
+        self.x += w + 8
+        self.row_h = max(self.row_h, h)
+        self.width = max(self.width, self.x)
+        return x, y
+
+    def newline(self) -> None:
+        self.x = 0.0
+        self.y += self.row_h + 8
+        self.row_h = 0.0
+
+    # primitives ---------------------------------------------------------
+
+    def group(
+        self, oid: str, x: float, y: float, w: float, h: float, body: str
+    ) -> None:
+        """An object whose bounds are exactly (x, y, w, h)."""
+        if oid in self.ids:
+            raise ValueError(f"duplicate SVG id {oid}")
+        self.ids.add(oid)
+        box = f'<rect x="{n(x)}" y="{n(y)}" width="{n(w)}" height="{n(h)}" style="fill:#000000;fill-opacity:0"/>'
+        self.parts.append(f'<g id="{oid}">{box}{body}</g>')
+
+    def framed(
+        self,
+        name: str,
+        bg: RGB | None,
+        border: RGB | None,
+        f: float,
+        bw: float = 1.0,
+        bg_alpha: float = 1.0,
+        border_alpha: float = 1.0,
+        interior: bool = True,
+        size: float = 16.0,
+    ) -> None:
+        """A rounded rectangle split into Kvantum's nine objects.
+
+        The corner radius equals the frame width f. `name` is the full
+        object prefix, e.g. "button-normal".
+        """
+        x0, y0 = self.slot(2 * f + size, 2 * f + size)
+        m = size
+        b = bw if border is not None else 0.0
+        r_in = f - b
+        bg_style = fill(bg, bg_alpha) if bg is not None else None
+        bd_style = fill(border, border_alpha) if border is not None else None
+
+        # Canonical top-left corner in local coordinates (0..f).
+        corner = ""
+        if bd_style:
+            corner += (
+                f'<path style="{bd_style}" d="M 0,{n(f)} A {n(f)},{n(f)} 0 0 1 {n(f)},0 '
+                f'L {n(f)},{n(b)} A {n(r_in)},{n(r_in)} 0 0 0 {n(b)},{n(f)} Z"/>'
+            )
+        if bg_style:
+            corner += (
+                f'<path style="{bg_style}" d="M {n(f)},{n(f)} L {n(b)},{n(f)} '
+                f'A {n(r_in)},{n(r_in)} 0 0 1 {n(f)},{n(b)} Z"/>'
+            )
+        # Canonical top edge (width m, height f).
+        edge_h = ""
+        if bd_style:
+            edge_h += (
+                f'<rect x="0" y="0" width="{n(m)}" height="{n(b)}" style="{bd_style}"/>'
+            )
+        if bg_style:
+            edge_h += f'<rect x="0" y="{n(b)}" width="{n(m)}" height="{n(f - b)}" style="{bg_style}"/>'
+        # Canonical left edge (width f, height m).
+        edge_v = ""
+        if bd_style:
+            edge_v += (
+                f'<rect x="0" y="0" width="{n(b)}" height="{n(m)}" style="{bd_style}"/>'
+            )
+        if bg_style:
+            edge_v += f'<rect x="{n(b)}" y="0" width="{n(f - b)}" height="{n(m)}" style="{bg_style}"/>'
+
+        def place(
+            part: str, body: str, x: float, y: float, w: float, h: float, tf: str
+        ) -> None:
+            self.group(f"{name}-{part}", x, y, w, h, f'<g transform="{tf}">{body}</g>')
+
+        xr = x0 + f + m  # right column
+        yb = y0 + f + m  # bottom row
+        place("topleft", corner, x0, y0, f, f, f"translate({n(x0)},{n(y0)})")
+        place(
+            "topright",
+            corner,
+            xr,
+            y0,
+            f,
+            f,
+            f"translate({n(xr + f)},{n(y0)}) scale(-1,1)",
+        )
+        place(
+            "bottomleft",
+            corner,
+            x0,
+            yb,
+            f,
+            f,
+            f"translate({n(x0)},{n(yb + f)}) scale(1,-1)",
+        )
+        place(
+            "bottomright",
+            corner,
+            xr,
+            yb,
+            f,
+            f,
+            f"translate({n(xr + f)},{n(yb + f)}) scale(-1,-1)",
+        )
+        place("top", edge_h, x0 + f, y0, m, f, f"translate({n(x0 + f)},{n(y0)})")
+        place(
+            "bottom",
+            edge_h,
+            x0 + f,
+            yb,
+            m,
+            f,
+            f"translate({n(x0 + f)},{n(yb + f)}) scale(1,-1)",
+        )
+        place("left", edge_v, x0, y0 + f, f, m, f"translate({n(x0)},{n(y0 + f)})")
+        place(
+            "right",
+            edge_v,
+            xr,
+            y0 + f,
+            f,
+            m,
+            f"translate({n(xr + f)},{n(y0 + f)}) scale(-1,1)",
+        )
+        if interior:
+            body = ""
+            if bg_style:
+                body = f'<rect x="{n(x0 + f)}" y="{n(y0 + f)}" width="{n(m)}" height="{n(m)}" style="{bg_style}"/>'
+            self.group(name, x0 + f, y0 + f, m, m, body)
+
+    def icon(self, oid: str, size: float, body: str) -> None:
+        """A square indicator drawn in local coordinates 0..size."""
+        x, y = self.slot(size, size)
+        self.group(
+            oid, x, y, size, size, f'<g transform="translate({n(x)},{n(y)})">{body}</g>'
+        )
+
+    def rect_obj(self, oid: str, w: float, h: float, body: str) -> None:
+        x, y = self.slot(w, h)
+        self.group(
+            oid, x, y, w, h, f'<g transform="translate({n(x)},{n(y)})">{body}</g>'
+        )
+
+    def shadow(self, element: str, depth: float, frame: float, alpha: float) -> None:
+        """Soft drop shadow pieces plus Kvantum's shadow-hint rectangles.
+
+        Each piece covers `depth` of pure shadow plus `frame` of the
+        widget frame, as Theme-Making.pdf describes.
+        """
+        t = depth + frame
+        stop_in = frame / t
+        gid = f"{element}-shadow-grad"
+        self.defs.append(
+            f'<linearGradient id="{gid}" x1="0" y1="1" x2="0" y2="0">'
+            f'<stop offset="0" stop-color="#000000" stop-opacity="{alpha:.2f}"/>'
+            f'<stop offset="{stop_in:.3f}" stop-color="#000000" stop-opacity="{alpha:.2f}"/>'
+            f'<stop offset="1" stop-color="#000000" stop-opacity="0"/></linearGradient>'
+        )
+        rid = f"{element}-shadow-rgrad"
+        self.defs.append(
+            f'<radialGradient id="{rid}" cx="1" cy="1" r="1" gradientUnits="objectBoundingBox">'
+            f'<stop offset="0" stop-color="#000000" stop-opacity="{alpha:.2f}"/>'
+            f'<stop offset="{stop_in:.3f}" stop-color="#000000" stop-opacity="{alpha:.2f}"/>'
+            f'<stop offset="1" stop-color="#000000" stop-opacity="0"/></radialGradient>'
+        )
+        m = 16.0
+        x0, y0 = self.slot(2 * t + m, 2 * t + m)
+        edge = f'<rect x="0" y="0" width="{n(m)}" height="{n(t)}" style="fill:url(#{gid})"/>'
+        corner = f'<rect x="0" y="0" width="{n(t)}" height="{n(t)}" style="fill:url(#{rid})"/>'
+        vgrad = (
+            f'<rect x="0" y="0" width="{n(m)}" height="{n(t)}" style="fill:url(#{gid})" '
+            f'transform="translate({n(t)},0) rotate(90)"/>'
+        )
+        xr, yb = x0 + t + m, y0 + t + m
+
+        def place(
+            part: str, body: str, x: float, y: float, w: float, h: float, tf: str
+        ) -> None:
+            self.group(
+                f"{element}-shadow-{part}",
+                x,
+                y,
+                w,
+                h,
+                f'<g transform="{tf}">{body}</g>',
+            )
+
+        place("top", edge, x0 + t, y0, m, t, f"translate({n(x0 + t)},{n(y0)})")
+        place(
+            "bottom",
+            edge,
+            x0 + t,
+            yb,
+            m,
+            t,
+            f"translate({n(x0 + t)},{n(yb + t)}) scale(1,-1)",
+        )
+        place(
+            "left",
+            vgrad,
+            x0,
+            y0 + t,
+            t,
+            m,
+            f"translate({n(x0 + t)},{n(y0 + t)}) scale(-1,1)",
+        )
+        place("right", vgrad, xr, y0 + t, t, m, f"translate({n(xr)},{n(y0 + t)})")
+        place("topleft", corner, x0, y0, t, t, f"translate({n(x0)},{n(y0)})")
+        place(
+            "topright",
+            corner,
+            xr,
+            y0,
+            t,
+            t,
+            f"translate({n(xr + t)},{n(y0)}) scale(-1,1)",
+        )
+        place(
+            "bottomleft",
+            corner,
+            x0,
+            yb,
+            t,
+            t,
+            f"translate({n(x0)},{n(yb + t)}) scale(1,-1)",
+        )
+        place(
+            "bottomright",
+            corner,
+            xr,
+            yb,
+            t,
+            t,
+            f"translate({n(xr + t)},{n(yb + t)}) scale(-1,-1)",
+        )
+        # Hints: only their height (top/bottom) or width (left/right) matters.
+        for side, (w, h) in {
+            "top": (m, depth),
+            "bottom": (m, depth),
+            "left": (depth, m),
+            "right": (depth, m),
+        }.items():
+            self.rect_obj(f"{element}-shadow-hint-{side}", w, h, "")
+
+    def render(self) -> str:
+        self.newline()
+        defs = "".join(self.defs)
+        body = "\n".join(self.parts)
+        w, h = n(self.width), n(self.y)
+        return (
+            '<?xml version="1.0" encoding="UTF-8"?>\n'
+            "<!-- SPDX-License-Identifier: GPL-3.0-or-later -->\n"
+            "<!-- Generated by components/glassfort-theme/kvantum/generate. Do not edit. -->\n"
+            f'<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="{w}" height="{h}" '
+            f'viewBox="0 0 {w} {h}">\n<defs>{defs}</defs>\n{body}\n</svg>\n'
+        )
+
+
+# --------------------------------------------------------------------------
+# Glyphs (local coordinates)
+# --------------------------------------------------------------------------
+
+
+def stroke(c: RGB, w: float, alpha: float = 1.0) -> str:
+    s = f"fill:none;stroke:{hexc(c)};stroke-width:{n(w)};stroke-linecap:round;stroke-linejoin:round"
+    if alpha < 1.0:
+        s += f";stroke-opacity:{alpha:.2f}"
+    return s
+
+
+CHEVRONS = {
+    # 10x10 box
+    "down": "M 2,3.75 L 5,6.75 L 8,3.75",
+    "up": "M 2,6.25 L 5,3.25 L 8,6.25",
+    "right": "M 3.75,2 L 6.75,5 L 3.75,8",
+    "left": "M 6.25,2 L 3.25,5 L 6.25,8",
+}
+
+
+def chevron(direction: str, c: RGB) -> str:
+    return f'<path style="{stroke(c, 1.5)}" d="{CHEVRONS[direction]}"/>'
+
+
+def plus(c: RGB) -> str:
+    return f'<path style="{stroke(c, 1.5)}" d="M 5,2 V 8 M 2,5 H 8"/>'
+
+
+def minus(c: RGB) -> str:
+    return f'<path style="{stroke(c, 1.5)}" d="M 2,5 H 8"/>'
+
+
+# --------------------------------------------------------------------------
+# Theme
+# --------------------------------------------------------------------------
+
+# Frame widths (= corner radii) in px.
+F_BUTTON = 5
+F_INPUT = 5
+F_TAB = 4
+F_ITEM = 3
+F_MENU = 6
+F_MENUITEM = 4
+F_TOOLTIP = 5
+F_FRAME = 5
+F_BAR = 3  # scrollbar, slider and progress pills (with frame.expansion)
+MENU_SHADOW = 7
+TOOLTIP_SHADOW = 6
+INDICATOR = 10
+
+
+def build_svg(p: Palette) -> str:
+    s = Svg()
+    hover = mix(p.button, p.accent, 0.08)
+    item_hover = p.accent
+    item_hover_alpha = 0.14 if not p.dark else 0.18
+
+    # Push and tool buttons.
+    s.framed("button-normal", p.button, p.border, F_BUTTON)
+    s.framed("button-focused", hover, mix(p.border, p.accent, 0.35), F_BUTTON)
+    s.framed("button-pressed", p.button_alt, p.border, F_BUTTON)
+    s.framed("button-toggled", p.button_alt, p.accent, F_BUTTON)
+    # The default button gets an accent border; no extra corner indicator.
+    s.framed("button-default", p.button, p.accent, F_BUTTON)
+    s.rect_obj("button-default-indicator", 4, 4, "")
+    s.newline()
+
+    # Line edits (also editable combo boxes and spin boxes).
+    s.framed("lineedit-normal", p.view, p.input_border, F_INPUT)
+    s.framed("lineedit-focused", p.view, p.focus, F_INPUT, bw=2)
+    s.newline()
+
+    # Generic frames, group boxes, tab frames.
+    s.framed("common-normal", None, p.border, F_FRAME)
+    panel = mix(p.window, p.text, 0.03)
+    s.framed("group-normal", panel, p.border, F_FRAME)
+    s.framed("tabframe-normal", panel, p.border, F_FRAME)
+    s.newline()
+
+    # Tabs: segmented-control look, the active tab is a raised button.
+    s.framed("tab-normal", None, None, F_TAB)
+    s.framed("tab-focused", mix(p.window, p.text, 0.06), None, F_TAB)
+    s.framed("tab-toggled", p.button, p.border, F_TAB)
+    s.rect_obj("tab-tear", 2, 16, "")
+    s.newline()
+    close = "M 4.5,4.5 L 9.5,9.5 M 9.5,4.5 L 4.5,9.5"
+    s.icon(
+        "tab-close-normal",
+        14,
+        f'<path style="{stroke(p.text_inactive, 1.4)}" d="{close}"/>',
+    )
+    s.icon(
+        "tab-close-focused",
+        14,
+        f'<circle cx="7" cy="7" r="7" style="{fill(p.text, 0.12)}"/>'
+        f'<path style="{stroke(p.text, 1.4)}" d="{close}"/>',
+    )
+    s.icon(
+        "tab-close-pressed",
+        14,
+        f'<circle cx="7" cy="7" r="7" style="{fill(p.text, 0.22)}"/>'
+        f'<path style="{stroke(p.text, 1.4)}" d="{close}"/>',
+    )
+    s.icon(
+        "tab-close-disabled",
+        14,
+        f'<path style="{stroke(p.disabled_text, 1.4)}" d="{close}"/>',
+    )
+    s.newline()
+
+    # Item views: hover tint, accent selection.
+    s.framed("itemview-focused", item_hover, None, F_ITEM, bg_alpha=item_hover_alpha)
+    s.framed("itemview-pressed", p.accent, None, F_ITEM)
+    s.framed("itemview-toggled", p.accent, None, F_ITEM)
+    s.newline()
+
+    # Header sections: flat with a bottom line, separators between them.
+    hx, hy = s.slot(24, 24)
+    view = fill(p.view)
+    s.group(
+        "header-normal",
+        hx + 4,
+        hy + 4,
+        16,
+        16,
+        f'<rect x="{hx + 4}" y="{hy + 4}" width="16" height="16" style="{view}"/>',
+    )
+    for side, (x, y, w, h) in {
+        "top": (hx + 4, hy, 16, 4),
+        "left": (hx, hy + 4, 4, 16),
+        "right": (hx + 20, hy + 4, 4, 16),
+        "topleft": (hx, hy, 4, 4),
+        "topright": (hx + 20, hy, 4, 4),
+    }.items():
+        s.group(
+            f"header-normal-{side}",
+            x,
+            y,
+            w,
+            h,
+            f'<rect x="{x}" y="{y}" width="{w}" height="{h}" style="{view}"/>',
+        )
+    for side, (x, w) in {
+        "bottomleft": (hx, 4),
+        "bottom": (hx + 4, 16),
+        "bottomright": (hx + 20, 4),
+    }.items():
+        y = hy + 20
+        s.group(
+            f"header-normal-{side}",
+            x,
+            y,
+            w,
+            4,
+            f'<rect x="{x}" y="{y}" width="{w}" height="3" style="{fill(p.view)}"/>'
+            f'<rect x="{x}" y="{y + 3}" width="{w}" height="1" style="{fill(p.border)}"/>',
+        )
+    s.rect_obj(
+        "header-separator",
+        4,
+        16,
+        f'<rect x="1.5" y="3" width="1" height="10" style="{fill(p.border)}"/>',
+    )
+    s.newline()
+
+    # Menus: translucent (blurred by KWin), rounded, with a soft shadow.
+    s.framed(
+        "menu-normal",
+        p.view if not p.dark else p.window,
+        p.border,
+        F_MENU,
+        bg_alpha=p.menu_alpha,
+    )
+    s.shadow("menu", MENU_SHADOW, F_MENU, 0.18 if not p.dark else 0.40)
+    s.newline()
+    for st in ("focused", "pressed", "toggled"):
+        s.framed(f"menuitem-{st}", p.accent, None, F_MENUITEM)
+    s.rect_obj(
+        "menuitem-separator",
+        16,
+        9,
+        f'<rect x="0" y="4" width="16" height="1" style="{fill(p.border)}"/>',
+    )
+    for st, c in (
+        ("normal", p.text),
+        ("focused", p.accent_text),
+        ("disabled", p.disabled_text),
+    ):
+        for d in ("left", "right"):
+            s.icon(f"menuitem-{d}-{st}", INDICATOR, chevron(d, c))
+    s.newline()
+    for st in ("focused", "pressed", "toggled"):
+        s.framed(f"menubaritem-{st}", mix(p.window, p.text, 0.08), None, F_MENUITEM)
+    s.newline()
+
+    # Tooltips.
+    s.framed("tooltip-normal", p.tooltip, p.border, F_TOOLTIP, bg_alpha=0.94)
+    s.shadow("tooltip", TOOLTIP_SHADOW, F_TOOLTIP, 0.14 if not p.dark else 0.35)
+    s.newline()
+
+    # Scrollbars: overlay pills (transient_scrollbar).
+    for st, a in (("normal", 0.40), ("focused", 0.58), ("pressed", 0.72)):
+        s.framed(f"scrollbarslider-{st}", p.text, None, F_BAR, bg_alpha=a)
+    s.framed("scrollbargroove-normal", p.text, None, F_BAR, bg_alpha=0.06)
+    s.newline()
+
+    # Sliders: groove, filled part, round handle.
+    s.framed("slider-normal", p.groove, None, F_BAR)
+    s.framed("slider-toggled", p.accent, None, F_BAR)
+    s.rect_obj(
+        "slider-tick-normal",
+        5,
+        1,
+        f'<rect x="0" y="0" width="5" height="1" style="{fill(p.text_inactive)}"/>',
+    )
+    handle = (
+        f'<circle cx="9" cy="9.5" r="8" style="{fill((0, 0, 0), 0.12)}"/>'
+        '<circle cx="9" cy="9" r="8" style="{bd}"/>'
+        '<circle cx="9" cy="9" r="7" style="{bg}"/>'
+    )
+    for st, bg, bd in (
+        ("normal", p.button, p.border),
+        ("focused", p.button, p.accent),
+        ("pressed", p.button_alt, p.accent),
+        ("disabled", p.button, p.border),
+    ):
+        body = handle.format(bd=fill(bd), bg=fill(bg))
+        s.icon(f"slidercursor-{st}", 18, body)
+        s.icon(f"slidercursor-tickless-{st}", 18, body)
+    s.newline()
+
+    # Progress bars.
+    s.framed("progress-normal", p.groove, None, F_BAR)
+    s.framed("progress-pattern-normal", p.accent, None, F_BAR)
+    s.framed("progress-pattern-disabled", p.text_inactive, None, F_BAR)
+    s.newline()
+
+    # Check boxes and radio buttons (16 px).
+    def box(bg: RGB, bd: RGB, bw: float = 1.0) -> str:
+        h = bw / 2
+        return (
+            f'<rect x="{n(h)}" y="{n(h)}" width="{n(16 - bw)}" height="{n(16 - bw)}" rx="{n(4 - h)}" '
+            f'style="{fill(bg)};stroke:{hexc(bd)};stroke-width:{n(bw)}"/>'
+        )
+
+    def disc(bg: RGB, bd: RGB, bw: float = 1.0) -> str:
+        return f'<circle cx="8" cy="8" r="{n(8 - bw / 2)}" style="{fill(bg)};stroke:{hexc(bd)};stroke-width:{n(bw)}"/>'
+
+    check = f'<path style="{stroke(p.accent_text, 2)}" d="M 4.5,8.25 L 7,10.75 L 11.5,5.5"/>'
+    dash = f'<path style="{stroke(p.accent_text, 2)}" d="M 4.5,8 H 11.5"/>'
+    dot = f'<circle cx="8" cy="8" r="3" style="{fill(p.accent_text)}"/>'
+    accent_hover = mix(p.accent, p.text if p.dark else p.view, 0.12)
+    for prefix in ("", "menu-", "item-"):
+        s.icon(f"{prefix}checkbox-normal", 16, box(p.view, p.input_border))
+        s.icon(f"{prefix}checkbox-focused", 16, box(p.view, p.focus, 1.5))
+        s.icon(f"{prefix}checkbox-checked-normal", 16, box(p.accent, p.accent) + check)
+        s.icon(
+            f"{prefix}checkbox-checked-focused",
+            16,
+            box(accent_hover, accent_hover) + check,
+        )
+        s.icon(f"{prefix}checkbox-tristate-normal", 16, box(p.accent, p.accent) + dash)
+        s.icon(
+            f"{prefix}checkbox-tristate-focused",
+            16,
+            box(accent_hover, accent_hover) + dash,
+        )
+        if prefix != "item-":
+            s.icon(f"{prefix}radio-normal", 16, disc(p.view, p.input_border))
+            s.icon(f"{prefix}radio-focused", 16, disc(p.view, p.focus, 1.5))
+            s.icon(f"{prefix}radio-checked-normal", 16, disc(p.accent, p.accent) + dot)
+            s.icon(
+                f"{prefix}radio-checked-focused",
+                16,
+                disc(accent_hover, accent_hover) + dot,
+            )
+        s.newline()
+
+    # Arrows. Missing focused/pressed/toggled states fall back to normal.
+    for st, c in (("normal", p.text), ("disabled", p.disabled_text)):
+        for d in ("up", "down", "left", "right"):
+            s.icon(f"arrow-{d}-{st}", INDICATOR, chevron(d, c))
+        s.icon(f"arrow-plus-{st}", INDICATOR, plus(c))
+        s.icon(f"arrow-minus-{st}", INDICATOR, minus(c))
+    s.newline()
+    # Tree expanders: chevrons instead of +/-.
+    for st, c in (
+        ("normal", p.text_inactive),
+        ("focused", p.text),
+        ("pressed", p.text),
+        ("disabled", p.disabled_text),
+    ):
+        s.icon(f"tree-plus-{st}", INDICATOR, chevron("right", c))
+        s.icon(f"tree-minus-{st}", INDICATOR, chevron("down", c))
+    s.newline()
+    # Spin boxes: +/- inside the line edit.
+    for st, c in (
+        ("normal", p.text),
+        ("focused", p.accent if not p.dark else p.focus),
+        ("disabled", p.disabled_text),
+    ):
+        s.icon(f"spin-plus-{st}", INDICATOR, plus(c))
+        s.icon(f"spin-minus-{st}", INDICATOR, minus(c))
+        s.icon(f"spin-up-{st}", INDICATOR, chevron("up", c))
+        s.icon(f"spin-down-{st}", INDICATOR, chevron("down", c))
+    s.newline()
+
+    # Focus frame: thin accent outline.
+    s.framed("focus", None, p.focus, 2, bw=1, border_alpha=0.7, interior=False)
+    # Splitter grip: three dots.
+    for st, c in (
+        ("normal", p.text_inactive),
+        ("focused", p.accent),
+        ("pressed", p.accent),
+    ):
+        dots = "".join(
+            f'<circle cx="3.5" cy="{y}" r="1" style="{fill(c)}"/>' for y in (4, 8, 12)
+        )
+        s.rect_obj(f"splitter-grip-{st}", 7, 16, dots)
+    # Size grip: two diagonal lines, bottom-right corner.
+    for st, c in (("normal", p.text_inactive), ("focused", p.text)):
+        s.icon(
+            f"sizegrip-{st}",
+            13,
+            f'<path style="{stroke(c, 1.2)}" d="M 11.5,4 L 4,11.5 M 11.5,8 L 8,11.5"/>',
+        )
+    # Toolbar handle and separator.
+    s.rect_obj(
+        "toolbar-handle",
+        8,
+        16,
+        "".join(
+            f'<circle cx="4" cy="{y}" r="1" style="{fill(p.text_inactive)}"/>'
+            for y in (4, 8, 12)
+        ),
+    )
+    s.rect_obj(
+        "toolbar-separator",
+        5,
+        16,
+        f'<rect x="2" y="2" width="1" height="12" style="{fill(p.border)}"/>',
+    )
+    s.newline()
+
+    return s.render()
+
+
+def build_kvconfig(p: Palette) -> str:
+    variant = "dark" if p.dark else "light"
+    text = hexc(p.text)
+    sel_text = hexc(p.accent_text)
+    general = f"""\
+[%General]
+author=Glassfort project
+comment=Glassfort {variant} theme. Generated by components/glassfort-theme/kvantum/generate.
+respect_DE=true
+x11drag=menubar_and_primary_toolbar
+alt_mnemonic=true
+left_tabs=false
+center_normal_tabs=true
+attach_active_tab=false
+joined_inactive_tabs=false
+group_toolbar_buttons=false
+spread_progressbar=true
+progressbar_thickness=6
+composite=true
+translucent_windows=false
+blurring=false
+popup_blurring=true
+menu_blur_radius={F_MENU}
+tooltip_blur_radius={F_TOOLTIP}
+menu_shadow_depth={MENU_SHADOW}
+tooltip_shadow_depth={TOOLTIP_SHADOW}
+shadowless_popup=false
+reduce_menu_opacity=0
+submenu_overlap=0
+menu_separator_height=9
+splitter_width=7
+scroll_width=10
+scroll_min_extent=36
+scroll_arrows=false
+transient_scrollbar=true
+transient_groove=true
+scrollbar_in_view=false
+slider_width=4
+slider_handle_width=18
+slider_handle_length=18
+tickless_slider_handle_size=18
+check_size=16
+animate_states=true
+combo_as_lineedit=true
+combo_menu=true
+inline_spin_indicators=true
+vertical_spin_indicators=false
+tree_branch_line=false
+toolbutton_style=0
+layout_spacing=6
+fill_rubberband=false
+opaque=kaffeine,kmplayer,subtitlecomposer,kdenlive,vlc,smplayer,smplayer2,avidemux,avidemux2_qt4,avidemux3_qt4,avidemux3_qt5,kamoso,QtCreator,VirtualBox,VirtualBoxVM,trojita,dragon,digikam,lyx
+
+[GeneralColors]
+window.color={hexc(p.window)}
+base.color={hexc(p.view)}
+alt.base.color={hexc(p.view_alt)}
+button.color={hexc(p.button)}
+light.color={hexc(mix(p.button, p.view, 0.5))}
+mid.light.color={hexc(mix(p.button, p.border, 0.5))}
+dark.color={hexc(p.input_border)}
+mid.color={hexc(p.border)}
+shadow.color=#000000
+highlight.color={hexc(p.accent)}
+inactive.highlight.color={hexc(p.accent)}
+tooltip.base.color={hexc(p.tooltip)}
+text.color={text}
+window.text.color={text}
+button.text.color={text}
+disabled.text.color={hexc(p.disabled_text)}
+tooltip.text.color={hexc(p.tooltip_text)}
+highlight.text.color={sel_text}
+inactive.highlight.text.color={sel_text}
+link.color={hexc(p.link)}
+link.visited.color={hexc(p.visited)}
+progress.indicator.text.color={text}
+
+[Hacks]
+respect_darkness=true
+transparent_ktitle_label=true
+transparent_menutitle=true
+no_selection_tint=true
+"""
+
+    sections = f"""
+[PanelButtonCommand]
+frame=true
+frame.element=button
+frame.top={F_BUTTON}
+frame.bottom={F_BUTTON}
+frame.left={F_BUTTON}
+frame.right={F_BUTTON}
+interior=true
+interior.element=button
+indicator.element=arrow
+indicator.size={INDICATOR}
+text.normal.color={text}
+text.focus.color={text}
+text.press.color={text}
+text.toggle.color={text}
+text.shadow=false
+text.margin.top=2
+text.margin.bottom=2
+text.margin.left=6
+text.margin.right=6
+text.iconspacing=6
+min_height=+0.3font
+
+[PanelButtonTool]
+inherits=PanelButtonCommand
+
+[ToolboxTab]
+inherits=PanelButtonCommand
+
+[Dock]
+inherits=PanelButtonCommand
+frame=false
+interior=false
+
+[DockTitle]
+inherits=PanelButtonCommand
+frame=false
+interior=false
+text.bold=true
+
+[IndicatorSpinBox]
+inherits=PanelButtonCommand
+frame=false
+interior=false
+indicator.element=spin
+indicator.size={INDICATOR}
+
+[RadioButton]
+inherits=PanelButtonCommand
+frame=false
+interior.element=radio
+text.margin.left=4
+text.margin.right=4
+
+[CheckBox]
+inherits=PanelButtonCommand
+frame=false
+interior.element=checkbox
+text.margin.left=4
+text.margin.right=4
+
+[Focus]
+inherits=PanelButtonCommand
+frame=true
+frame.element=focus
+frame.top=2
+frame.bottom=2
+frame.left=2
+frame.right=2
+interior=false
+
+[GenericFrame]
+inherits=PanelButtonCommand
+frame=true
+interior=false
+frame.element=common
+interior.element=common
+frame.top={F_FRAME}
+frame.bottom={F_FRAME}
+frame.left={F_FRAME}
+frame.right={F_FRAME}
+
+[LineEdit]
+inherits=PanelButtonCommand
+frame.element=lineedit
+interior.element=lineedit
+frame.top={F_INPUT}
+frame.bottom={F_INPUT}
+frame.left={F_INPUT}
+frame.right={F_INPUT}
+
+[DropDownButton]
+inherits=PanelButtonCommand
+indicator.element=arrow
+
+[IndicatorArrow]
+indicator.element=arrow
+indicator.size={INDICATOR}
+
+[ComboBox]
+inherits=PanelButtonCommand
+
+[Tab]
+inherits=PanelButtonCommand
+frame.element=tab
+interior.element=tab
+indicator.element=tab
+indicator.size=14
+frame.top={F_TAB}
+frame.bottom={F_TAB}
+frame.left={F_TAB}
+frame.right={F_TAB}
+text.margin.left=10
+text.margin.right=10
+
+[TabFrame]
+inherits=PanelButtonCommand
+frame.element=tabframe
+interior.element=tabframe
+frame.top={F_FRAME}
+frame.bottom={F_FRAME}
+frame.left={F_FRAME}
+frame.right={F_FRAME}
+
+[TabBarFrame]
+inherits=GenericFrame
+frame=false
+interior=false
+
+[TreeExpander]
+inherits=PanelButtonCommand
+frame=false
+interior=false
+indicator.element=tree
+indicator.size={INDICATOR}
+
+[HeaderSection]
+inherits=PanelButtonCommand
+frame.element=header
+interior.element=header
+indicator.element=arrow
+frame.top=4
+frame.bottom=4
+frame.left=4
+frame.right=4
+text.bold=false
+
+[SizeGrip]
+indicator.element=sizegrip
+
+[Toolbar]
+inherits=PanelButtonCommand
+frame=false
+interior=false
+indicator.element=toolbar
+indicator.size=5
+
+[Slider]
+inherits=PanelButtonCommand
+frame.element=slider
+interior.element=slider
+frame.top={F_BAR}
+frame.bottom={F_BAR}
+frame.left={F_BAR}
+frame.right={F_BAR}
+frame.expansion=32
+
+[SliderCursor]
+inherits=PanelButtonCommand
+frame=false
+interior.element=slidercursor
+
+[Progressbar]
+inherits=PanelButtonCommand
+frame.element=progress
+interior.element=progress
+frame.top={F_BAR}
+frame.bottom={F_BAR}
+frame.left={F_BAR}
+frame.right={F_BAR}
+frame.expansion=32
+text.bold=false
+
+[ProgressbarContents]
+inherits=PanelButtonCommand
+frame=true
+frame.element=progress-pattern
+interior.element=progress-pattern
+frame.top={F_BAR}
+frame.bottom={F_BAR}
+frame.left={F_BAR}
+frame.right={F_BAR}
+frame.expansion=32
+
+[ItemView]
+inherits=PanelButtonCommand
+frame.element=itemview
+interior.element=itemview
+frame.top={F_ITEM}
+frame.bottom={F_ITEM}
+frame.left={F_ITEM}
+frame.right={F_ITEM}
+text.margin=0
+text.normal.color={text}
+text.focus.color={text}
+text.press.color={sel_text}
+text.toggle.color={sel_text}
+
+[Splitter]
+inherits=PanelButtonCommand
+frame=false
+interior=false
+indicator.element=splitter-grip
+indicator.size=16
+
+[Scrollbar]
+inherits=PanelButtonCommand
+indicator.element=arrow
+indicator.size={INDICATOR}
+
+[ScrollbarSlider]
+inherits=PanelButtonCommand
+frame.element=scrollbarslider
+interior.element=scrollbarslider
+indicator.element=grip
+frame.top={F_BAR}
+frame.bottom={F_BAR}
+frame.left={F_BAR}
+frame.right={F_BAR}
+frame.expansion=32
+
+[ScrollbarGroove]
+inherits=PanelButtonCommand
+frame.element=scrollbargroove
+interior.element=scrollbargroove
+frame.top={F_BAR}
+frame.bottom={F_BAR}
+frame.left={F_BAR}
+frame.right={F_BAR}
+frame.expansion=32
+
+[Menu]
+inherits=PanelButtonCommand
+frame.element=menu
+interior.element=menu
+frame.top={F_MENU}
+frame.bottom={F_MENU}
+frame.left={F_MENU}
+frame.right={F_MENU}
+
+[MenuItem]
+inherits=PanelButtonCommand
+frame=true
+frame.element=menuitem
+interior.element=menuitem
+indicator.element=menuitem
+frame.top={F_MENUITEM}
+frame.bottom={F_MENUITEM}
+frame.left={F_MENUITEM}
+frame.right={F_MENUITEM}
+text.margin.top=1
+text.margin.bottom=1
+text.margin.left=4
+text.margin.right=4
+min_height=+0.3font
+text.focus.color={sel_text}
+text.press.color={sel_text}
+text.toggle.color={sel_text}
+
+[MenuBar]
+inherits=PanelButtonCommand
+frame=false
+interior=false
+
+[MenuBarItem]
+inherits=PanelButtonCommand
+frame=true
+frame.element=menubaritem
+interior.element=menubaritem
+frame.top={F_MENUITEM}
+frame.bottom={F_MENUITEM}
+frame.left={F_MENUITEM}
+frame.right={F_MENUITEM}
+text.margin.left=4
+text.margin.right=4
+
+[TitleBar]
+inherits=PanelButtonCommand
+frame=false
+interior=false
+indicator.element=mdi
+text.bold=true
+
+[GroupBox]
+inherits=GenericFrame
+frame.element=group
+interior=true
+interior.element=group
+
+[ToolTip]
+inherits=GenericFrame
+frame.element=tooltip
+interior=true
+interior.element=tooltip
+frame.top={F_TOOLTIP}
+frame.bottom={F_TOOLTIP}
+frame.left={F_TOOLTIP}
+frame.right={F_TOOLTIP}
+text.normal.color={hexc(p.tooltip_text)}
+text.margin=0
+
+[StatusBar]
+inherits=GenericFrame
+frame=false
+interior=false
+
+[Window]
+interior=false
+"""
+    header = (
+        "# SPDX-License-Identifier: GPL-3.0-or-later\n"
+        "# Generated by components/glassfort-theme/kvantum/generate. Do not edit.\n"
+    )
+    return header + general + sections
+
+
+# --------------------------------------------------------------------------
+# Checks
+# --------------------------------------------------------------------------
+
+# Elements whose -normal object must exist for each kvconfig element key.
+INDICATOR_SUFFIXES = {
+    "arrow": ["-up-normal", "-down-normal", "-left-normal", "-right-normal"],
+    "spin": ["-plus-normal", "-minus-normal"],
+    "tree": ["-plus-normal", "-minus-normal"],
+    "tab": ["-close-normal"],
+    "menuitem": ["-separator", "-right-normal"],
+    "splitter-grip": ["-normal"],
+    "sizegrip": ["-normal"],
+    "toolbar": ["-handle", "-separator"],
+}
+# Elements deliberately left to Kvantum's default theme.
+FALLBACK_OK = {"grip", "mdi"}
+# Elements that only have hover/press/select states.
+STATEFUL_ONLY = {"itemview", "menuitem", "menubaritem"}
+
+
+def check_references(kvconfig: str, svg: str) -> list[str]:
+    ids = set(re.findall(r'id="([^"]+)"', svg))
+    errors = []
+    cp = configparser.ConfigParser(interpolation=None, strict=False)
+    cp.optionxform = str
+    cp.read_string(kvconfig)
+
+    def get(sec: str, key: str) -> str | None:
+        seen = set()
+        while sec and sec not in seen:
+            seen.add(sec)
+            if key in cp[sec]:
+                return cp[sec][key]
+            sec = cp[sec].get("inherits", "")
+        return None
+
+    for sec in cp.sections():
+        if sec.startswith("%") or sec in ("GeneralColors", "Hacks"):
+            continue
+        for kind in ("frame", "interior"):
+            if get(sec, kind) != "true":
+                continue
+            el = get(sec, f"{kind}.element")
+            if not el or el in FALLBACK_OK:
+                continue
+            states = ("focused",) if el in STATEFUL_ONLY else ("normal",)
+            if el == "focus":
+                states = ("",)
+            for st in states:
+                base = f"{el}-{st}" if st else el
+                want = (
+                    [base] if kind == "interior" else [f"{base}-top", f"{base}-topleft"]
+                )
+                if kind == "interior" and el in ("checkbox", "radio"):
+                    want = [f"{el}-normal", f"{el}-checked-normal"]
+                want = [w for w in want if not (kind == "interior" and el == "focus")]
+                errors += [
+                    f"[{sec}] {kind}: missing SVG object {w}"
+                    for w in want
+                    if w not in ids
+                ]
+        ind = get(sec, "indicator.element")
+        if ind and ind not in FALLBACK_OK:
+            for suf in INDICATOR_SUFFIXES.get(ind, []):
+                if ind + suf not in ids:
+                    errors.append(f"[{sec}] indicator: missing SVG object {ind}{suf}")
+    return errors
+
+
+def check_contrast(p: Palette) -> list[str]:
+    errors = []
+    for what, fg, bg, need in (
+        ("text on view", p.text, p.view, 4.5),
+        ("text on button", p.text, p.button, 4.5),
+        ("selected text on accent", p.accent_text, p.accent, 4.5),
+        ("input border on view", p.input_border, p.view, 3.0),
+        ("check mark on accent", p.accent_text, p.accent, 3.0),
+        ("tooltip text", p.tooltip_text, p.tooltip, 4.5),
+    ):
+        r = contrast(fg, bg)
+        if r < need:
+            errors.append(f"{p.name}: {what} contrast {r:.2f} < {need}")
+    return errors
+
+
+# --------------------------------------------------------------------------
+
+
+def outputs() -> tuple[dict[Path, str], list[str]]:
+    files: dict[Path, str] = {}
+    errors: list[str] = []
+    for name, scheme, dark in (
+        ("Glassfort", HERE.parent / "GlassfortLight.colors", False),
+        ("GlassfortDark", HERE.parent / "GlassfortDark.colors", True),
+    ):
+        p = palette(name, scheme, dark)
+        svg = build_svg(p)
+        kv = build_kvconfig(p)
+        files[OUT / f"kvantum-{name}.svg"] = svg
+        files[OUT / f"kvantum-{name}.kvconfig"] = kv
+        errors += [f"{name}: {e}" for e in check_references(kv, svg)]
+        errors += check_contrast(p)
+    return files, errors
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    ap.add_argument("--check", action="store_true", help="verify instead of writing")
+    args = ap.parse_args()
+
+    files, errors = outputs()
+    if args.check:
+        for path, content in files.items():
+            if not path.exists() or path.read_text(encoding="utf-8") != content:
+                errors.append(
+                    f"{path.relative_to(HERE.parent)} is out of date; run {Path(__file__).name}"
+                )
+    else:
+        for path, content in files.items():
+            path.write_text(content, encoding="utf-8")
+    for e in errors:
+        print(f"error: {e}", file=sys.stderr)
+    return 1 if errors else 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

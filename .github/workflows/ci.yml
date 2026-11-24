@@ -34,6 +34,9 @@ jobs:
       - name: Relative Markdown links
         run: scripts/check-links
 
+      - name: Generated Kvantum theme up to date
+        run: components/glassfort-theme/kvantum/generate --check
+
   packages:
     name: Build packages (clean chroot)
     runs-on: ubuntu-latest
