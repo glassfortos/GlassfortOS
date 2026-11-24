@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Maintainer: Glassfort project <https://github.com/jankln/GlassfortOS>
 
-# glassfort-theme: Glassfort look (colour schemes, kitty, Kvantum, later
-# GTK, wallpapers and the Global Theme). See README.md and
+# glassfort-theme: Glassfort look (colour schemes, kitty, Kvantum, GTK,
+# later wallpapers and the Global Theme). See README.md and
 # docs/03-desktop-design.md. Dependencies: D-34 in docs/DECISIONS.md.
 
 pkgname=glassfort-theme
@@ -18,7 +18,13 @@ depends=(
     'kvantum'
     'ttf-jetbrains-mono'
 )
-backup=('etc/xdg/kitty/kitty.conf')
+backup=(
+    'etc/gtk-3.0/settings.ini'
+    'etc/gtk-4.0/settings.ini'
+    'etc/skel/.config/gtk-3.0/settings.ini'
+    'etc/skel/.config/gtk-4.0/settings.ini'
+    'etc/xdg/kitty/kitty.conf'
+)
 source=(
     'GlassfortDark.colors'
     'GlassfortLight.colors'
@@ -30,6 +36,13 @@ source=(
     'kvantum-Glassfort.svg'
     'kvantum-GlassfortDark.kvconfig'
     'kvantum-GlassfortDark.svg'
+    'gtk3-gtk.css'
+    'gtk3-gtk-dark.css'
+    'gtk4-gtk.css'
+    'gtk4-gtk-dark.css'
+    # Hand-written.
+    'gtk-index.theme'
+    'gtk-settings.ini'
 )
 sha256sums=(
     '073d208e59ecfb5d078361056d6721f868b9afdf2aee89800bf8f3be9314ae82'
@@ -41,6 +54,12 @@ sha256sums=(
     'e7fc5a2a96b614ab32b2bfa9f7c79566c3a71dcf722459943b03a79df1b149a8'
     '109e1d152c0d49b020eb0aa90152483b60b5ac39827417932288a3580ec37a45'
     'ea248368a1646027a8b901a0f514fdcfea7f6e06a9df0e1b8b73dfa6c5245c81'
+    '20105690fb35d313f52810619632a6fd43e58a7081d0032607af65fc2b23a7f2'
+    '84b0ba15439d3f751649ebbd54f9043c459859e69b36c9057c96d87006c8b500'
+    'c6a5aecaa17a63b634ebcf572156b7d2464e488c7a25faf2c205c2dd8441c842'
+    '8bf7fa10ce593fb446ebd9548e1092851db9681d2cca3834321e7e83ea6ad18a'
+    '8ab4f7416adb9e0e13b3b46705e0a6c097265c98774ab172de1d52602e01dfbb'
+    'c340c767076726f4c440933a474cd5b86e216a4446b82b1310391ddc6d600acb'
 )
 
 package() {
@@ -58,5 +77,16 @@ package() {
     local f
     for f in Glassfort.kvconfig Glassfort.svg GlassfortDark.kvconfig GlassfortDark.svg; do
         install -Dm644 "kvantum-${f}" "${pkgdir}/usr/share/Kvantum/Glassfort/${f}"
+    done
+
+    # GTK theme "Glassfort": adw-gtk3 plus the Glassfort accent and surfaces.
+    local theme="${pkgdir}/usr/share/themes/Glassfort"
+    install -Dm644 gtk-index.theme "${theme}/index.theme"
+    local v
+    for v in 3 4; do
+        install -Dm644 "gtk${v}-gtk.css" "${theme}/gtk-${v}.0/gtk.css"
+        install -Dm644 "gtk${v}-gtk-dark.css" "${theme}/gtk-${v}.0/gtk-dark.css"
+        install -Dm644 gtk-settings.ini "${pkgdir}/etc/gtk-${v}.0/settings.ini"
+        install -Dm644 gtk-settings.ini "${pkgdir}/etc/skel/.config/gtk-${v}.0/settings.ini"
     done
 }

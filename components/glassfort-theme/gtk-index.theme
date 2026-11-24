@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+[X-GNOME-Metatheme]
+Name=Glassfort
+Type=X-GNOME-Metatheme
+Comment=adw-gtk3 with the Glassfort colours
+Encoding=UTF-8
+GtkTheme=Glassfort

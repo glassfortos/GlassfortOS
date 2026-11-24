@@ -21,11 +21,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] record decisions D-34 (theme dependencies), D-35 (placeholder wallpapers)
     - [x] package skeleton + colour schemes GlassfortLight/GlassfortDark + kitty themes
     - [x] Kvantum theme (generated from the colour schemes by generate)
-    - [ ] GTK settings (adw-gtk3, accent colour) (sub-task started 2026-11-24):
-      - [x] research: kde-gtk-config only writes *_breeze colours (adw-gtk3 ignores them) and resets an empty user gtk-theme-name to Breeze (kconf_update gtk_theme)
-      - [x] refactor commit: move kvantum/generate to components/glassfort-theme/generate (only the generated-by comment changes)
-      - [ ] feat commit: GTK theme "Glassfort" (imports adw-gtk3, overrides accent + surfaces, light/dark), /etc/gtk-*/settings.ini, /etc/skel settings.ini
-      - [ ] PKGBUILD, README, docs/03-desktop-design.md
+    - [x] GTK theme Glassfort (adw-gtk3 + palette, generated) and default settings.ini
     - [ ] placeholder wallpapers (own SVG, light + dark, no logo)
     - [ ] Global Theme (look-and-feel) tying colours, fonts, widget style, wallpaper
   - [ ] glassfort-branding (blocked on logo, D-24)
@@ -33,7 +29,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [ ] meta package glassfort-desktop
   - [ ] VM test: plain Arch → pacman -S glassfort-desktop → break update → roll back from boot menu
 - **Files expected to change:** components/glassfort-theme/*, PROGRESS.md
-- **Next step if interrupted:** Extend components/glassfort-theme/generate with the GTK theme Glassfort (gtk-3.0/gtk-4.0 CSS importing adw-gtk3) and add settings.ini files. AI drafts in images/ (untracked) are style reference for D-35 wallpapers, do not commit without asking.
+- **Next step if interrupted:** Draw the D-35 placeholder wallpapers (own SVG, light + dark, no logo) in components/glassfort-theme. AI drafts in images/ (untracked) are style reference only, do not commit them without asking.
 - **Blocked because:** –
 
 ## Unpushed commits
@@ -45,6 +41,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-24 | – | glassfort-theme: GTK theme Glassfort (adw-gtk3 with the palette) and default GTK settings |
 | 2026-11-24 | – | glassfort-theme: move the theme generator to the package root |
 | 2026-11-24 | – | glassfort-theme: Kvantum themes (light + dark) generated from the colour schemes |
 | 2026-11-23 | – | glassfort-theme: Plasma colour schemes and kitty themes |

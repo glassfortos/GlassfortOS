@@ -14,6 +14,8 @@ Palette: D-22, dependencies: D-34 in
 | `kitty.conf` | `/etc/xdg/kitty/` | Default kitty config: JetBrains Mono, slight translucency, Glassfort colours |
 | – (symlinks) | `/etc/xdg/kitty/{dark,light}-theme.auto.conf` | kitty follows the desktop's light/dark setting |
 | `kvantum-*.kvconfig`, `kvantum-*.svg` (generated) | `/usr/share/Kvantum/Glassfort/` | Kvantum Qt widget style, light (`Glassfort`) and dark (`GlassfortDark`) |
+| `gtk{3,4}-gtk.css`, `gtk{3,4}-gtk-dark.css` (generated), `gtk-index.theme` | `/usr/share/themes/Glassfort/` | GTK theme: adw-gtk3 with the Glassfort accent and surfaces |
+| `gtk-settings.ini` | `/etc/gtk-{3,4}.0/`, `/etc/skel/.config/gtk-{3,4}.0/` | Makes `Glassfort` the default GTK theme |
 
 ## Colours
 
@@ -57,13 +59,38 @@ Kvantum chooses the theme by widget style name: `kvantum` →
 `~/.config/Kvantum/kvantum.kvconfig` (`theme=Glassfort`) is the Global
 Theme's job.
 
-After changing the generator, update the four `sha256sums` in the
-PKGBUILD (`updpkgsums`).
+After changing the generator, update the `sha256sums` of the generated
+files in the PKGBUILD (`updpkgsums`).
+
+## GTK
+
+The GTK theme `Glassfort` imports adw-gtk3 (package `adw-gtk-theme`)
+and only redefines its named colours: accent, window, view, header bar,
+sidebar, cards, dialogs and popovers. `generate` writes the CSS from
+the same colour schemes. Status colours (destructive, success, warning,
+error) keep adw-gtk3's values.
+
+- Light/dark: GTK loads `gtk-dark.css` when
+  `gtk-application-prefer-dark-theme` is set. Plasma's kde-gtk-config
+  sets it whenever the colour scheme is dark.
+- Plasma does not colour adw-gtk3: kde-gtk-config writes only
+  `*_breeze` colours into `~/.config/gtk-*/colors.css`, which only
+  Breeze-GTK reads. That is why the colours live in the theme itself.
+- Default theme: on a user's first Plasma login, kde-gtk-config's
+  `gtk_theme` update script switches an empty `gtk-theme-name` to
+  Breeze. The copy in `/etc/skel` prevents this for new users; users
+  that already exist keep their setting.
+- libadwaita apps (GTK4 with Adwaita widgets) ignore GTK themes. They
+  take the accent from the desktop portal; check this in the Plasma VM.
+
+Checked headless (GTK 3.24 and 4.22 on Broadway, `GTK_THEME=Glassfort`
+and `Glassfort:dark`): the overrides apply, including derived colours
+such as `theme_selected_bg_color`.
 
 ## Planned
 
-GTK settings (adw-gtk3 with the accent colour), placeholder
-wallpapers (D-35) and the Global Theme that ties them together.
+Placeholder wallpapers (D-35) and the Global Theme that ties everything
+together.
 
 ## Build
 

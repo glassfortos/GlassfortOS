@@ -47,7 +47,7 @@ The Copilot key sends `Meta+Shift+F23`; KDE's shortcut recorder cannot capture F
 |---|---|
 | Windows | Own decoration with round, coloured buttons (own artwork, never Apple's) |
 | Effects | Blur behind panels/menus, "magic lamp" minimise, smooth animations, rounded corners |
-| Accent | One accent colour drives GTK (adw-gtk3), Qt (Kvantum), kitty, KWin borders and all widgets |
+| Accent | One accent colour drives GTK (theme `Glassfort` = adw-gtk3 with the Glassfort palette), Qt (Kvantum), kitty, KWin borders and all widgets. All of them are generated from the Plasma colour schemes. libadwaita apps take the accent from the desktop portal |
 | Light/Dark | Switches automatically by time of day; manual override |
 | Fonts | UI: **Inter**; monospace: **JetBrains Mono** (both in the official Arch repositories, D-23). SF Pro is not allowed (licence). |
 | Icons/cursor | One consistent icon set, our own over time |
