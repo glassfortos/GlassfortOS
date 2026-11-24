@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Desktop services Glassfort enables by default (applied by glassfort-setup).
+enable sddm.service
+enable NetworkManager.service
+enable bluetooth.service
+enable power-profiles-daemon.service

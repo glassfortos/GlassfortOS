@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+
+post_install() {
+    echo ">>> Glassfort desktop installed."
+    echo ">>> Run 'sudo glassfort-setup' to enable the login screen (SDDM), network,"
+    echo ">>> Bluetooth and the other Glassfort services, then reboot."
+}
+
+post_upgrade() {
+    :
+}

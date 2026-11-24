@@ -41,13 +41,13 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] control center plasmoid org.glassfort.controlcenter (Wi-Fi, Bluetooth, volume, brightness, night light, dark mode, DND, screen recording)
     - [x] panel layout (top bar + floating dock) in the global themes; verified with scripts/session-screenshot
     - [ ] shortcut overlay (hold Super) – may move to a later step
-  - [ ] meta package glassfort-desktop (sub-task started 2026-11-24):
+  - [x] meta package glassfort-desktop (keyring dependency added once D-26 key exists):
     - [x] decisions D-37 (curated Plasma), D-38 (SDDM), D-39 (apps as hard deps), D-40 (libreoffice-fresh)
     - [x] glassfort-setup applies every 50-glassfort*.preset (settings commit)
-    - [ ] glassfort-desktop PKGBUILD + 50-glassfort-desktop.preset (sddm, NetworkManager, bluetooth, power-profiles-daemon)
+    - [x] glassfort-desktop PKGBUILD + 50-glassfort-desktop.preset (sddm, NetworkManager, bluetooth, power-profiles-daemon)
   - [ ] VM test: plain Arch → pacman -S glassfort-desktop → break update → roll back from boot menu
 - **Files expected to change:** components/glassfort-shell/*, docs/03-desktop-design.md, docs/DECISIONS.md, PROGRESS.md
-- **Next step if interrupted:** Extend glassfort-setup setup_services() to read all /usr/lib/systemd/system-preset/50-glassfort*.preset, then create components/glassfort-desktop. images/*.jpg stay untracked (reference only).
+- **Next step if interrupted:** Prepare the Phase 1 VM test (QEMU/OVMF): plain Arch on Btrfs with Limine, local [glassfort] repo signed with repo/vm-test-key, pacman -S glassfort-desktop, glassfort-setup, break an update, roll back from the boot menu. images/*.jpg stay untracked (reference only).
 - **Blocked because:** –
 
 ## Unpushed commits
@@ -59,6 +59,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-24 | – | Add glassfort-desktop meta package |
 | 2026-11-24 | – | glassfort-setup: apply all Glassfort service presets |
 | 2026-11-24 | – | Record maintainer decisions D-37–D-40 (glassfort-desktop contents) |
 | 2026-11-24 | – | Fix namcap findings: hicolor-icon-theme for glassfort-branding, bluez-qt for glassfort-shell |

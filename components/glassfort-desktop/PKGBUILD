@@ -1,0 +1,83 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Maintainer: Glassfort project <https://github.com/jankln/GlassfortOS>
+
+# glassfort-desktop: meta package that turns a plain Arch install into
+# Glassfort: Plasma, default apps and all Glassfort packages. See README.md,
+# docs/01-architecture.md and D-37 to D-40 in docs/DECISIONS.md.
+#
+# ci: no-chroot (nothing to build; the clean chroot would only download
+# every dependency on each CI run)
+
+pkgname=glassfort-desktop
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='Glassfort desktop: Plasma, default apps and the Glassfort packages'
+arch=('any')
+url='https://github.com/jankln/GlassfortOS'
+license=('GPL-3.0-or-later')
+depends=(
+    # Glassfort
+    'glassfort-branding'
+    'glassfort-mirrorlist'
+    'glassfort-settings'
+    'glassfort-shell'
+    'glassfort-theme'
+    # Plasma (curated, D-37)
+    'breeze'
+    'discover'
+    'flatpak'
+    'kactivitymanagerd'
+    'kde-cli-tools'
+    'kde-gtk-config'
+    'kinfocenter'
+    'kio-extras'
+    'kscreen'
+    'kwallet-pam'
+    'kwin'
+    'plasma-desktop'
+    'plasma-firewall'
+    'plasma-nm'
+    'plasma-pa'
+    'plasma-systemmonitor'
+    'plasma-workspace'
+    'polkit-kde-agent'
+    'powerdevil'
+    'power-profiles-daemon'
+    'systemsettings'
+    'xdg-desktop-portal-kde'
+    'xdg-user-dirs'
+    # Login (D-38)
+    'sddm'
+    'sddm-kcm'
+    # Sound, network, Bluetooth
+    'bluedevil'
+    'bluez'
+    'bluez-utils'
+    'networkmanager'
+    'pipewire-pulse'
+    'wireplumber'
+    # Default apps (docs/03, D-39, D-40)
+    'ark'
+    'dolphin'
+    'firefox'
+    'gwenview'
+    'haruna'
+    'kate'
+    'keepassxc'
+    'kitty'
+    'libreoffice-fresh'
+    'okular'
+    'spectacle'
+    'thunderbird'
+    # Fonts
+    'noto-fonts'
+    'noto-fonts-emoji'
+)
+install=glassfort-desktop.install
+source=('50-glassfort-desktop.preset')
+sha256sums=('45c446ccc2d1249cb2d72616abea78ac46cdbc1e4725fc407642f79dec1c1237')
+
+package() {
+    install -Dm644 "${srcdir}/50-glassfort-desktop.preset" \
+        "${pkgdir}/usr/lib/systemd/system-preset/50-glassfort-desktop.preset"
+}
