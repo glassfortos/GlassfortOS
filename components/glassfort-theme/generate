@@ -7,7 +7,10 @@ Writes, next to this script:
   kvantum-GlassfortDark.{svg,kvconfig}  Kvantum theme, dark
   gtk{3,4}-gtk.css, gtk{3,4}-gtk-dark.css
                                         GTK theme "Glassfort": adw-gtk3 with
-                                        the Glassfort accent and surfaces The
+                                        the Glassfort accent and surfaces
+  wallpaper-light.svg, wallpaper-dark.svg
+                                        desktop wallpaper (CC BY-SA 4.0);
+                                        the PKGBUILD renders the PNGs The
 colours come from GlassfortLight.colors and GlassfortDark.colors, so
 Plasma, Kvantum and kitty share one palette (D-22).
 
@@ -28,6 +31,8 @@ from __future__ import annotations
 
 import argparse
 import configparser
+import math
+import random
 import re
 import sys
 from dataclasses import dataclass
@@ -1281,6 +1286,133 @@ def check_gtk_contrast(p: Palette) -> list[str]:
 
 
 # --------------------------------------------------------------------------
+# Wallpaper
+# --------------------------------------------------------------------------
+
+TEAL: RGB = (61, 214, 198)
+INDIGO: RGB = (76, 79, 224)
+
+# Frosted-glass shapes framing an empty centre, after the maintainer's
+# wallpaper draft (D-35). (cx, cy, rx, ry, rotation in degrees, depth
+# 0 = back .. 2 = front) on a 1920 x 1080 canvas.
+WALLPAPER_SHAPES = [
+    (-80, 160, 320, 280, 20, 0),
+    (90, 420, 270, 250, -30, 2),
+    (-70, 690, 280, 260, 10, 1),
+    (170, 930, 300, 230, -8, 2),
+    (520, 1120, 330, 190, -8, 0),
+    (600, -70, 330, 170, 12, 1),
+    (1380, -80, 320, 190, -15, 0),
+    (1820, 80, 260, 260, 25, 2),
+    (2000, 420, 260, 280, 5, 0),
+    (1760, 640, 300, 270, -20, 2),
+    (1980, 980, 330, 300, 5, 1),
+    (1400, 1130, 360, 190, 8, 1),
+]
+# Out-of-focus discs behind the shapes: (cx, cy, r, 0 = teal / 1 = indigo).
+WALLPAPER_BOKEH = [
+    (260, 300, 300, 0),
+    (1650, 330, 320, 1),
+    (420, 820, 280, 1),
+    (1550, 880, 300, 0),
+    (960, -120, 360, 0),
+    (960, 1200, 360, 1),
+]
+WALLPAPER_SEED = 7
+
+
+def blob(
+    rng: random.Random, cx: float, cy: float, rx: float, ry: float, rot: float
+) -> str:
+    """A smooth, slightly irregular closed shape (Catmull-Rom through 8 points)."""
+    pts = []
+    for i in range(8):
+        a = 2 * math.pi * i / 8 + rng.uniform(-0.25, 0.25)
+        k = 1 + rng.uniform(-0.12, 0.12)
+        x, y = rx * k * math.cos(a), ry * k * math.sin(a)
+        c, s = math.cos(rot), math.sin(rot)
+        pts.append((cx + x * c - y * s, cy + x * s + y * c))
+    d = f"M{pts[0][0]:.1f},{pts[0][1]:.1f}"
+    m = len(pts)
+    for i in range(m):
+        p0, p1, p2, p3 = pts[i - 1], pts[i], pts[(i + 1) % m], pts[(i + 2) % m]
+        c1 = (p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6)
+        c2 = (p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6)
+        d += f"C{c1[0]:.1f},{c1[1]:.1f} {c2[0]:.1f},{c2[1]:.1f} {p2[0]:.1f},{p2[1]:.1f}"
+    return d + "Z"
+
+
+def build_wallpaper(dark: bool) -> str:
+    """Desktop wallpaper without logo. Gradients only, no filters."""
+    rng = random.Random(WALLPAPER_SEED)
+    w, h = 1920, 1080
+    centre, edge = ("#161D38", "#0A0E1B") if dark else ("#F8FAFD", "#E2E8F2")
+    rim = (0.75, 0.12, 0.35) if dark else (0.95, 0.35, 0.6)
+    defs = [
+        (
+            f'<radialGradient id="bg" cx="0.5" cy="0.5" r="0.75"><stop offset="0" stop-color="{centre}"/>'
+            f'<stop offset="1" stop-color="{edge}"/></radialGradient>'
+        ),
+        # Light from the top left: a sheen inside and a bright rim.
+        (
+            '<linearGradient id="sheen" x1="0.15" y1="0" x2="0.7" y2="1">'
+            '<stop offset="0" stop-color="#FFFFFF" stop-opacity="0.30"/>'
+            '<stop offset="0.45" stop-color="#FFFFFF" stop-opacity="0.04"/>'
+            '<stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>'
+        ),
+        (
+            f'<linearGradient id="rim" x1="0.1" y1="0" x2="0.8" y2="1">'
+            f'<stop offset="0" stop-color="#FFFFFF" stop-opacity="{rim[0]}"/>'
+            f'<stop offset="0.5" stop-color="#FFFFFF" stop-opacity="{rim[1]}"/>'
+            f'<stop offset="1" stop-color="#FFFFFF" stop-opacity="{rim[2]}"/></linearGradient>'
+        ),
+        # A darker core makes the shapes read as thick glass.
+        (
+            f'<radialGradient id="core" cx="0.55" cy="0.6" r="0.6">'
+            f'<stop offset="0" stop-color="{"#0A0E1B" if dark else "#3A3F9A"}" '
+            f'stop-opacity="{0.35 if dark else 0.12}"/>'
+            '<stop offset="1" stop-color="#000000" stop-opacity="0"/></radialGradient>'
+        ),
+    ]
+    body = [f'<rect width="{w}" height="{h}" fill="url(#bg)"/>']
+    for i, (bx, by, r, ci) in enumerate(WALLPAPER_BOKEH):
+        c = hexc((TEAL, INDIGO)[ci])
+        defs.append(
+            f'<radialGradient id="b{i}"><stop offset="0" stop-color="{c}" '
+            f'stop-opacity="{0.28 if dark else 0.16}"/><stop offset="1" stop-color="{c}" stop-opacity="0"/>'
+            "</radialGradient>"
+        )
+        body.append(f'<circle cx="{bx}" cy="{by}" r="{r}" fill="url(#b{i})"/>')
+    for depth in (0, 1, 2):
+        for i, (cx, cy, rx, ry, rot, dp) in enumerate(WALLPAPER_SHAPES):
+            if dp != depth:
+                continue
+            d = blob(rng, cx, cy, rx, ry, math.radians(rot))
+            a = math.radians(rng.uniform(20, 160))
+            x1, y1 = 0.5 - 0.5 * math.cos(a), 0.5 - 0.5 * math.sin(a)
+            c1, c2 = (TEAL, INDIGO) if rng.random() < 0.55 else (INDIGO, TEAL)
+            op = (0.5, 0.68, 0.85)[depth] if dark else (0.3, 0.45, 0.62)[depth]
+            defs.append(
+                f'<linearGradient id="g{i}" x1="{x1:.3f}" y1="{y1:.3f}" x2="{1 - x1:.3f}" y2="{1 - y1:.3f}">'
+                f'<stop offset="0" stop-color="{hexc(c1)}"/><stop offset="1" stop-color="{hexc(c2)}"/>'
+                "</linearGradient>"
+            )
+            body.append(
+                f'<path d="{d}" fill="url(#g{i})" fill-opacity="{op}"/>'
+                f'<path d="{d}" fill="url(#core)"/>'
+                f'<path d="{d}" fill="url(#sheen)"/>'
+                f'<path d="{d}" fill="none" stroke="url(#rim)" stroke-width="{(1.2, 1.6, 2.2)[depth]}"/>'
+            )
+    return (
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        "<!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->\n"
+        "<!-- Generated by components/glassfort-theme/generate. Do not edit. -->\n"
+        f'<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="{w}" height="{h}" viewBox="0 0 {w} {h}">\n'
+        f"<defs>{''.join(defs)}</defs>\n" + "\n".join(body) + "\n</svg>\n"
+    )
+
+
+# --------------------------------------------------------------------------
 # Checks
 # --------------------------------------------------------------------------
 
@@ -1387,6 +1519,9 @@ def outputs() -> tuple[dict[Path, str], list[str]]:
         suffix = "-dark" if dark else ""
         for gtk in (3, 4):
             files[OUT / f"gtk{gtk}-gtk{suffix}.css"] = build_gtk_css(p, gtk)
+        files[OUT / f"wallpaper-{'dark' if dark else 'light'}.svg"] = build_wallpaper(
+            dark
+        )
     return files, errors
 
 

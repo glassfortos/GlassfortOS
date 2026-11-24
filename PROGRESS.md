@@ -22,7 +22,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] package skeleton + colour schemes GlassfortLight/GlassfortDark + kitty themes
     - [x] Kvantum theme (generated from the colour schemes by generate)
     - [x] GTK theme Glassfort (adw-gtk3 + palette, generated) and default settings.ini
-    - [ ] placeholder wallpapers (own SVG, light + dark, no logo)
+    - [x] wallpapers: vector recreation of the maintainer's draft, light + dark, no logo (PNG rendered at build time)
     - [ ] Global Theme (look-and-feel) tying colours, fonts, widget style, wallpaper
   - [ ] glassfort-branding (sub-task started 2026-11-24; maintainer decided: logo = their draft in images/, optimised + redrawn as vector):
     - [x] docs: D-24 Decided, docs/03 logo section
@@ -33,7 +33,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [ ] meta package glassfort-desktop
   - [ ] VM test: plain Arch → pacman -S glassfort-desktop → break update → roll back from boot menu
 - **Files expected to change:** components/glassfort-theme/*, PROGRESS.md
-- **Next step if interrupted:** Wallpapers in components/glassfort-theme: vector recreation of the maintainer's wallpaper draft (glass shapes at the edges, calm centre), light + dark, desktop without logo. images/*.jpg stay untracked (reference only).
+- **Next step if interrupted:** Global Theme (look-and-feel org.glassfort.desktop) in components/glassfort-theme: colours, Kvantum widget style, GTK, fonts Inter/JetBrains Mono, wallpaper, light/dark pair. images/*.jpg stay untracked (reference only).
 - **Blocked because:** –
 
 ## Unpushed commits
@@ -45,6 +45,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-24 | – | glassfort-theme: desktop wallpaper (light + dark) after the maintainer's draft |
 | 2026-11-24 | – | Add glassfort-branding: logo redrawn as vector (symbol, app icon, monochrome, lockups) |
 | 2026-11-24 | – | Record maintainer decision D-24 (logo = maintainer's draft, optimised vector redraw) |
 | 2026-11-24 | – | glassfort-theme: GTK theme Glassfort (adw-gtk3 with the palette) and default GTK settings |

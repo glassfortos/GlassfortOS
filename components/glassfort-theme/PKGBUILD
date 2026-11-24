@@ -2,7 +2,7 @@
 # Maintainer: Glassfort project <https://github.com/jankln/GlassfortOS>
 
 # glassfort-theme: Glassfort look (colour schemes, kitty, Kvantum, GTK,
-# later wallpapers and the Global Theme). See README.md and
+# wallpapers, later the Global Theme). See README.md and
 # docs/03-desktop-design.md. Dependencies: D-34 in docs/DECISIONS.md.
 
 pkgname=glassfort-theme
@@ -11,13 +11,14 @@ pkgrel=1
 pkgdesc='Glassfort colour schemes and application themes'
 arch=('any')
 url='https://github.com/jankln/GlassfortOS'
-license=('GPL-3.0-or-later')
+license=('GPL-3.0-or-later' 'CC-BY-SA-4.0')  # code / wallpapers
 depends=(
     'adw-gtk-theme'
     'inter-font'
     'kvantum'
     'ttf-jetbrains-mono'
 )
+makedepends=('librsvg')
 backup=(
     'etc/gtk-3.0/settings.ini'
     'etc/gtk-4.0/settings.ini'
@@ -40,9 +41,12 @@ source=(
     'gtk3-gtk-dark.css'
     'gtk4-gtk.css'
     'gtk4-gtk-dark.css'
+    'wallpaper-light.svg'
+    'wallpaper-dark.svg'
     # Hand-written.
     'gtk-index.theme'
     'gtk-settings.ini'
+    'wallpaper-metadata.json'
 )
 sha256sums=(
     '073d208e59ecfb5d078361056d6721f868b9afdf2aee89800bf8f3be9314ae82'
@@ -58,9 +62,25 @@ sha256sums=(
     '84b0ba15439d3f751649ebbd54f9043c459859e69b36c9057c96d87006c8b500'
     'c6a5aecaa17a63b634ebcf572156b7d2464e488c7a25faf2c205c2dd8441c842'
     '8bf7fa10ce593fb446ebd9548e1092851db9681d2cca3834321e7e83ea6ad18a'
+    'b12313ffde10d74b33602d8331fd048ad486d354cfe337b5bccf8966b7bd96d1'
+    '3127fd6947c830d0be6156f35b07a050a16da408ec807c6c69837e6bb733d43c'
     '8ab4f7416adb9e0e13b3b46705e0a6c097265c98774ab172de1d52602e01dfbb'
     'c340c767076726f4c440933a474cd5b86e216a4446b82b1310391ddc6d600acb'
+    'a65aa69dc201a101e51562ffbc9b479a6dd2877a8834da630f6ce135292aa3d4'
 )
+
+# Wallpaper sizes: 16:9 in 4K and Full HD; Plasma picks the closest one.
+_wallpaper_sizes=('3840x2160' '1920x1080')
+
+build() {
+    cd "${srcdir}"
+    local variant size
+    for variant in light dark; do
+        for size in "${_wallpaper_sizes[@]}"; do
+            rsvg-convert -w "${size%x*}" -h "${size#*x}" -o "wallpaper-${variant}-${size}.png" "wallpaper-${variant}.svg"
+        done
+    done
+}
 
 package() {
     cd "${srcdir}"
@@ -88,5 +108,14 @@ package() {
         install -Dm644 "gtk${v}-gtk-dark.css" "${theme}/gtk-${v}.0/gtk-dark.css"
         install -Dm644 gtk-settings.ini "${pkgdir}/etc/gtk-${v}.0/settings.ini"
         install -Dm644 gtk-settings.ini "${pkgdir}/etc/skel/.config/gtk-${v}.0/settings.ini"
+    done
+
+    # Plasma wallpaper package; images_dark is used with dark colour schemes.
+    local wp="${pkgdir}/usr/share/wallpapers/Glassfort"
+    install -Dm644 wallpaper-metadata.json "${wp}/metadata.json"
+    local size
+    for size in "${_wallpaper_sizes[@]}"; do
+        install -Dm644 "wallpaper-light-${size}.png" "${wp}/contents/images/${size}.png"
+        install -Dm644 "wallpaper-dark-${size}.png" "${wp}/contents/images_dark/${size}.png"
     done
 }

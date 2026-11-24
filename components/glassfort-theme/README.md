@@ -15,6 +15,7 @@ Palette: D-22, dependencies: D-34 in
 | – (symlinks) | `/etc/xdg/kitty/{dark,light}-theme.auto.conf` | kitty follows the desktop's light/dark setting |
 | `kvantum-*.kvconfig`, `kvantum-*.svg` (generated) | `/usr/share/Kvantum/Glassfort/` | Kvantum Qt widget style, light (`Glassfort`) and dark (`GlassfortDark`) |
 | `gtk{3,4}-gtk.css`, `gtk{3,4}-gtk-dark.css` (generated), `gtk-index.theme` | `/usr/share/themes/Glassfort/` | GTK theme: adw-gtk3 with the Glassfort accent and surfaces |
+| `wallpaper-{light,dark}.svg` (generated), `wallpaper-metadata.json` | `/usr/share/wallpapers/Glassfort/` | Desktop wallpaper; PNGs rendered at build time |
 | `gtk-settings.ini` | `/etc/gtk-{3,4}.0/`, `/etc/skel/.config/gtk-{3,4}.0/` | Makes `Glassfort` the default GTK theme |
 
 ## Colours
@@ -87,10 +88,29 @@ Checked headless (GTK 3.24 and 4.22 on Broadway, `GTK_THEME=Glassfort`
 and `Glassfort:dark`): the overrides apply, including derived colours
 such as `theme_selected_bg_color`.
 
+## Wallpaper
+
+A vector recreation of the maintainer's wallpaper draft: frosted-glass
+shapes in teal and indigo frame an empty centre, on Midnight (dark) and
+Frost (light). Desktop version without logo (D-35); variants with the
+logo for login and lock screen follow with `glassfort-branding`.
+
+`generate` draws the shapes from a fixed list and seed, so the output is
+reproducible. Only gradients are used: blur filters looked better in
+places but leave light seams at the image edges. The PKGBUILD renders
+3840×2160 and 1920×1080 PNGs with `rsvg-convert` (makedepends
+`librsvg`), so no rendered images are committed. The Plasma wallpaper
+package has `contents/images` (light) and `contents/images_dark`
+(dark); Plasma switches between them with the colour scheme.
+
+Licence: CC BY-SA 4.0 (artwork, D-21).
+
+Known limitation: the dark radial gradients show slight banding when
+you look closely at 4K. Dithering at build time would fix it.
+
 ## Planned
 
-Placeholder wallpapers (D-35) and the Global Theme that ties everything
-together.
+The Global Theme that ties everything together.
 
 ## Build
 

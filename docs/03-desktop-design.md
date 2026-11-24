@@ -95,7 +95,7 @@ Teal/indigo is deliberate: it stays clearly distinct from Arch blue and KDE blue
 - Default: abstract frosted-glass shapes in the palette on Midnight (dark) and Frost (light), empty calm centre.
 - Variants **with** centred logo: login screen, lock screen, installer, website, GitHub social preview.
 - Variants **without** logo: desktop.
-- Deliver at least 3840×2160 (upscale the AI drafts, e.g. with Upscayl, or recreate as vector).
+- Deliver at least 3840×2160. Current state: the desktop wallpaper (light + dark, no logo) is a vector recreation of the maintainer's draft, generated in `components/glassfort-theme` and rendered to PNG at build time.
 
 ### Where the CI appears
 

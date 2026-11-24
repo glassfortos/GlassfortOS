@@ -1,0 +1,12 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Glassfort project"
+            }
+        ],
+        "Id": "Glassfort",
+        "License": "CC-BY-SA-4.0",
+        "Name": "Glassfort"
+    }
+}
