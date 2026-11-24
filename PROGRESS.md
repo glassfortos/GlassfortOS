@@ -56,6 +56,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-24 | – | Fix namcap findings: hicolor-icon-theme for glassfort-branding, bluez-qt for glassfort-shell |
 | 2026-11-24 | – | glassfort-shell: default panel layout; scripts/session-screenshot for headless full-session screenshots |
 | 2026-11-24 | – | glassfort-shell: control center plasmoid |
 | 2026-11-24 | – | glassfort-shell: live window previews on dock hover |

@@ -100,7 +100,7 @@ A button in the top bar with network and volume status. It opens:
 | Tile / slider | Backend (the matching Plasma applet's) |
 |---|---|
 | Wi-Fi on/off, current connection | plasma-nm (`org.kde.plasma.networkmanagement`) |
-| Bluetooth on/off, connected devices | bluedevil (`org.kde.bluezqt`) |
+| Bluetooth on/off, connected devices | bluez-qt (`org.kde.bluezqt`), as in bluedevil's applet |
 | Do Not Disturb | `org.kde.notificationmanager` (until turned off) |
 | Dark Mode | powerdevil `DarkModeControl` (switches Glassfort ↔ Glassfort Dark) |
 | Night Light | KWin `org.kde.KWin.NightLight` (manual override of the schedule) |

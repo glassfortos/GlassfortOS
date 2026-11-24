@@ -12,6 +12,8 @@ pkgdesc='Glassfort logo and branding artwork'
 arch=('any')
 url='https://github.com/jankln/GlassfortOS'
 license=('LicenseRef-Glassfort-Trademark')
+# The app icon goes into the hicolor icon theme.
+depends=('hicolor-icon-theme')
 source=(
     'glassfort-symbol.svg'
     'glassfort-symbol-dark.svg'

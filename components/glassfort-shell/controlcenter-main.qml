@@ -5,7 +5,7 @@
     in the top bar that opens quick settings. Every tile uses the backend
     of the matching Plasma applet:
       Wi-Fi             plasma-nm (org.kde.plasma.networkmanagement)
-      Bluetooth         bluedevil (org.kde.bluezqt)
+      Bluetooth         bluez-qt (org.kde.bluezqt), as in bluedevil
       Volume            plasma-pa (org.kde.plasma.private.volume)
       Brightness, dark  powerdevil (org.kde.plasma.private.brightnesscontrolplugin)
       Night light       KWin's org.kde.KWin.NightLight D-Bus interface

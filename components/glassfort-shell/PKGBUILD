@@ -17,11 +17,11 @@ url='https://github.com/jankln/GlassfortOS'
 license=('GPL-3.0-or-later')
 # plasma-workspace: Kicker models (org.kde.plasma.private.kicker) and the
 # task model (org.kde.taskmanager);
-# kpipewire: window previews; kirigami-addons: avatar; plasma-nm, bluedevil,
+# kpipewire: window previews; kirigami-addons: avatar; plasma-nm, bluez-qt,
 # plasma-pa, powerdevil: control center backends; spectacle: screen
 # recording; glassfort-branding: the "glassfort" start icon.
 depends=(
-    'bluedevil'
+    'bluez-qt'
     'glassfort-branding'
     'kcoreaddons'
     'kirigami-addons'
@@ -72,7 +72,7 @@ sha256sums=(
     'cfe70cb2eb1ac91c69eccf616db7d57cb82ded9b93ded8aa5795ab55dd4699e2'
     '2de673c02885741311c3f892eaa2bea0b239d863eb9c4d85b2217d15262253b9'
     '94c93a758fbecb3b1c9bcf54ccaf70c248d17d29e2483e38651af4a77972de3d'
-    '966af7193ed9d7918f7dad5e29707516938a5704cb5c5a20d4c0f9e79ebca666'
+    '940e63b245fc7f3831bce420850701f450afab90683c88ff4444a7aad4a2e303'
     'd3cd21d0ea3c9a87d4088417dfc00785d1238be8e7c5bc8e7f1c478de9b077b7'
     '79552a7a45a98193aa6a0ce3ec6bbf0982534cafa340df3a07184d26756d95b9'
     '141c2c4e48e5a49eece1a4415e7973c14d22e3c761c31c82dcf98e06537977d4'
