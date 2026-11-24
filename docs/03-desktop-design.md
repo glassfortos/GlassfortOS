@@ -6,6 +6,7 @@
 
 - **Top bar** (slim): clock, control center, notifications, system tray. No global menu (Windows switchers expect menus inside the window).
 - **Bottom taskbar/dock** (floating panel): pinned apps centred, running indicators, hover previews; click focuses or minimises like Windows.
+- Implemented as the default layout of the Glassfort global themes (`components/glassfort-shell/layout.js`).
 - Windows **float by default**. Tiling is opt-in via KWin quick tiling and custom tile layouts (`Meta+T`).
 
 ## Glassfort widgets (`glassfort-shell`)

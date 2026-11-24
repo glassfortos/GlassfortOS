@@ -19,6 +19,7 @@ Test where distros typically break (NVIDIA, scaling, Secure Boot), automatically
 | Check | How |
 |---|---|
 | Plasmoid screenshots | `scripts/plasmoid-screenshot OUT.png PLASMOID_DIR`: runs the widget in an invisible KWin (`kwin_wayland --virtual`) on a private D-Bus session with empty config and data dirs and takes a screenshot. Needs a Plasma host (kwin, plasma-sdk, spectacle). |
+| Session screenshot | `scripts/session-screenshot OUT.png`: builds the desktop components with makepkg into a temporary root and screenshots a complete Plasma session (invisible KWin + plasmashell, empty config) that uses them. Shows global theme, panel layout and widgets as on a new user's first login. |
 | qmllint for plasmoids | Run locally for now; the CI lint job has no Plasma QML modules yet. |
 
 ## Real hardware matrix

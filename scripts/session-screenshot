@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Screenshot a complete Glassfort Plasma session without touching the
+# running desktop or installing anything.
+#
+# Builds the given components with makepkg (no dependency checks) into a
+# temporary root, then starts an invisible KWin (kwin_wayland --virtual)
+# and plasmashell on a private D-Bus session with empty config and data
+# dirs. XDG_DATA_DIRS and XDG_CONFIG_DIRS point at the temporary root
+# first, so plasmashell sees the Glassfort global theme, layout and
+# widgets as if the packages were installed. The panel layout is created
+# fresh, like on a new user's first login.
+#
+# Usage: scripts/session-screenshot [-w SECONDS] OUT.png [COMPONENT...]
+#   -w  seconds to wait before the screenshot (default 15)
+#   COMPONENT defaults to: glassfort-branding glassfort-theme glassfort-shell
+#
+# Needs: makepkg, kwin, plasma-workspace, spectacle, dbus.
+# Writes OUT.log (plasmashell) and OUT.appletsrc (the created layout).
+# Kvantum and fonts come from the host; without kvantum installed, Qt
+# falls back to Breeze.
+
+set -euo pipefail
+
+wait_s=15
+while getopts "w:" opt; do
+    case $opt in
+        w) wait_s=$OPTARG ;;
+        *) exit 2 ;;
+    esac
+done
+shift $((OPTIND - 1))
+if (($# < 1)); then
+    sed -n '/^# Usage/,/^# Needs/p' "$0" >&2
+    exit 2
+fi
+out=$(realpath "$1")
+shift
+
+if [[ ${1:-} == --inner ]]; then
+    root=$2
+    # Tell the outer part which bus to clean up afterwards.
+    echo "${DBUS_SESSION_BUS_ADDRESS%%,*}" >"$3"
+    tmp=$(mktemp -d)
+    trap 'kill "${shell_pid:-}" "${kwin:-}" 2>/dev/null || true; wait 2>/dev/null || true; rm -rf "$tmp"' EXIT
+    export XDG_RUNTIME_DIR=$tmp/run XDG_CONFIG_HOME=$tmp/config XDG_DATA_HOME=$tmp/data
+    export XDG_CACHE_HOME=$tmp/cache XDG_STATE_HOME=$tmp/state
+    mkdir -p "$XDG_RUNTIME_DIR" "$XDG_CONFIG_HOME" "$XDG_DATA_HOME"
+    chmod 700 "$XDG_RUNTIME_DIR"
+    export XDG_DATA_DIRS=$root/usr/share:/usr/local/share:/usr/share
+    export XDG_CONFIG_DIRS=$root/etc/xdg:/etc/xdg
+    export XDG_CURRENT_DESKTOP=KDE KDE_FULL_SESSION=true KDE_SESSION_VERSION=6
+    export QT_FORCE_STDERR_LOGGING=1
+
+    socket=glassfort-session
+    kwin_wayland --virtual --no-lockscreen --width 1600 --height 900 --socket "$socket" >"$tmp/kwin.log" 2>&1 &
+    kwin=$!
+    sleep 3
+    export WAYLAND_DISPLAY=$socket QT_QPA_PLATFORM=wayland
+    plasmashell --no-respawn >"${out%.png}.log" 2>&1 &
+    shell_pid=$!
+    sleep "$wait_s"
+    spectacle -b -n -f -o "$out" >/dev/null 2>&1
+    cp "$XDG_CONFIG_HOME/plasma-org.kde.plasma.desktop-appletsrc" "${out%.png}.appletsrc" 2>/dev/null || true
+    exit 0
+fi
+
+repo=$(cd "$(dirname "$0")/.." && pwd)
+components=("$@")
+if ((${#components[@]} == 0)); then
+    components=(glassfort-branding glassfort-theme glassfort-shell)
+fi
+
+work=$(mktemp -d)
+trap 'rm -rf "$work"' EXIT
+mkdir -p "$work/root"
+for c in "${components[@]}"; do
+    cp -r "$repo/components/$c" "$work/$c"
+    (cd "$work/$c" && makepkg --nodeps --force --noconfirm >"$work/$c.makepkg.log" 2>&1) || {
+        echo "makepkg failed for $c; see log:" >&2
+        cat "$work/$c.makepkg.log" >&2
+        exit 1
+    }
+    cp -r "$work/$c/pkg/$c/." "$work/root/"
+done
+
+rc=0
+timeout 180 dbus-run-session -- "$0" -w "$wait_s" "$out" --inner "$work/root" "$work/bus" 2>"${out%.png}.dbus.log" || rc=$?
+# Stop what was D-Bus activated on that private bus (portals,
+# kactivitymanagerd, runners); they outlive dbus-run-session.
+bus=$(cat "$work/bus" 2>/dev/null || true)
+if [[ -n $bus ]]; then
+    for pid in $(pgrep -u "$(id -u)"); do
+        if tr '\0' '\n' 2>/dev/null <"/proc/$pid/environ" | grep -qF "DBUS_SESSION_BUS_ADDRESS=$bus"; then
+            kill "$pid" 2>/dev/null || true
+        fi
+    done
+fi
+[[ -s $out ]] || {
+    echo "No screenshot taken; see ${out%.png}.log" >&2
+    exit 1
+}
+echo "$out"
+exit "$rc"

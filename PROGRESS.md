@@ -39,12 +39,12 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
       - [x] context menu: new window, pin/unpin, close (jump lists later)
       - [x] hover window previews (live PipeWire thumbnails, click to switch, close button)
     - [x] control center plasmoid org.glassfort.controlcenter (Wi-Fi, Bluetooth, volume, brightness, night light, dark mode, DND, screen recording)
-    - [ ] panel layout (top bar + floating dock) in the global themes; Super opens the start menu
+    - [x] panel layout (top bar + floating dock) in the global themes; verified with scripts/session-screenshot
     - [ ] shortcut overlay (hold Super) – may move to a later step
   - [ ] meta package glassfort-desktop
   - [ ] VM test: plain Arch → pacman -S glassfort-desktop → break update → roll back from boot menu
 - **Files expected to change:** components/glassfort-shell/*, docs/03-desktop-design.md, docs/DECISIONS.md, PROGRESS.md
-- **Next step if interrupted:** Panel layout: contents/layouts/org.kde.plasma.desktop-layout.js for both global themes (slim top bar: control center, tray, notifications, clock; floating bottom dock: start menu + dock). images/*.jpg stay untracked (reference only).
+- **Next step if interrupted:** Meta package glassfort-desktop (depends on settings, theme, branding, shell, mirrorlist; Plasma + default apps from docs/03). images/*.jpg stay untracked (reference only).
 - **Blocked because:** –
 
 ## Unpushed commits
@@ -56,6 +56,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-24 | – | glassfort-shell: default panel layout; scripts/session-screenshot for headless full-session screenshots |
 | 2026-11-24 | – | glassfort-shell: control center plasmoid |
 | 2026-11-24 | – | glassfort-shell: live window previews on dock hover |
 | 2026-11-24 | – | glassfort-shell: dock plasmoid (pinned + running apps, Windows-like clicks, context menu) |

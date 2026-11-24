@@ -10,8 +10,24 @@ Glassfort's own Plasma widgets (D-36 in
 | `org.glassfort.dock` – taskbar/dock | first version |
 | `org.glassfort.controlcenter` – control center | first version |
 
-Installed to `/usr/share/plasma/plasmoids/`. The panel layout that places
-them (slim top bar, floating dock) comes with the global themes.
+Installed to `/usr/share/plasma/plasmoids/`.
+
+## Layout
+
+`layout.js` is installed as the default layout of both Glassfort global
+themes (`contents/layouts/org.kde.plasma.desktop-layout.js`); plasmashell
+runs it for a new user's first session and when a global theme is
+applied together with its layout:
+
+- slim top bar (not floating): spacer, system tray, control center,
+  clock with date. The tray items the control center covers (network,
+  volume, Bluetooth, brightness) are moved to the tray's overflow. In
+  Plasma 6 the tray is itself a containment, so the script writes
+  `hiddenItems` into the tray's own `[General]` group.
+- floating dock at the bottom, centred, as wide as its content: start
+  menu and dock.
+
+Without glassfort-shell the global themes fall back to Breeze's layout.
 
 makepkg takes local sources only as flat files, so the files sit flat in
 this folder: `<plasmoid>-metadata.json`, `<plasmoid>-main.xml` and
@@ -97,6 +113,11 @@ qmllint cannot see plasma-pa's `PreferredDevice` and `PulseAudio` (the
 plugin registers them at runtime) and warns about them.
 
 ## Checking
+
+`scripts/session-screenshot OUT.png` builds glassfort-branding,
+glassfort-theme and glassfort-shell into a temporary root and takes a
+screenshot of a complete, invisible Plasma session with them (global
+theme, layout and widgets as on a new user's first login).
 
 ```sh
 qmllint -I /usr/lib/qt6/qml *.qml

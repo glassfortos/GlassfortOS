@@ -54,6 +54,7 @@ source=(
     'ControlCenterPopup.qml'
     'ControlCenterSlider.qml'
     'ControlCenterTile.qml'
+    'layout.js'
 )
 sha256sums=(
     '20a08734f94f54d1a2cf941f85c3416b9580c5160114f26faf6ce5de886700da'
@@ -76,6 +77,7 @@ sha256sums=(
     '79552a7a45a98193aa6a0ce3ec6bbf0982534cafa340df3a07184d26756d95b9'
     '141c2c4e48e5a49eece1a4415e7973c14d22e3c761c31c82dcf98e06537977d4'
     '0c666294f3944892357f663e08fe00869266d4e6884d3762d64164b744950a13'
+    '863937bb1bb6117722d4dbf6b368b8b0f17f4b49c386357b751449c08a404784'
 )
 
 # Install a plasmoid: $1 = id, $2 = file prefix, then the QML type files.
@@ -97,4 +99,11 @@ package() {
     _install_plasmoid org.glassfort.dock dock DockTask.qml DockPreview.qml
     _install_plasmoid org.glassfort.controlcenter controlcenter \
         ControlCenterButton.qml ControlCenterPopup.qml ControlCenterSlider.qml ControlCenterTile.qml
+
+    # Default panel layout of both Glassfort global themes (glassfort-theme).
+    local lnf
+    for lnf in org.glassfort.desktop org.glassfort.dark.desktop; do
+        install -Dm644 layout.js \
+            "${pkgdir}/usr/share/plasma/look-and-feel/${lnf}/contents/layouts/org.kde.plasma.desktop-layout.js"
+    done
 }
