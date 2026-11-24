@@ -59,6 +59,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-24 | – | Fix CI: do not inject meta packages into later chroots |
 | 2026-11-24 | – | Fix glassfort-settings checksum (CI was red after the preset change) |
 | 2026-11-24 | – | Add glassfort-desktop meta package |
 | 2026-11-24 | – | glassfort-setup: apply all Glassfort service presets |

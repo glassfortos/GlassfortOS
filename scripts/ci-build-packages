@@ -114,7 +114,9 @@ for dir in "${dirs[@]}"; do
     # Meta packages ("# ci: no-chroot" in the PKGBUILD) have nothing to
     # build; a clean chroot would only download all their dependencies on
     # every run. Build them with makepkg --nodeps instead; namcap still runs.
+    meta=0
     if grep -q '^# ci: no-chroot' "$work/PKGBUILD"; then
+        meta=1
         build=(sudo -u builder makepkg --nodeps --force --noconfirm)
     else
         build=(sudo -u builder extra-x86_64-build -- "${inject[@]}")
@@ -129,7 +131,9 @@ for dir in "${dirs[@]}"; do
     for pkg in "${expected[@]}"; do
         namcap "$pkg"
         cp "$pkg" "$out/"
-        local_pkgs+=("$out/$(basename "$pkg")")
+        # Meta packages are not installed into later chroots: their
+        # dependencies may not be built yet and nothing builds against them.
+        ((meta)) || local_pkgs+=("$out/$(basename "$pkg")")
         if [[ -n $cache ]] && is_third_party "$dir"; then
             cp "$pkg" "$cache/"
         fi
