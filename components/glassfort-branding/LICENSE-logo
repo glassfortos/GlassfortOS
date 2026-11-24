@@ -1,0 +1,14 @@
+The Glassfort name and logo
+
+The files glassfort-*.svg in this package contain the Glassfort logo. The
+logo is not covered by the GPL-3.0-or-later or CC BY-SA 4.0 licences of the
+Glassfort project. It may be used only as described in the Glassfort
+trademark policy:
+
+    https://github.com/jankln/GlassfortOS/blob/main/TRADEMARKS.md
+
+Derived distributions must remove this package and use their own name and
+logo.
+
+The wordmark uses outlines of the typeface Inter by Rasmus Andersson,
+licensed under the SIL Open Font License 1.1 (https://rsms.me/inter).

@@ -35,7 +35,9 @@ jobs:
         run: scripts/check-links
 
       - name: Generated theme files up to date
-        run: components/glassfort-theme/generate --check
+        run: |
+          components/glassfort-theme/generate --check
+          components/glassfort-branding/generate --check
 
   packages:
     name: Build packages (clean chroot)
