@@ -43,7 +43,10 @@ change. Steps:
 3. **initramfs:** add `btrfs-overlayfs` (or `sd-btrfs-overlayfs` for
    systemd-based initramfs) after `filesystems`, so read-only snapshots boot.
 4. **Firewall:** set `glassfort-public` as default zone.
-5. **Services:** enable the units listed in the preset.
+5. **Services:** enable the units listed in every
+   `/usr/lib/systemd/system-preset/50-glassfort*.preset` (this package's and,
+   for example, glassfort-desktop's). A unit that cannot be enabled (such as
+   SDDM while another login manager is active) gives a warning.
 6. **Boot menu:** run `limine-update` if anything changed.
 
 ## Why some defaults live elsewhere

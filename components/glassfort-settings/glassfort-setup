@@ -19,7 +19,8 @@ set -euo pipefail
 readonly LSM="landlock,lockdown,yama,integrity,apparmor,bpf"
 readonly SNAPPER_TEMPLATE="glassfort-root"
 readonly FIREWALL_ZONE="glassfort-public"
-readonly PRESET="/usr/lib/systemd/system-preset/50-glassfort.preset"
+# Every Glassfort package may ship a 50-glassfort*.preset (e.g. glassfort-desktop).
+readonly PRESET_DIR="/usr/lib/systemd/system-preset"
 
 check_only=0
 changed=0
@@ -218,8 +219,9 @@ setup_firewall() {
 
 setup_services() {
     info "Services"
-    if [[ ! -f $PRESET ]]; then
-        warn "$PRESET not found (glassfort-settings not installed?). Skipping."
+    local presets=("$PRESET_DIR"/50-glassfort*.preset)
+    if [[ ! -f ${presets[0]} ]]; then
+        warn "No $PRESET_DIR/50-glassfort*.preset found (glassfort-settings not installed?). Skipping."
         return
     fi
     local action unit
@@ -227,10 +229,11 @@ setup_services() {
         [[ $action == enable ]] || continue
         if systemctl is-enabled --quiet "$unit" 2>/dev/null; then
             step "$unit enabled"
-        else
-            apply systemctl enable "$unit"
+        elif ! apply systemctl enable "$unit"; then
+            # E.g. sddm while another login manager owns display-manager.service.
+            warn "Could not enable $unit; enable it by hand if you want it."
         fi
-    done < <(grep -E '^(enable|disable)[[:space:]]' "$PRESET")
+    done < <(grep -hE '^(enable|disable)[[:space:]]' "${presets[@]}")
 }
 
 # --- 6. Boot entries -------------------------------------------------------------

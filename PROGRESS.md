@@ -43,7 +43,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [ ] shortcut overlay (hold Super) – may move to a later step
   - [ ] meta package glassfort-desktop (sub-task started 2026-11-24):
     - [x] decisions D-37 (curated Plasma), D-38 (SDDM), D-39 (apps as hard deps), D-40 (libreoffice-fresh)
-    - [ ] glassfort-setup applies every 50-glassfort*.preset (settings commit)
+    - [x] glassfort-setup applies every 50-glassfort*.preset (settings commit)
     - [ ] glassfort-desktop PKGBUILD + 50-glassfort-desktop.preset (sddm, NetworkManager, bluetooth, power-profiles-daemon)
   - [ ] VM test: plain Arch → pacman -S glassfort-desktop → break update → roll back from boot menu
 - **Files expected to change:** components/glassfort-shell/*, docs/03-desktop-design.md, docs/DECISIONS.md, PROGRESS.md
@@ -59,6 +59,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-24 | – | glassfort-setup: apply all Glassfort service presets |
 | 2026-11-24 | – | Record maintainer decisions D-37–D-40 (glassfort-desktop contents) |
 | 2026-11-24 | – | Fix namcap findings: hicolor-icon-theme for glassfort-branding, bluez-qt for glassfort-shell |
 | 2026-11-24 | – | glassfort-shell: default panel layout; scripts/session-screenshot for headless full-session screenshots |
