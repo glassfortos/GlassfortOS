@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# System-wide Plasma defaults from glassfort-theme. Users override them in
+# ~/.config/kdeglobals (System Settings > Global Theme).
+[KDE]
+LookAndFeelPackage=org.glassfort.desktop
+DefaultLightLookAndFeel=org.glassfort.desktop
+DefaultDarkLookAndFeel=org.glassfort.dark.desktop
+# Switch between light and dark by time of day (docs/03-desktop-design.md).
+AutomaticLookAndFeel=true

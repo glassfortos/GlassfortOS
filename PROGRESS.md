@@ -17,13 +17,13 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [x] glassfort-mirrorlist (file:// server for Phase 1, D-33) + docs for adding [glassfort] to pacman.conf
   - [x] repo/publish: sign packages and build a local repo database (repo-add --sign)
   - [ ] glassfort-keyring – deferred by maintainer until the real key exists (D-26); VM tests use repo/vm-test-key
-  - [ ] glassfort-theme:
+  - [x] glassfort-theme (VM check of the live look pending, see VM test)
     - [x] record decisions D-34 (theme dependencies), D-35 (placeholder wallpapers)
     - [x] package skeleton + colour schemes GlassfortLight/GlassfortDark + kitty themes
     - [x] Kvantum theme (generated from the colour schemes by generate)
     - [x] GTK theme Glassfort (adw-gtk3 + palette, generated) and default settings.ini
     - [x] wallpapers: vector recreation of the maintainer's draft, light + dark, no logo (PNG rendered at build time)
-    - [ ] Global Theme (look-and-feel) tying colours, fonts, widget style, wallpaper
+    - [x] Global Theme: org.glassfort.desktop + org.glassfort.dark.desktop, /etc/xdg defaults, auto light/dark
   - [ ] glassfort-branding (sub-task started 2026-11-24; maintainer decided: logo = their draft in images/, optimised + redrawn as vector):
     - [x] docs: D-24 Decided, docs/03 logo section
     - [x] logo SVGs: symbol (light/dark bg), app icon, flat monochrome (dark/white), lockups (wordmark as Inter Semibold outlines)
@@ -33,7 +33,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [ ] meta package glassfort-desktop
   - [ ] VM test: plain Arch → pacman -S glassfort-desktop → break update → roll back from boot menu
 - **Files expected to change:** components/glassfort-theme/*, PROGRESS.md
-- **Next step if interrupted:** Global Theme (look-and-feel org.glassfort.desktop) in components/glassfort-theme: colours, Kvantum widget style, GTK, fonts Inter/JetBrains Mono, wallpaper, light/dark pair. images/*.jpg stay untracked (reference only).
+- **Next step if interrupted:** Plan glassfort-shell (Start menu, taskbar/dock, control center): read docs/03-desktop-design.md, propose the panel layout as a look-and-feel layout. images/*.jpg stay untracked (reference only).
 - **Blocked because:** –
 
 ## Unpushed commits
@@ -45,6 +45,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-24 | – | glassfort-theme: global themes Glassfort and Glassfort Dark with automatic light/dark switch |
 | 2026-11-24 | – | glassfort-theme: desktop wallpaper (light + dark) after the maintainer's draft |
 | 2026-11-24 | – | Add glassfort-branding: logo redrawn as vector (symbol, app icon, monochrome, lockups) |
 | 2026-11-24 | – | Record maintainer decision D-24 (logo = maintainer's draft, optimised vector redraw) |

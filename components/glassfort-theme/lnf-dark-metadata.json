@@ -1,0 +1,16 @@
+{
+    "KPackageStructure": "Plasma/LookAndFeel",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Glassfort project"
+            }
+        ],
+        "Category": "",
+        "Description": "Glassfort dark: Midnight surfaces, Glacier Teal accent",
+        "Id": "org.glassfort.dark.desktop",
+        "License": "GPL-3.0-or-later",
+        "Name": "Glassfort Dark",
+        "Website": "https://github.com/jankln/GlassfortOS"
+    }
+}

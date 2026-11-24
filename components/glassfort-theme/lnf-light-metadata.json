@@ -1,0 +1,16 @@
+{
+    "KPackageStructure": "Plasma/LookAndFeel",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Glassfort project"
+            }
+        ],
+        "Category": "",
+        "Description": "Glassfort light: Frost surfaces, Fort Indigo accent",
+        "Id": "org.glassfort.desktop",
+        "License": "GPL-3.0-or-later",
+        "Name": "Glassfort",
+        "Website": "https://github.com/jankln/GlassfortOS"
+    }
+}

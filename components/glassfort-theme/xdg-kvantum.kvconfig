@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# System-wide Kvantum theme. The dark variant (GlassfortDark) is picked
+# automatically for the widget style "kvantum-dark".
+[General]
+theme=Glassfort

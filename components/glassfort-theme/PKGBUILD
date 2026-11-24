@@ -2,13 +2,13 @@
 # Maintainer: Glassfort project <https://github.com/jankln/GlassfortOS>
 
 # glassfort-theme: Glassfort look (colour schemes, kitty, Kvantum, GTK,
-# wallpapers, later the Global Theme). See README.md and
+# wallpapers, Global Theme). See README.md and
 # docs/03-desktop-design.md. Dependencies: D-34 in docs/DECISIONS.md.
 
 pkgname=glassfort-theme
 pkgver=0.1.0
 pkgrel=1
-pkgdesc='Glassfort colour schemes and application themes'
+pkgdesc='Glassfort global theme, colour schemes, application themes and wallpaper'
 arch=('any')
 url='https://github.com/jankln/GlassfortOS'
 license=('GPL-3.0-or-later' 'CC-BY-SA-4.0')  # code / wallpapers
@@ -24,6 +24,8 @@ backup=(
     'etc/gtk-4.0/settings.ini'
     'etc/skel/.config/gtk-3.0/settings.ini'
     'etc/skel/.config/gtk-4.0/settings.ini'
+    'etc/xdg/Kvantum/kvantum.kvconfig'
+    'etc/xdg/kdeglobals'
     'etc/xdg/kitty/kitty.conf'
 )
 source=(
@@ -47,6 +49,12 @@ source=(
     'gtk-index.theme'
     'gtk-settings.ini'
     'wallpaper-metadata.json'
+    'lnf-light-metadata.json'
+    'lnf-light-defaults'
+    'lnf-dark-metadata.json'
+    'lnf-dark-defaults'
+    'xdg-kdeglobals'
+    'xdg-kvantum.kvconfig'
 )
 sha256sums=(
     '073d208e59ecfb5d078361056d6721f868b9afdf2aee89800bf8f3be9314ae82'
@@ -67,6 +75,12 @@ sha256sums=(
     '8ab4f7416adb9e0e13b3b46705e0a6c097265c98774ab172de1d52602e01dfbb'
     'c340c767076726f4c440933a474cd5b86e216a4446b82b1310391ddc6d600acb'
     'a65aa69dc201a101e51562ffbc9b479a6dd2877a8834da630f6ce135292aa3d4'
+    '3e9c29b0811d307ba856032cba8f2336bbdfd59e2e22b9fe7c36a0c5bd40d44a'
+    '1b77fab3669f73985d06a9ef2f81fd701e7b8effa410c4dd0a13543a2db3f89c'
+    '9200f5bcf4346388c486ee40f73574476313848902d2e4f212a25c4554feac4a'
+    'f4dd81b070e6773c763e9b44fbd8aeea6cce62e6f86b86208c9976c535be4e21'
+    'c25b628ea09c2bec8c3b792a3b655b05456ab4b4750238cadc0c8dd27acddc38'
+    '76e4fb9934f2916c2b65bf3a065292a10592b770e94243dfa6c8dc47016d9b53'
 )
 
 # Wallpaper sizes: 16:9 in 4K and Full HD; Plasma picks the closest one.
@@ -79,6 +93,8 @@ build() {
         for size in "${_wallpaper_sizes[@]}"; do
             rsvg-convert -w "${size%x*}" -h "${size#*x}" -o "wallpaper-${variant}-${size}.png" "wallpaper-${variant}.svg"
         done
+        # Preview for System Settings > Global Theme.
+        rsvg-convert -w 600 -h 337 -o "lnf-${variant}-preview.png" "wallpaper-${variant}.svg"
     done
 }
 
@@ -113,9 +129,23 @@ package() {
     # Plasma wallpaper package; images_dark is used with dark colour schemes.
     local wp="${pkgdir}/usr/share/wallpapers/Glassfort"
     install -Dm644 wallpaper-metadata.json "${wp}/metadata.json"
-    local size
+    local size variant
     for size in "${_wallpaper_sizes[@]}"; do
         install -Dm644 "wallpaper-light-${size}.png" "${wp}/contents/images/${size}.png"
         install -Dm644 "wallpaper-dark-${size}.png" "${wp}/contents/images_dark/${size}.png"
     done
+
+    # Global themes (light and dark) and the system-wide defaults that select
+    # them and switch between them by time of day.
+    local lnf id
+    for variant in light dark; do
+        id=org.glassfort.desktop
+        [[ ${variant} == dark ]] && id=org.glassfort.dark.desktop
+        lnf="${pkgdir}/usr/share/plasma/look-and-feel/${id}"
+        install -Dm644 "lnf-${variant}-metadata.json" "${lnf}/metadata.json"
+        install -Dm644 "lnf-${variant}-defaults" "${lnf}/contents/defaults"
+        install -Dm644 "lnf-${variant}-preview.png" "${lnf}/contents/previews/preview.png"
+    done
+    install -Dm644 xdg-kdeglobals "${pkgdir}/etc/xdg/kdeglobals"
+    install -Dm644 xdg-kvantum.kvconfig "${pkgdir}/etc/xdg/Kvantum/kvantum.kvconfig"
 }
