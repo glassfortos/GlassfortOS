@@ -158,12 +158,17 @@ MouseArea {
         }
     }
 
+    // Hover: live window previews (DockPreview); clicks inside it work.
     PlasmaCore.ToolTipArea {
         anchors.fill: parent
-        mainText: task.model.display ?? ""
-        subText: task.running ? i18np("%1 window", "%1 windows", task.windowCount) : ""
         location: task.vertical ? PlasmaCore.Types.LeftEdge : PlasmaCore.Types.BottomEdge
+        interactive: task.running
         active: !menu.status
+        mainItem: DockPreview {
+            tasksModel: task.tasksModel
+            taskIndex: task.index
+            taskModel: task.model
+        }
     }
 
     PlasmaExtras.Menu {

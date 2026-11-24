@@ -62,13 +62,18 @@ and the assistant prompt in the search field (Phase 3,
 - Running indicator under the icon: a dot per running app, wider for
   several windows, an accent-coloured pill for the active app, the
   negative colour when an app demands attention. Starting apps pulse.
-- Tooltip with the app name and window count.
+- Hover preview (`DockPreview.qml`): a live thumbnail per window
+  (PipeWire screencast through KWin, `org.kde.pipewire` from kpipewire),
+  the window title and a close button; clicking a thumbnail brings the
+  window forward. Streams run only while the preview is on screen;
+  minimised windows show the app icon. Pinned apps that are not running
+  show their name.
 - Pinned apps live in the `launchers` setting (TasksModel launcher URLs,
   `preferred://filemanager`, `applications:kitty.desktop`, …).
 
 Data comes from Plasma's public task model (`org.kde.taskmanager`).
 
-Planned: window previews on hover (PipeWire thumbnails), jump lists
+Planned: jump lists
 (the stock task manager's jump list backend is compiled into that applet
 and cannot be imported), drag to reorder, drop files on an icon.
 

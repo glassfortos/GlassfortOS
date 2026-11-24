@@ -17,10 +17,12 @@ url='https://github.com/jankln/GlassfortOS'
 license=('GPL-3.0-or-later')
 # plasma-workspace: Kicker models (org.kde.plasma.private.kicker) and the
 # task model (org.kde.taskmanager);
-# kirigami-addons: avatar; glassfort-branding: the "glassfort" start icon.
+# kpipewire: window previews; kirigami-addons: avatar; glassfort-branding:
+# the "glassfort" start icon.
 depends=(
     'glassfort-branding'
     'kirigami-addons'
+    'kpipewire'
     'kcoreaddons'
     'plasma-workspace'
     'qt6-declarative'
@@ -38,6 +40,7 @@ source=(
     'dock-main.xml'
     'dock-main.qml'
     'DockTask.qml'
+    'DockPreview.qml'
 )
 sha256sums=(
     '20a08734f94f54d1a2cf941f85c3416b9580c5160114f26faf6ce5de886700da'
@@ -51,7 +54,8 @@ sha256sums=(
     '24726705247f039ff66fa064eaa1c7847de881bea7b4951544ee7453bca39a60'
     '013f9ac9aa067925cdff46e3221bbc7ee739f0dc1eee2edad94f14cc5a96b491'
     '3febc033edcbf536a1b4d4d4ea4838d8b34a3e5812490a61cf5bd91c2a0bf176'
-    '169e841d2babfe2aa28446f15c5423c185513704009ff9ef05881a0441391330'
+    'b17834b7518842b4636c63894d5498b78138cb0366aae64ee377d2e654afa6e5'
+    'cfe70cb2eb1ac91c69eccf616db7d57cb82ded9b93ded8aa5795ab55dd4699e2'
 )
 
 # Install a plasmoid: $1 = id, $2 = file prefix, then the QML type files.
@@ -70,5 +74,5 @@ package() {
     cd "${srcdir}"
     _install_plasmoid org.glassfort.startmenu startmenu \
         StartMenuButton.qml StartMenuPopup.qml StartMenuRow.qml StartMenuTile.qml StartMenuPinMenu.qml
-    _install_plasmoid org.glassfort.dock dock DockTask.qml
+    _install_plasmoid org.glassfort.dock dock DockTask.qml DockPreview.qml
 }
