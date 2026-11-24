@@ -35,14 +35,14 @@ include `/usr/share/glassfort/kitty/glassfort-dark.conf` or
 
 ## Kvantum
 
-`kvantum/generate` writes both Kvantum themes from the two `.colors`
+`generate` writes both Kvantum themes from the two `.colors`
 files, so Qt widgets and Plasma share one palette. Never edit the
 `kvantum-*` files by hand; change the generator or the colour
 scheme and run it again:
 
 ```sh
-kvantum/generate          # rewrite the theme files
-kvantum/generate --check  # CI: files up to date, SVG objects present, contrast
+./generate          # rewrite the generated files
+./generate --check  # CI: files up to date, SVG objects present, contrast
 ```
 
 Look: rounded corners (5 px controls, 6 px menus), flat buttons with a
