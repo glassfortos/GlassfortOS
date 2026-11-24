@@ -29,11 +29,17 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] logo SVGs: symbol (light/dark bg), app icon, flat monochrome (dark/white), lockups (wordmark as Inter Semibold outlines)
     - [x] package glassfort-branding (hicolor icon, /usr/share/glassfort/branding)
     - [ ] later: Plymouth, Limine splash, login/lock screen (with logo wallpapers)
-  - [ ] glassfort-shell (Start menu, taskbar/dock, control center)
+  - [ ] glassfort-shell (sub-task started 2026-11-24; D-36: own QML plasmoids from the start):
+    - [x] record D-36
+    - [ ] package skeleton + start menu plasmoid org.glassfort.startmenu (search, pinned grid, recent files, power menu, Super)
+    - [ ] dock plasmoid org.glassfort.dock (pinned + running, previews, jump lists, click focuses/minimises)
+    - [ ] control center plasmoid org.glassfort.controlcenter (Wi-Fi, Bluetooth, volume, brightness, night light, dark mode, DND, screen recording)
+    - [ ] panel layout (top bar + floating dock) in the global themes; Super opens the start menu
+    - [ ] shortcut overlay (hold Super) – may move to a later step
   - [ ] meta package glassfort-desktop
   - [ ] VM test: plain Arch → pacman -S glassfort-desktop → break update → roll back from boot menu
-- **Files expected to change:** components/glassfort-theme/*, PROGRESS.md
-- **Next step if interrupted:** Plan glassfort-shell (Start menu, taskbar/dock, control center): read docs/03-desktop-design.md, propose the panel layout as a look-and-feel layout. images/*.jpg stay untracked (reference only).
+- **Files expected to change:** components/glassfort-shell/*, docs/03-desktop-design.md, docs/DECISIONS.md, PROGRESS.md
+- **Next step if interrupted:** Create components/glassfort-shell with the start menu plasmoid (study Kickoff's use of org.kde.plasma.private.kicker in /usr/share/plasma/plasmoids/org.kde.plasma.kickoff). images/*.jpg stay untracked (reference only).
 - **Blocked because:** –
 
 ## Unpushed commits
@@ -45,6 +51,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-24 | – | Record maintainer decision D-36 (own shell widgets from the start) |
 | 2026-11-24 | – | glassfort-theme: global themes Glassfort and Glassfort Dark with automatic light/dark switch |
 | 2026-11-24 | – | glassfort-theme: desktop wallpaper (light + dark) after the maintainer's draft |
 | 2026-11-24 | – | Add glassfort-branding: logo redrawn as vector (symbol, app icon, monochrome, lockups) |

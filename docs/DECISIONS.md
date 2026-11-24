@@ -45,3 +45,4 @@ Claude Code adds new decisions as **Proposed**. Only the maintainer sets **Decid
 | D-33 | `[glassfort]` hosting (Phase 1) | Local only: built and tested via `file://` in VMs; public server decided later (see D-30) | Decided | 2026-11-22 |
 | D-34 | `glassfort-theme` dependencies | Hard `depends` on inter-font, ttf-jetbrains-mono, kvantum, adw-gtk-theme; Plasma itself comes from `glassfort-desktop` | Decided | 2026-11-23 |
 | D-35 | Wallpapers (interim) | Own abstract SVG placeholders in the palette (light + dark, no logo) until the final artwork exists (D-24) | Decided | 2026-11-23 |
+| D-36 | Shell widgets | Start menu, taskbar/dock and control center are our own QML plasmoids from the start (no interim layout from stock Plasma widgets). Data comes from Plasma's QML models (kicker, task manager, system tray backends) | Decided | 2026-11-24 |
