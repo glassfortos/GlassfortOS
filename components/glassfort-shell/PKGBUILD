@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Maintainer: Glassfort project <https://github.com/jankln/GlassfortOS>
 
-# glassfort-shell: Glassfort's own Plasma widgets (D-36): start menu, dock,
-# later the control center. See README.md and docs/03-desktop-design.md.
+# glassfort-shell: Glassfort's own Plasma widgets (D-36): start menu, dock
+# and control center. See README.md and docs/03-desktop-design.md.
 #
 # makepkg takes local sources only as flat files, so the plasmoid files
 # carry a prefix (startmenu-*) or a unique type name (StartMenu*.qml) and
@@ -17,15 +17,21 @@ url='https://github.com/jankln/GlassfortOS'
 license=('GPL-3.0-or-later')
 # plasma-workspace: Kicker models (org.kde.plasma.private.kicker) and the
 # task model (org.kde.taskmanager);
-# kpipewire: window previews; kirigami-addons: avatar; glassfort-branding:
-# the "glassfort" start icon.
+# kpipewire: window previews; kirigami-addons: avatar; plasma-nm, bluedevil,
+# plasma-pa, powerdevil: control center backends; spectacle: screen
+# recording; glassfort-branding: the "glassfort" start icon.
 depends=(
+    'bluedevil'
     'glassfort-branding'
+    'kcoreaddons'
     'kirigami-addons'
     'kpipewire'
-    'kcoreaddons'
+    'plasma-nm'
+    'plasma-pa'
     'plasma-workspace'
+    'powerdevil'
     'qt6-declarative'
+    'spectacle'
 )
 source=(
     'startmenu-metadata.json'
@@ -41,6 +47,13 @@ source=(
     'dock-main.qml'
     'DockTask.qml'
     'DockPreview.qml'
+    'controlcenter-metadata.json'
+    'controlcenter-main.xml'
+    'controlcenter-main.qml'
+    'ControlCenterButton.qml'
+    'ControlCenterPopup.qml'
+    'ControlCenterSlider.qml'
+    'ControlCenterTile.qml'
 )
 sha256sums=(
     '20a08734f94f54d1a2cf941f85c3416b9580c5160114f26faf6ce5de886700da'
@@ -56,6 +69,13 @@ sha256sums=(
     '3febc033edcbf536a1b4d4d4ea4838d8b34a3e5812490a61cf5bd91c2a0bf176'
     'b17834b7518842b4636c63894d5498b78138cb0366aae64ee377d2e654afa6e5'
     'cfe70cb2eb1ac91c69eccf616db7d57cb82ded9b93ded8aa5795ab55dd4699e2'
+    '2de673c02885741311c3f892eaa2bea0b239d863eb9c4d85b2217d15262253b9'
+    '94c93a758fbecb3b1c9bcf54ccaf70c248d17d29e2483e38651af4a77972de3d'
+    '966af7193ed9d7918f7dad5e29707516938a5704cb5c5a20d4c0f9e79ebca666'
+    'd3cd21d0ea3c9a87d4088417dfc00785d1238be8e7c5bc8e7f1c478de9b077b7'
+    '79552a7a45a98193aa6a0ce3ec6bbf0982534cafa340df3a07184d26756d95b9'
+    '141c2c4e48e5a49eece1a4415e7973c14d22e3c761c31c82dcf98e06537977d4'
+    '0c666294f3944892357f663e08fe00869266d4e6884d3762d64164b744950a13'
 )
 
 # Install a plasmoid: $1 = id, $2 = file prefix, then the QML type files.
@@ -75,4 +95,6 @@ package() {
     _install_plasmoid org.glassfort.startmenu startmenu \
         StartMenuButton.qml StartMenuPopup.qml StartMenuRow.qml StartMenuTile.qml StartMenuPinMenu.qml
     _install_plasmoid org.glassfort.dock dock DockTask.qml DockPreview.qml
+    _install_plasmoid org.glassfort.controlcenter controlcenter \
+        ControlCenterButton.qml ControlCenterPopup.qml ControlCenterSlider.qml ControlCenterTile.qml
 }

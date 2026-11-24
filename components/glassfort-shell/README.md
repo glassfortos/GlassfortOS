@@ -8,7 +8,7 @@ Glassfort's own Plasma widgets (D-36 in
 |---|---|
 | `org.glassfort.startmenu` – start menu | first version |
 | `org.glassfort.dock` – taskbar/dock | first version |
-| `org.glassfort.controlcenter` – control center | planned |
+| `org.glassfort.controlcenter` – control center | first version |
 
 Installed to `/usr/share/plasma/plasmoids/`. The panel layout that places
 them (slim top bar, floating dock) comes with the global themes.
@@ -17,7 +17,7 @@ makepkg takes local sources only as flat files, so the files sit flat in
 this folder: `<plasmoid>-metadata.json`, `<plasmoid>-main.xml` and
 `<plasmoid>-main.qml` become `metadata.json`, `contents/config/main.xml`
 and `contents/ui/main.qml`; the other QML files have unique type names
-(`StartMenuPopup.qml`, `DockTask.qml`, …) and go to `contents/ui/` unchanged.
+(`StartMenuPopup.qml`, `DockTask.qml`, `ControlCenterTile.qml`, …) and go to `contents/ui/` unchanged.
 
 ## Start menu
 
@@ -77,6 +77,25 @@ Planned: jump lists
 (the stock task manager's jump list backend is compiled into that applet
 and cannot be imported), drag to reorder, drop files on an icon.
 
+## Control center
+
+A button in the top bar with network and volume status. It opens:
+
+| Tile / slider | Backend (the matching Plasma applet's) |
+|---|---|
+| Wi-Fi on/off, current connection | plasma-nm (`org.kde.plasma.networkmanagement`) |
+| Bluetooth on/off, connected devices | bluedevil (`org.kde.bluezqt`) |
+| Do Not Disturb | `org.kde.notificationmanager` (until turned off) |
+| Dark Mode | powerdevil `DarkModeControl` (switches Glassfort ↔ Glassfort Dark) |
+| Night Light | KWin `org.kde.KWin.NightLight` (manual override of the schedule) |
+| Record Screen | `spectacle -R r` (`recordMode`: r region, s screen, w window) |
+| Volume slider + mute | plasma-pa (`PreferredDevice.sink`) |
+| Brightness slider per display | powerdevil `ScreenBrightnessControl` |
+| All Settings | starts `systemsettings` |
+
+qmllint cannot see plasma-pa's `PreferredDevice` and `PulseAudio` (the
+plugin registers them at runtime) and warns about them.
+
 ## Checking
 
 ```sh
@@ -92,7 +111,9 @@ Plasma data. In such a fresh environment the pinned apps stay empty,
 because KActivities creates its database only after the first start.
 The dock shows its pinned apps there but no running windows: KWin's
 window management interface is only available to plasmashell. Running
-indicators and click behaviour need the VM test.
+indicators and click behaviour need the VM test. The control center
+shows real Wi-Fi and Bluetooth state there, but no volume or brightness
+sliders (no audio or brightness service in the private session).
 
 qmllint reports three warnings in `startmenu-main.qml` about the Kicker models'
 dynamic types (`initForClient`, `portOldFavorites`,

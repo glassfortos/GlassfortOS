@@ -1,0 +1,18 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Glassfort project"
+            }
+        ],
+        "Category": "System Information",
+        "Description": "Glassfort control center: Wi-Fi, Bluetooth, volume, brightness and quick toggles",
+        "Icon": "preferences-system",
+        "Id": "org.glassfort.controlcenter",
+        "License": "GPL-3.0-or-later",
+        "Name": "Control Center",
+        "Website": "https://github.com/jankln/GlassfortOS"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}

@@ -38,13 +38,13 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
       - [x] dock: pinned + running icons, running indicator, click focuses/minimises/cycles, middle-click new instance
       - [x] context menu: new window, pin/unpin, close (jump lists later)
       - [x] hover window previews (live PipeWire thumbnails, click to switch, close button)
-    - [ ] control center plasmoid org.glassfort.controlcenter (Wi-Fi, Bluetooth, volume, brightness, night light, dark mode, DND, screen recording)
+    - [x] control center plasmoid org.glassfort.controlcenter (Wi-Fi, Bluetooth, volume, brightness, night light, dark mode, DND, screen recording)
     - [ ] panel layout (top bar + floating dock) in the global themes; Super opens the start menu
     - [ ] shortcut overlay (hold Super) – may move to a later step
   - [ ] meta package glassfort-desktop
   - [ ] VM test: plain Arch → pacman -S glassfort-desktop → break update → roll back from boot menu
 - **Files expected to change:** components/glassfort-shell/*, docs/03-desktop-design.md, docs/DECISIONS.md, PROGRESS.md
-- **Next step if interrupted:** Control center plasmoid org.glassfort.controlcenter (study plasma-workspace applets: networkmanagement is in plasma-nm, bluetooth in bluedevil, volume in plasma-pa, brightness/night light in powerdevil/plasma-workspace). images/*.jpg stay untracked (reference only).
+- **Next step if interrupted:** Panel layout: contents/layouts/org.kde.plasma.desktop-layout.js for both global themes (slim top bar: control center, tray, notifications, clock; floating bottom dock: start menu + dock). images/*.jpg stay untracked (reference only).
 - **Blocked because:** –
 
 ## Unpushed commits
@@ -56,6 +56,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-24 | – | glassfort-shell: control center plasmoid |
 | 2026-11-24 | – | glassfort-shell: live window previews on dock hover |
 | 2026-11-24 | – | glassfort-shell: dock plasmoid (pinned + running apps, Windows-like clicks, context menu) |
 | 2026-11-24 | – | glassfort-shell: pin/unpin apps in the start menu, retry-safe seeding of pinned apps |
