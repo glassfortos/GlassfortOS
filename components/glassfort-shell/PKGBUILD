@@ -1,0 +1,36 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Maintainer: Glassfort project <https://github.com/jankln/GlassfortOS>
+
+# glassfort-shell: Glassfort's own Plasma widgets (D-36): start menu, later
+# dock and control center. See README.md and docs/03-desktop-design.md.
+
+pkgname=glassfort-shell
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='Glassfort start menu, dock and control center for Plasma'
+arch=('any')
+url='https://github.com/jankln/GlassfortOS'
+license=('GPL-3.0-or-later')
+# plasma-workspace: Kicker models (org.kde.plasma.private.kicker);
+# kirigami-addons: avatar; glassfort-branding: the "glassfort" start icon.
+depends=(
+    'glassfort-branding'
+    'kirigami-addons'
+    'plasma-workspace'
+)
+source=()
+sha256sums=()
+
+_plasmoids=('org.glassfort.startmenu')
+
+package() {
+    local p
+    for p in "${_plasmoids[@]}"; do
+        # makepkg copies only listed sources; take the plasmoids from the
+        # PKGBUILD directory so new QML files need no source entry.
+        (cd "${startdir}/plasmoids" && find "${p}" -type f -print0) |
+            while IFS= read -r -d '' f; do
+                install -Dm644 "${startdir}/plasmoids/${f}" "${pkgdir}/usr/share/plasma/plasmoids/${f}"
+            done
+    done
+}

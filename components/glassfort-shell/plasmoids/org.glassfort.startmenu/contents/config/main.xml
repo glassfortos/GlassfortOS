@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
+      http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+  <kcfgfile name=""/>
+  <group name="General">
+    <entry name="icon" type="String">
+      <default>glassfort</default>
+    </entry>
+    <entry name="favorites" type="StringList">
+      <label>Pinned apps on first start (menu ids or preferred:// URLs). Later changes are stored per user in KActivities.</label>
+      <default>preferred://browser,org.kde.dolphin.desktop,kitty.desktop,thunderbird.desktop,libreoffice-startcenter.desktop,org.kde.discover.desktop,systemsettings.desktop,org.kde.kate.desktop,org.kde.okular.desktop,org.kde.gwenview.desktop,org.kde.spectacle.desktop,org.keepassxc.KeePassXC.desktop</default>
+    </entry>
+    <entry name="favoritesPortedToKAstats" type="Bool">
+      <default>false</default>
+    </entry>
+    <entry name="powerActions" type="StringList">
+      <label>Entries shown in the power menu (ids of Kicker's system model).</label>
+      <default>lock-screen,logout,suspend,reboot,shutdown</default>
+    </entry>
+  </group>
+</kcfg>

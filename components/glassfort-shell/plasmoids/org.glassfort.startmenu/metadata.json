@@ -1,0 +1,21 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Glassfort project"
+            }
+        ],
+        "Category": "Application Launchers",
+        "Description": "Glassfort start menu: search, pinned apps, recent files and power",
+        "Icon": "glassfort",
+        "Id": "org.glassfort.startmenu",
+        "License": "GPL-3.0-or-later",
+        "Name": "Start Menu",
+        "Website": "https://github.com/jankln/GlassfortOS"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-Provides": [
+        "org.kde.plasma.launchermenu"
+    ]
+}

@@ -14,6 +14,13 @@ Test where distros typically break (NVIDIA, scaling, Secure Boot), automatically
 | Secure Boot tests | OVMF with enrolled custom keys: Limine boots, checksum enrollment works, fallback path `BOOTX64.EFI` works |
 | Assistant security | Prompt-injection test suite; fuzzing of the helper D-Bus interface |
 
+## Local checks
+
+| Check | How |
+|---|---|
+| Plasmoid screenshots | `scripts/plasmoid-screenshot OUT.png PLASMOID_DIR`: runs the widget in an invisible KWin (`kwin_wayland --virtual`) on a private D-Bus session with empty config and data dirs and takes a screenshot. Needs a Plasma host (kwin, plasma-sdk, spectacle). |
+| qmllint for plasmoids | Run locally for now; the CI lint job has no Plasma QML modules yet. |
+
 ## Real hardware matrix
 
 | Device | Tests |

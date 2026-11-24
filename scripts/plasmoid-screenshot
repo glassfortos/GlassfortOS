@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Screenshot a plasmoid without touching the running desktop.
+#
+# Starts an invisible KWin (kwin_wayland --virtual) on a private D-Bus
+# session with empty config/data dirs, opens the plasmoid there with
+# plasmoidviewer, takes a screenshot with spectacle and stops everything
+# again. Nothing is shown on screen and the user's Plasma data is not used.
+#
+# Usage: scripts/plasmoid-screenshot [-w SECONDS] [-c CONFIG_DIR] OUT.png PLASMOID_DIR [plasmoidviewer args...]
+#   -w  seconds to wait before the screenshot (default 6)
+#   -c  directory copied into the private XDG_CONFIG_HOME first
+#       (e.g. a kdeglobals with a Glassfort colour scheme)
+#
+# Needs: kwin, plasma-sdk (plasmoidviewer), spectacle, dbus.
+# The plasmoid's log goes to OUT.log, D-Bus messages to OUT.dbus.log.
+
+set -euo pipefail
+
+wait_s=6
+config=""
+while getopts "w:c:" opt; do
+    case $opt in
+        w) wait_s=$OPTARG ;;
+        c) config=$(realpath "$OPTARG") ;;
+        *) exit 2 ;;
+    esac
+done
+shift $((OPTIND - 1))
+if (($# < 2)); then
+    sed -n '/^# Usage/,/^# Needs/p' "$0" >&2
+    exit 2
+fi
+out=$(realpath "$1")
+plasmoid=$(realpath "$2")
+shift 2
+
+if [[ ${1:-} != --inner ]]; then
+    # Re-run inside a private D-Bus session, then stop everything that was
+    # D-Bus activated on it (portals, kactivitymanagerd, runners).
+    rc=0
+    timeout 120 dbus-run-session -- "$0" -w "$wait_s" ${config:+-c "$config"} "$out" "$plasmoid" --inner "$@" 2>"${out%.png}.dbus.log" || rc=$?
+    for pid in $(pgrep -u "$(id -u)"); do
+        if tr '\0' '\n' <"/proc/$pid/environ" 2>/dev/null | grep -q '^DBUS_SESSION_BUS_ADDRESS=unix:path=/tmp/dbus-'; then
+            kill "$pid" 2>/dev/null || true
+        fi
+    done
+    exit "$rc"
+fi
+shift # --inner
+
+tmp=$(mktemp -d)
+trap 'kill "${app:-}" "${kwin:-}" 2>/dev/null || true; wait 2>/dev/null || true; rm -rf "$tmp"' EXIT
+export XDG_RUNTIME_DIR=$tmp/run XDG_CONFIG_HOME=$tmp/config XDG_DATA_HOME=$tmp/data
+export XDG_CACHE_HOME=$tmp/cache XDG_STATE_HOME=$tmp/state
+mkdir -p "$XDG_RUNTIME_DIR" "$XDG_CONFIG_HOME" "$XDG_DATA_HOME"
+chmod 700 "$XDG_RUNTIME_DIR"
+if [[ -n $config ]]; then
+    cp -r "$config/." "$XDG_CONFIG_HOME/"
+fi
+
+socket=glassfort-shot
+kwin_wayland --virtual --no-lockscreen --width 1280 --height 800 --socket "$socket" >"$tmp/kwin.log" 2>&1 &
+kwin=$!
+sleep 3
+
+WAYLAND_DISPLAY=$socket QT_QPA_PLATFORM=wayland QT_FORCE_STDERR_LOGGING=1 \
+    QT_LOGGING_RULES="qml.debug=true;js.debug=true" \
+    plasmoidviewer -a "$plasmoid" "$@" >"${out%.png}.log" 2>&1 &
+app=$!
+sleep "$wait_s"
+
+WAYLAND_DISPLAY=$socket QT_QPA_PLATFORM=wayland spectacle -b -n -f -o "$out" >"$tmp/spectacle.log" 2>&1
+[[ -s $out ]] || {
+    echo "No screenshot taken; see ${out%.png}.log" >&2
+    exit 1
+}
+echo "$out"
