@@ -13,6 +13,12 @@ Glassfort's own Plasma widgets (D-36 in
 Installed to `/usr/share/plasma/plasmoids/`. The panel layout that places
 them (slim top bar, floating dock) comes with the global themes.
 
+makepkg takes local sources only as flat files, so the files sit flat in
+this folder: `<plasmoid>-metadata.json`, `<plasmoid>-main.xml` and
+`<plasmoid>-main.qml` become `metadata.json`, `contents/config/main.xml`
+and `contents/ui/main.qml`; the other QML files have unique type names
+(`StartMenuPopup.qml`, …) and go to `contents/ui/` unchanged.
+
 ## Start menu
 
 - Opens with `Super`: the plasmoid provides `org.kde.plasma.launchermenu`,
@@ -41,8 +47,10 @@ assistant prompt in the search field (Phase 3, `glassfort-assistant`).
 ## Checking
 
 ```sh
-qmllint -I /usr/lib/qt6/qml plasmoids/*/contents/ui/*.qml
-../../scripts/plasmoid-screenshot out.png plasmoids/org.glassfort.startmenu -f planar -s 760x900
+qmllint -I /usr/lib/qt6/qml *.qml
+makepkg -d -f            # assembles pkg/glassfort-shell/usr/share/plasma/plasmoids/
+../../scripts/plasmoid-screenshot out.png \
+    pkg/glassfort-shell/usr/share/plasma/plasmoids/org.glassfort.startmenu -f planar -s 760x900
 ```
 
 `scripts/plasmoid-screenshot` runs the plasmoid in an invisible KWin with
@@ -50,6 +58,6 @@ empty config and data dirs, so it neither shows windows nor touches your
 Plasma data. In such a fresh environment the pinned apps stay empty,
 because KActivities creates its database only after the first start.
 
-qmllint reports three warnings in `main.qml` about the Kicker models'
+qmllint reports three warnings in `startmenu-main.qml` about the Kicker models'
 dynamic types (`initForClient`, `portOldFavorites`,
 `systemFavoritesModel`). Kickoff uses the same calls.

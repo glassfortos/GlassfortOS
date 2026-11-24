@@ -52,6 +52,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-24 | – | glassfort-shell: flat plasmoid sources (fixes namcap "File referenced in $startdir") |
 | 2026-11-24 | – | glassfort-shell: start menu plasmoid; scripts/plasmoid-screenshot for headless widget screenshots |
 | 2026-11-24 | – | Record maintainer decision D-36 (own shell widgets from the start) |
 | 2026-11-24 | – | glassfort-theme: global themes Glassfort and Glassfort Dark with automatic light/dark switch |

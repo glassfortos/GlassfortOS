@@ -77,7 +77,7 @@ PlasmaExtras.Representation {
             function launchFirst() {
                 if (menu.searching && searchView.count > 0) {
                     searchView.currentIndex = 0;
-                    (searchView.currentItem as ResultRow).clicked();
+                    (searchView.currentItem as StartMenuRow).clicked();
                 }
             }
             Keys.onReturnPressed: launchFirst()
@@ -117,7 +117,7 @@ PlasmaExtras.Representation {
                 cellHeight: menu.cellSize
                 keyNavigationWraps: false
                 model: root.rootModel.favoritesModel
-                delegate: AppTile {
+                delegate: StartMenuTile {
                     sourceModel: root.rootModel.favoritesModel
                     onLaunched: menu.close()
                 }
@@ -150,7 +150,7 @@ PlasmaExtras.Representation {
                 Layout.fillHeight: true
                 clip: true
                 model: root.recentFilesModel
-                delegate: ResultRow {
+                delegate: StartMenuRow {
                     sourceModel: root.recentFilesModel
                     onLaunched: menu.close()
                 }
@@ -198,7 +198,7 @@ PlasmaExtras.Representation {
                         width: ListView.view.width
                         text: section.toUpperCase()
                     }
-                    delegate: ResultRow {
+                    delegate: StartMenuRow {
                         sourceModel: root.appsModel
                         onLaunched: menu.close()
                     }
@@ -218,7 +218,7 @@ PlasmaExtras.Representation {
                 // modelForRow does not notify; re-evaluate when the count changes.
                 model: root.runnerModel.count ? root.runnerModel.modelForRow(0) : null
                 highlightMoveDuration: 0
-                delegate: ResultRow {
+                delegate: StartMenuRow {
                     sourceModel: searchView.model
                     onLaunched: menu.close()
                 }

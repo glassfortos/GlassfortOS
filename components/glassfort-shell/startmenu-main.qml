@@ -72,8 +72,8 @@ PlasmoidItem {
     toolTipSubText: i18n("Search, apps, recent files and power")
 
     preferredRepresentation: compactRepresentation
-    compactRepresentation: CompactRepresentation {}
-    fullRepresentation: FullRepresentation {}
+    compactRepresentation: StartMenuButton {}
+    fullRepresentation: StartMenuPopup {}
 
     onExpandedChanged: {
         if (!expanded) {

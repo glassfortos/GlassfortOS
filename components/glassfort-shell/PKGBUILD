@@ -3,6 +3,10 @@
 
 # glassfort-shell: Glassfort's own Plasma widgets (D-36): start menu, later
 # dock and control center. See README.md and docs/03-desktop-design.md.
+#
+# makepkg takes local sources only as flat files, so the plasmoid files
+# carry a prefix (startmenu-*) or a unique type name (StartMenu*.qml) and
+# package() puts them into the plasmoid layout.
 
 pkgname=glassfort-shell
 pkgver=0.1.0
@@ -16,21 +20,43 @@ license=('GPL-3.0-or-later')
 depends=(
     'glassfort-branding'
     'kirigami-addons'
+    'kcoreaddons'
     'plasma-workspace'
+    'qt6-declarative'
 )
-source=()
-sha256sums=()
+source=(
+    'startmenu-metadata.json'
+    'startmenu-main.xml'
+    'startmenu-main.qml'
+    'StartMenuButton.qml'
+    'StartMenuPopup.qml'
+    'StartMenuRow.qml'
+    'StartMenuTile.qml'
+)
+sha256sums=(
+    '20a08734f94f54d1a2cf941f85c3416b9580c5160114f26faf6ce5de886700da'
+    '59b83aa356bd31b0ca37e6a2bd1c3de828c6f5b33c86fdf4070272ee5055ead8'
+    '109f903ec18f62e3b835f62176106719d05eaa9b07a9206d6059db8101b4240c'
+    '34984d8c0fad1552a2c4a022a242705f8cf7e3f1bad44f4db8cca449145a751e'
+    '05820e9ba5ae3db2d600ba6b15d30d0b94a7fa25a1fc45a29fadebcc334cabc8'
+    '91c71553066f7270cce6b3bbdb47448278355bc04d4549781530220ab9f0c45f'
+    'a5ce1cb7acfc47ba4845cf2e922fb132db6f6e9b361c12916a219ccfec23c922'
+)
 
-_plasmoids=('org.glassfort.startmenu')
+# Install a plasmoid: $1 = id, $2 = file prefix, then the QML type files.
+_install_plasmoid() {
+    local dir="${pkgdir}/usr/share/plasma/plasmoids/$1" prefix=$2 f
+    shift 2
+    install -Dm644 "${prefix}-metadata.json" "${dir}/metadata.json"
+    install -Dm644 "${prefix}-main.xml" "${dir}/contents/config/main.xml"
+    install -Dm644 "${prefix}-main.qml" "${dir}/contents/ui/main.qml"
+    for f in "$@"; do
+        install -Dm644 "${f}" "${dir}/contents/ui/${f}"
+    done
+}
 
 package() {
-    local p
-    for p in "${_plasmoids[@]}"; do
-        # makepkg copies only listed sources; take the plasmoids from the
-        # PKGBUILD directory so new QML files need no source entry.
-        (cd "${startdir}/plasmoids" && find "${p}" -type f -print0) |
-            while IFS= read -r -d '' f; do
-                install -Dm644 "${startdir}/plasmoids/${f}" "${pkgdir}/usr/share/plasma/plasmoids/${f}"
-            done
-    done
+    cd "${srcdir}"
+    _install_plasmoid org.glassfort.startmenu startmenu \
+        StartMenuButton.qml StartMenuPopup.qml StartMenuRow.qml StartMenuTile.qml
 }
