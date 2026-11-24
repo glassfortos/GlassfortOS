@@ -111,7 +111,15 @@ for dir in "${dirs[@]}"; do
     for pkg in "${local_pkgs[@]}"; do
         inject+=(-I "$pkg")
     done
-    if ! (cd "$work" && sudo -u builder extra-x86_64-build -- "${inject[@]}"); then
+    # Meta packages ("# ci: no-chroot" in the PKGBUILD) have nothing to
+    # build; a clean chroot would only download all their dependencies on
+    # every run. Build them with makepkg --nodeps instead; namcap still runs.
+    if grep -q '^# ci: no-chroot' "$work/PKGBUILD"; then
+        build=(sudo -u builder makepkg --nodeps --force --noconfirm)
+    else
+        build=(sudo -u builder extra-x86_64-build -- "${inject[@]}")
+    fi
+    if ! (cd "$work" && "${build[@]}"); then
         echo "::error::Build failed: $name"
         status=1
         echo "::endgroup::"
