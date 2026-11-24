@@ -40,15 +40,25 @@ if [[ ${1:-} != --inner ]]; then
     # Re-run inside a private D-Bus session, then stop everything that was
     # D-Bus activated on it (portals, kactivitymanagerd, runners).
     rc=0
-    timeout 120 dbus-run-session -- "$0" -w "$wait_s" ${config:+-c "$config"} "$out" "$plasmoid" --inner "$@" 2>"${out%.png}.dbus.log" || rc=$?
-    for pid in $(pgrep -u "$(id -u)"); do
-        if tr '\0' '\n' 2>/dev/null <"/proc/$pid/environ" | grep -q '^DBUS_SESSION_BUS_ADDRESS=unix:path=/tmp/dbus-'; then
-            kill "$pid" 2>/dev/null || true
-        fi
-    done
+    busfile=$(mktemp)
+    timeout 120 dbus-run-session -- "$0" -w "$wait_s" ${config:+-c "$config"} "$out" "$plasmoid" --inner "$busfile" "$@" 2>"${out%.png}.dbus.log" || rc=$?
+    # Stop what was D-Bus activated on that private bus (portals,
+    # kactivitymanagerd, runners); they outlive dbus-run-session.
+    bus=$(cat "$busfile" 2>/dev/null || true)
+    rm -f "$busfile"
+    if [[ -n $bus ]]; then
+        for pid in $(pgrep -u "$(id -u)"); do
+            if tr '\0' '\n' 2>/dev/null <"/proc/$pid/environ" | grep -qF "DBUS_SESSION_BUS_ADDRESS=$bus"; then
+                kill "$pid" 2>/dev/null || true
+            fi
+        done
+    fi
     exit "$rc"
 fi
 shift # --inner
+# Tell the outer part which bus to clean up afterwards.
+echo "${DBUS_SESSION_BUS_ADDRESS%%,*}" >"$1"
+shift
 
 tmp=$(mktemp -d)
 trap 'kill "${app:-}" "${kwin:-}" 2>/dev/null || true; wait 2>/dev/null || true; rm -rf "$tmp"' EXIT
