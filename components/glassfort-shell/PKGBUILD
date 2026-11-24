@@ -32,15 +32,17 @@ source=(
     'StartMenuPopup.qml'
     'StartMenuRow.qml'
     'StartMenuTile.qml'
+    'StartMenuPinMenu.qml'
 )
 sha256sums=(
     '20a08734f94f54d1a2cf941f85c3416b9580c5160114f26faf6ce5de886700da'
     '59b83aa356bd31b0ca37e6a2bd1c3de828c6f5b33c86fdf4070272ee5055ead8'
-    '109f903ec18f62e3b835f62176106719d05eaa9b07a9206d6059db8101b4240c'
+    '6ae5eec65a9bd9cf8acd470f1362f4524df1b2a843a3fa2ce40e301ef2ddaa1d'
     '34984d8c0fad1552a2c4a022a242705f8cf7e3f1bad44f4db8cca449145a751e'
     '05820e9ba5ae3db2d600ba6b15d30d0b94a7fa25a1fc45a29fadebcc334cabc8'
-    '91c71553066f7270cce6b3bbdb47448278355bc04d4549781530220ab9f0c45f'
-    'a5ce1cb7acfc47ba4845cf2e922fb132db6f6e9b361c12916a219ccfec23c922'
+    '63195ac178a5eeaf67ea43c79b81c62726c5dea26b877764b347936adedf0eac'
+    '5f5609d56805b4bf70d0570d7b4882b17ad3f9f67d0a6044aae334cbd02ffe1f'
+    '92c175ffd09bbf4de30ab858710f1032d10b3fa07fa473e99caec686a4b4b519'
 )
 
 # Install a plasmoid: $1 = id, $2 = file prefix, then the QML type files.
@@ -58,5 +60,5 @@ _install_plasmoid() {
 package() {
     cd "${srcdir}"
     _install_plasmoid org.glassfort.startmenu startmenu \
-        StartMenuButton.qml StartMenuPopup.qml StartMenuRow.qml StartMenuTile.qml
+        StartMenuButton.qml StartMenuPopup.qml StartMenuRow.qml StartMenuTile.qml StartMenuPinMenu.qml
 }

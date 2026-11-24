@@ -32,7 +32,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [ ] glassfort-shell (sub-task started 2026-11-24; D-36: own QML plasmoids from the start):
     - [x] record D-36
     - [x] package skeleton + start menu plasmoid org.glassfort.startmenu (search, pinned grid, all apps, recent files, power menu, Super) + scripts/plasmoid-screenshot
-    - [ ] start menu: pin/unpin context menu, drag to reorder
+    - [x] start menu: pin/unpin context menu (drag to reorder later)
     - [ ] dock plasmoid org.glassfort.dock (pinned + running, previews, jump lists, click focuses/minimises)
     - [ ] control center plasmoid org.glassfort.controlcenter (Wi-Fi, Bluetooth, volume, brightness, night light, dark mode, DND, screen recording)
     - [ ] panel layout (top bar + floating dock) in the global themes; Super opens the start menu
@@ -52,6 +52,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-24 | – | glassfort-shell: pin/unpin apps in the start menu, retry-safe seeding of pinned apps |
 | 2026-11-24 | – | glassfort-shell: flat plasmoid sources (fixes namcap "File referenced in $startdir") |
 | 2026-11-24 | – | glassfort-shell: start menu plasmoid; scripts/plasmoid-screenshot for headless widget screenshots |
 | 2026-11-24 | – | Record maintainer decision D-36 (own shell widgets from the start) |

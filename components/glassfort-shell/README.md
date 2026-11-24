@@ -38,11 +38,15 @@ apps, all apps), runner model (search), recent usage model (recent
 files) and system model (power). It is a private Plasma API, so check
 the start menu after every Plasma upgrade.
 
-Pinned apps are stored per user by KActivities, like Kickoff's. The
-`favorites` setting only seeds them on first use.
+Pinned apps are stored per user by KActivities, like Kickoff's. Right-click
+an app (in the grid, All apps or search results) to pin or unpin it. The
+`favorites` setting seeds the grid on first use; if KActivities is not
+ready yet on a user's very first login, the seeding is retried at the
+next start instead of being marked as done.
 
-Planned: pin and unpin from the context menu, drag to reorder, and the
-assistant prompt in the search field (Phase 3, `glassfort-assistant`).
+Planned: drag to reorder, app actions (jump lists) in the context menu,
+and the assistant prompt in the search field (Phase 3,
+`glassfort-assistant`).
 
 ## Checking
 

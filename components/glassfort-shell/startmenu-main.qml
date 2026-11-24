@@ -36,7 +36,22 @@ PlasmoidItem {
             if (!Plasmoid.configuration.favoritesPortedToKAstats) {
                 if (favoritesModel.count < 1) {
                     favoritesModel.portOldFavorites(Plasmoid.configuration.favorites);
+                    seedCheck.start();
+                } else {
+                    Plasmoid.configuration.favoritesPortedToKAstats = true;
                 }
+            }
+        }
+    }
+
+    // On a user's very first login the KActivities database may not exist
+    // yet and seeding fails silently. Only mark the defaults as seeded once
+    // they arrived, so the next start tries again otherwise.
+    Timer {
+        id: seedCheck
+        interval: 3000
+        onTriggered: {
+            if (root.rootModel.favoritesModel.count > 0) {
                 Plasmoid.configuration.favoritesPortedToKAstats = true;
             }
         }

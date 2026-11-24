@@ -51,6 +51,20 @@ PC3.ItemDelegate {
         }
     }
 
+    // Right-click: pin or unpin apps (only rows that are apps have a favoriteId).
+    TapHandler {
+        acceptedButtons: Qt.RightButton
+        enabled: (tile.model.favoriteId ?? "").length > 0
+        onTapped: eventPoint => {
+            pinMenu.favoriteId = tile.model.favoriteId;
+            pinMenu.open(eventPoint.position.x, eventPoint.position.y);
+        }
+    }
+    StartMenuPinMenu {
+        id: pinMenu
+        visualParent: tile
+    }
+
     onClicked: {
         if (sourceModel.trigger(index, "", null)) {
             launched();
