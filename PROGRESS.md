@@ -33,14 +33,18 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] record D-36
     - [x] package skeleton + start menu plasmoid org.glassfort.startmenu (search, pinned grid, all apps, recent files, power menu, Super) + scripts/plasmoid-screenshot
     - [x] start menu: pin/unpin context menu (drag to reorder later)
-    - [ ] dock plasmoid org.glassfort.dock (pinned + running, previews, jump lists, click focuses/minimises)
+    - [ ] dock plasmoid org.glassfort.dock (sub-task started 2026-11-24):
+      - [x] research org.kde.taskmanager TasksModel (jump list backend is applet-internal, not importable)
+      - [x] dock: pinned + running icons, running indicator, click focuses/minimises/cycles, middle-click new instance
+      - [x] context menu: new window, pin/unpin, close (jump lists later)
+      - [ ] hover window previews
     - [ ] control center plasmoid org.glassfort.controlcenter (Wi-Fi, Bluetooth, volume, brightness, night light, dark mode, DND, screen recording)
     - [ ] panel layout (top bar + floating dock) in the global themes; Super opens the start menu
     - [ ] shortcut overlay (hold Super) – may move to a later step
   - [ ] meta package glassfort-desktop
   - [ ] VM test: plain Arch → pacman -S glassfort-desktop → break update → roll back from boot menu
 - **Files expected to change:** components/glassfort-shell/*, docs/03-desktop-design.md, docs/DECISIONS.md, PROGRESS.md
-- **Next step if interrupted:** Dock plasmoid org.glassfort.dock (study plasma-desktop applets/taskmanager and org.kde.taskmanager QML API). images/*.jpg stay untracked (reference only).
+- **Next step if interrupted:** Dock hover previews (TaskManager.ScreencastingRequest + PipeWire thumbnail, see plasma-desktop applets/taskmanager/qml/PipeWireThumbnail.qml), then control center. images/*.jpg stay untracked (reference only).
 - **Blocked because:** –
 
 ## Unpushed commits
@@ -52,6 +56,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-24 | – | glassfort-shell: dock plasmoid (pinned + running apps, Windows-like clicks, context menu) |
 | 2026-11-24 | – | glassfort-shell: pin/unpin apps in the start menu, retry-safe seeding of pinned apps |
 | 2026-11-24 | – | glassfort-shell: flat plasmoid sources (fixes namcap "File referenced in $startdir") |
 | 2026-11-24 | – | glassfort-shell: start menu plasmoid; scripts/plasmoid-screenshot for headless widget screenshots |

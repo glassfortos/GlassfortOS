@@ -7,7 +7,7 @@ Glassfort's own Plasma widgets (D-36 in
 | Plasmoid | Status |
 |---|---|
 | `org.glassfort.startmenu` – start menu | first version |
-| `org.glassfort.dock` – taskbar/dock | planned |
+| `org.glassfort.dock` – taskbar/dock | first version |
 | `org.glassfort.controlcenter` – control center | planned |
 
 Installed to `/usr/share/plasma/plasmoids/`. The panel layout that places
@@ -17,7 +17,7 @@ makepkg takes local sources only as flat files, so the files sit flat in
 this folder: `<plasmoid>-metadata.json`, `<plasmoid>-main.xml` and
 `<plasmoid>-main.qml` become `metadata.json`, `contents/config/main.xml`
 and `contents/ui/main.qml`; the other QML files have unique type names
-(`StartMenuPopup.qml`, …) and go to `contents/ui/` unchanged.
+(`StartMenuPopup.qml`, `DockTask.qml`, …) and go to `contents/ui/` unchanged.
 
 ## Start menu
 
@@ -48,6 +48,30 @@ Planned: drag to reorder, app actions (jump lists) in the context menu,
 and the assistant prompt in the search field (Phase 3,
 `glassfort-assistant`).
 
+## Dock
+
+- One icon per app: pinned apps and running windows share the icon
+  (windows are grouped by app; `TasksModel` with `separateLaunchers`
+  off and `hideActivatedLaunchers` on).
+- Left click works like the Windows taskbar: starts a pinned app,
+  focuses its window, minimises it when it is already active, and with
+  several windows cycles through them.
+- Middle click or Shift+click opens a new window.
+- Right click: New Window, Pin to Dock / Unpin from Dock, Close
+  Window(s).
+- Running indicator under the icon: a dot per running app, wider for
+  several windows, an accent-coloured pill for the active app, the
+  negative colour when an app demands attention. Starting apps pulse.
+- Tooltip with the app name and window count.
+- Pinned apps live in the `launchers` setting (TasksModel launcher URLs,
+  `preferred://filemanager`, `applications:kitty.desktop`, …).
+
+Data comes from Plasma's public task model (`org.kde.taskmanager`).
+
+Planned: window previews on hover (PipeWire thumbnails), jump lists
+(the stock task manager's jump list backend is compiled into that applet
+and cannot be imported), drag to reorder, drop files on an icon.
+
 ## Checking
 
 ```sh
@@ -61,6 +85,9 @@ makepkg -d -f            # assembles pkg/glassfort-shell/usr/share/plasma/plasmo
 empty config and data dirs, so it neither shows windows nor touches your
 Plasma data. In such a fresh environment the pinned apps stay empty,
 because KActivities creates its database only after the first start.
+The dock shows its pinned apps there but no running windows: KWin's
+window management interface is only available to plasmashell. Running
+indicators and click behaviour need the VM test.
 
 qmllint reports three warnings in `startmenu-main.qml` about the Kicker models'
 dynamic types (`initForClient`, `portOldFavorites`,

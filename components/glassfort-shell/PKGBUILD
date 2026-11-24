@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Maintainer: Glassfort project <https://github.com/jankln/GlassfortOS>
 
-# glassfort-shell: Glassfort's own Plasma widgets (D-36): start menu, later
-# dock and control center. See README.md and docs/03-desktop-design.md.
+# glassfort-shell: Glassfort's own Plasma widgets (D-36): start menu, dock,
+# later the control center. See README.md and docs/03-desktop-design.md.
 #
 # makepkg takes local sources only as flat files, so the plasmoid files
 # carry a prefix (startmenu-*) or a unique type name (StartMenu*.qml) and
@@ -15,7 +15,8 @@ pkgdesc='Glassfort start menu, dock and control center for Plasma'
 arch=('any')
 url='https://github.com/jankln/GlassfortOS'
 license=('GPL-3.0-or-later')
-# plasma-workspace: Kicker models (org.kde.plasma.private.kicker);
+# plasma-workspace: Kicker models (org.kde.plasma.private.kicker) and the
+# task model (org.kde.taskmanager);
 # kirigami-addons: avatar; glassfort-branding: the "glassfort" start icon.
 depends=(
     'glassfort-branding'
@@ -33,6 +34,10 @@ source=(
     'StartMenuRow.qml'
     'StartMenuTile.qml'
     'StartMenuPinMenu.qml'
+    'dock-metadata.json'
+    'dock-main.xml'
+    'dock-main.qml'
+    'DockTask.qml'
 )
 sha256sums=(
     '20a08734f94f54d1a2cf941f85c3416b9580c5160114f26faf6ce5de886700da'
@@ -43,6 +48,10 @@ sha256sums=(
     '63195ac178a5eeaf67ea43c79b81c62726c5dea26b877764b347936adedf0eac'
     '5f5609d56805b4bf70d0570d7b4882b17ad3f9f67d0a6044aae334cbd02ffe1f'
     '92c175ffd09bbf4de30ab858710f1032d10b3fa07fa473e99caec686a4b4b519'
+    '24726705247f039ff66fa064eaa1c7847de881bea7b4951544ee7453bca39a60'
+    '013f9ac9aa067925cdff46e3221bbc7ee739f0dc1eee2edad94f14cc5a96b491'
+    '3febc033edcbf536a1b4d4d4ea4838d8b34a3e5812490a61cf5bd91c2a0bf176'
+    '169e841d2babfe2aa28446f15c5423c185513704009ff9ef05881a0441391330'
 )
 
 # Install a plasmoid: $1 = id, $2 = file prefix, then the QML type files.
@@ -61,4 +70,5 @@ package() {
     cd "${srcdir}"
     _install_plasmoid org.glassfort.startmenu startmenu \
         StartMenuButton.qml StartMenuPopup.qml StartMenuRow.qml StartMenuTile.qml StartMenuPinMenu.qml
+    _install_plasmoid org.glassfort.dock dock DockTask.qml
 }

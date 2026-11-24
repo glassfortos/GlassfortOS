@@ -1,0 +1,21 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "Glassfort project"
+            }
+        ],
+        "Category": "Windows and Tasks",
+        "Description": "Glassfort dock: pinned and running apps",
+        "Icon": "preferences-system-windows",
+        "Id": "org.glassfort.dock",
+        "License": "GPL-3.0-or-later",
+        "Name": "Dock",
+        "Website": "https://github.com/jankln/GlassfortOS"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-Provides": [
+        "org.kde.plasma.multitasking"
+    ]
+}
