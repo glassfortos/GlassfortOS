@@ -24,12 +24,15 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] GTK theme Glassfort (adw-gtk3 + palette, generated) and default settings.ini
     - [ ] placeholder wallpapers (own SVG, light + dark, no logo)
     - [ ] Global Theme (look-and-feel) tying colours, fonts, widget style, wallpaper
-  - [ ] glassfort-branding (blocked on logo, D-24)
+  - [ ] glassfort-branding (sub-task started 2026-11-24; maintainer decided: logo = their draft in images/, optimised + redrawn as vector):
+    - [x] docs: D-24 Decided, docs/03 logo section
+    - [ ] logo SVGs: symbol (light/dark bg), app icon, flat monochrome (dark/white), lockups (wordmark as Inter Semibold outlines)
+    - [ ] package glassfort-branding (hicolor icons, /usr/share/glassfort/branding)
   - [ ] glassfort-shell (Start menu, taskbar/dock, control center)
   - [ ] meta package glassfort-desktop
   - [ ] VM test: plain Arch → pacman -S glassfort-desktop → break update → roll back from boot menu
 - **Files expected to change:** components/glassfort-theme/*, PROGRESS.md
-- **Next step if interrupted:** Draw the D-35 placeholder wallpapers (own SVG, light + dark, no logo) in components/glassfort-theme. AI drafts in images/ (untracked) are style reference only, do not commit them without asking.
+- **Next step if interrupted:** Draw the logo SVGs in components/glassfort-branding (symbol, app icon, monochrome, lockups). images/*.jpg stay untracked (reference only).
 - **Blocked because:** –
 
 ## Unpushed commits
@@ -41,6 +44,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-24 | – | Record maintainer decision D-24 (logo = maintainer's draft, optimised vector redraw) |
 | 2026-11-24 | – | glassfort-theme: GTK theme Glassfort (adw-gtk3 with the palette) and default GTK settings |
 | 2026-11-24 | – | glassfort-theme: move the theme generator to the package root |
 | 2026-11-24 | – | glassfort-theme: Kvantum themes (light + dark) generated from the colour schemes |

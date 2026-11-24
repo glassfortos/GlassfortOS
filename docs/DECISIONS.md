@@ -33,7 +33,7 @@ Claude Code adds new decisions as **Proposed**. Only the maintainer sets **Decid
 | D-21 | Licences | Code GPL-3.0-or-later; docs/artwork CC BY-SA 4.0; name and logo excluded, governed by `TRADEMARKS.md` | Decided | 2026-11-22 |
 | D-22 | Colour palette | Glacier Teal `#3DD6C6`, Fort Indigo `#4C4FE0`, Midnight `#0E1222`, Frost `#F5F7FA`, Steel `#8B93A7` | Decided | 2026-11-22 |
 | D-23 | Fonts | Inter (UI, `inter-font`), JetBrains Mono (monospace, `ttf-jetbrains-mono`); both from the official Arch repositories | Decided | 2026-11-22 |
-| D-24 | Logo | Glass fortress tower with three crenellations; simplification and vector redraw pending | Open | 2026-11-22 |
+| D-24 | Logo | The maintainer's draft (glass fortress tower, three crenellations, teal → indigo) is the logo. It is redrawn as our own vector artwork and optimised for small sizes: fewer overlapping panes in the full-colour symbol, a flat variant for 16–32 px | Decided | 2026-11-24 |
 | D-25 | Versioning | Dated ISO releases `YYYY.MM` | Proposed | 2026-11-22 |
 | D-26 | Signing key | Offline on hardware token; CI builds unsigned, maintainer signs. Until the real key exists, VM tests use a throwaway key that never leaves the VM | Decided | 2026-11-22 |
 | D-27 | Telemetry | None, or strictly opt-in | Proposed | 2026-11-22 |

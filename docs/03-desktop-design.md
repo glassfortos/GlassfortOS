@@ -86,7 +86,7 @@ Teal/indigo is deliberate: it stays clearly distinct from Arch blue and KDE blue
 ### Logo
 
 - Symbol: an abstract fortress tower with **three rounded crenellations**, built from overlapping translucent frosted-glass panes, gradient teal → indigo.
-- Current state: AI-generated drafts exist (symbol, app icon, wallpaper). **Open:** decide whether to simplify the symbol (fewer overlapping panes) for legibility at 16 px, then redraw it as clean vector (Inkscape) – the final logo must be our own vector artwork.
+- Decided (D-24): the maintainer's draft is the logo. It is redrawn as our own vector artwork (`components/glassfort-branding`) with fewer overlapping panes: crown, tower body and one front glass pane. 16–32 px use the flat monochrome variant. The raster drafts are reference only and are not shipped.
 - Required variants: full-colour symbol (light and dark backgrounds), app icon (squircle, symbol ≈ 60 % of the area), flat monochrome (dark and white) for 16–32 px, horizontal and stacked lockup with the wordmark set in Inter Semibold.
 - Must never resemble Arch's logo, Apple's or Microsoft's marks, or KDE's logo.
 
