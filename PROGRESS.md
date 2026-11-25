@@ -52,7 +52,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] pacman -S glassfort-desktop + glassfort-setup, boot into Plasma – run 6: all first-boot checks ok incl. AppArmor
     - [x] break an update, roll back from the Limine snapshot menu – run 8 PASSED (15/15 checks)
 - **Files expected to change:** tests/vm/*, docs/07-testing.md, PROGRESS.md
-- **Next step if interrupted:** Last follow-up: dock jump lists (Kicker AppsModel actionList for the app's desktop entry). images/*.jpg stay untracked (reference only).
+- **Next step if interrupted:** Phase 1 follow-ups done; only glassfort-keyring waits for the real key (D-26). Ask the maintainer about Phase 2 (own ISO, Time Machine, update app, Secure Boot). images/*.jpg stay untracked (reference only).
 - **Blocked because:** –
 
 ### Follow-ups (sub-task started 2026-11-25, maintainer: open items first)
@@ -61,7 +61,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [x] SDDM login theme (glassfort-branding: theme 'glassfort' reusing Breeze's QML, dark wallpaper, lockup as logo)
   - [x] lock screen wallpaper (glassfort-theme: /etc/xdg/kscreenlockerrc)
   - [x] Plymouth (D-41) + Glassfort KSplash; VM test 18/18 with realistic cmdline, boot fully branded
-  - [ ] dock jump lists
+  - [x] dock jump lists (Kicker app model, looked up per app on menu open)
 
 ## Unpushed commits
 
@@ -72,6 +72,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-25 | – | Dock jump lists; all Phase 1 follow-ups done |
 | 2026-11-25 | – | Glassfort start splash (KSplash); VM test without serial console |
 | 2026-11-25 | – | Plymouth boot splash (D-41); VM test 18/18 |
 | 2026-11-25 | – | Record D-41 (Plymouth); docs/04: SDDM instead of Plasma Login Manager |

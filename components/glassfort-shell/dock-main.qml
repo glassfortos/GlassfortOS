@@ -8,9 +8,11 @@
 
 import QtQuick
 import QtQuick.Layouts
+import QtQml.Models
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
+import org.kde.plasma.private.kicker as Kicker
 import org.kde.taskmanager as TaskManager
 
 PlasmoidItem {
@@ -58,6 +60,77 @@ PlasmoidItem {
 
         launcherList: Plasmoid.configuration.launchers
         onLauncherListChanged: Plasmoid.configuration.launchers = launcherList
+    }
+
+    // Jump lists: the app actions of each .desktop file ("New Private
+    // Window", ...). Plasma's task manager keeps its jump list backend inside
+    // that applet, so take them from Kicker's app model, like the start menu.
+    readonly property Kicker.RootModel kickerRoot: Kicker.RootModel {
+        autoPopulate: false
+        appletInterface: root
+        flat: true
+        sorted: true
+        showSeparators: false
+        showAllApps: true
+        showAllAppsCategorized: false
+        showRecentApps: false
+        showRecentDocs: false
+        showPowerSession: false
+        showFavoritesPlaceholder: false
+        Component.onCompleted: refresh()
+    }
+    property var kickerApps: null
+    // favoriteId (e.g. "firefox.desktop") -> { row, actions }, filled on demand.
+    property var jumpLists: ({})
+    Connections {
+        target: root.kickerRoot
+        function onRefreshed() {
+            root.jumpLists = {};
+            root.kickerApps = root.kickerRoot.count > 0 ? root.kickerRoot.modelForRow(0) : null;
+        }
+    }
+    // Row access without creating delegates. Asking every app for its
+    // actionList up front is slow (Kicker adds AppStream entries), so only
+    // the app whose menu opens is asked.
+    DelegateModel {
+        id: kickerItems
+        model: root.kickerApps
+        delegate: Item {}
+    }
+
+    // The jump list of a dock entry, from its launcher URL or app id.
+    function jumpListFor(launcherUrl, appId) {
+        const url = String(launcherUrl ?? "");
+        const candidates = [];
+        if (url.startsWith("applications:")) {
+            candidates.push(url.slice("applications:".length));
+        }
+        if (appId) {
+            candidates.push(appId + ".desktop", appId);
+        }
+        for (const id of candidates) {
+            if (id in root.jumpLists) {
+                return root.jumpLists[id];
+            }
+        }
+        for (let row = 0; row < kickerItems.items.count; ++row) {
+            const m = kickerItems.items.get(row).model;
+            if (!candidates.includes(m.favoriteId)) {
+                continue;
+            }
+            const actions = (m.actionList ?? []).filter(a => a.actionId === "_kicker_jumpListAction");
+            const entry = actions.length > 0 ? {
+                row: row,
+                actions: actions
+            } : null;
+            root.jumpLists[m.favoriteId] = entry;
+            return entry;
+        }
+        return null;
+    }
+
+    function runJumpAction(entry, action) {
+        root.kickerApps.trigger(entry.row, "_kicker_jumpListAction", action.actionArgument);
     }
 
     fullRepresentation: ListView {

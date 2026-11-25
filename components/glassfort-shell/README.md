@@ -73,8 +73,9 @@ and the assistant prompt in the search field (Phase 3,
   focuses its window, minimises it when it is already active, and with
   several windows cycles through them.
 - Middle click or Shift+click opens a new window.
-- Right click: New Window, Pin to Dock / Unpin from Dock, Close
-  Window(s).
+- Right click: the app's jump list (actions from its .desktop file, e.g.
+  Firefox's "New Private Window"), New Window, Pin to Dock / Unpin from
+  Dock, Close Window(s).
 - Running indicator under the icon: a dot per running app, wider for
   several windows, an accent-coloured pill for the active app, the
   negative colour when an app demands attention. Starting apps pulse.
@@ -89,9 +90,12 @@ and the assistant prompt in the search field (Phase 3,
 
 Data comes from Plasma's public task model (`org.kde.taskmanager`).
 
-Planned: jump lists
-(the stock task manager's jump list backend is compiled into that applet
-and cannot be imported), drag to reorder, drop files on an icon.
+Jump lists come from Kicker's app model (the stock task manager's jump
+list backend is compiled into that applet and cannot be imported). Only
+the app whose menu opens is looked up: asking all apps for their action
+lists up front blocks the dock for seconds.
+
+Planned: drag to reorder, drop files on an icon.
 
 ## Control center
 

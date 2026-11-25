@@ -5,7 +5,7 @@
     - left click: start a pinned app; focus its window; minimise it when
       it is already active; with several windows, cycle through them
     - middle click or Shift+click: new window
-    - right click: context menu (new window, pin/unpin, close)
+    - right click: context menu (jump list, new window, pin/unpin, close)
 */
 
 import QtQuick
@@ -72,7 +72,7 @@ MouseArea {
         if (mouse.button === Qt.MiddleButton || (mouse.button === Qt.LeftButton && (mouse.modifiers & Qt.ShiftModifier))) {
             tasksModel.requestNewInstance(modelIndex());
         } else if (mouse.button === Qt.RightButton) {
-            menu.open(mouse.x, mouse.y);
+            openMenu(mouse.x, mouse.y);
         } else {
             activate();
         }
@@ -82,7 +82,7 @@ MouseArea {
             activate();
             event.accepted = true;
         } else if (event.key === Qt.Key_Menu) {
-            menu.open(width / 2, height / 2);
+            openMenu(width / 2, height / 2);
             event.accepted = true;
         }
     }
@@ -171,6 +171,44 @@ MouseArea {
         }
     }
 
+    // Jump list entries are created when the menu opens, above "New Window".
+    property var jumpItems: []
+    Component {
+        id: jumpItemComponent
+        PlasmaExtras.MenuItem {
+            property var entry
+            property var jumpAction
+            onClicked: root.runJumpAction(entry, jumpAction)
+        }
+    }
+    function openMenu(x, y) {
+        for (const item of jumpItems) {
+            menu.removeMenuItem(item);
+            item.destroy();
+        }
+        const items = [];
+        const entry = root.jumpListFor(task.model.LauncherUrlWithoutIcon, task.model.AppId);
+        if (entry) {
+            for (const action of entry.actions) {
+                const item = jumpItemComponent.createObject(menu, {
+                    text: action.text,
+                    icon: action.icon,
+                    entry: entry,
+                    jumpAction: action
+                });
+                menu.addMenuItem(item, newWindowItem);
+                items.push(item);
+            }
+            const separator = jumpItemComponent.createObject(menu, {
+                separator: true
+            });
+            menu.addMenuItem(separator, newWindowItem);
+            items.push(separator);
+        }
+        jumpItems = items;
+        menu.open(x, y);
+    }
+
     PlasmaExtras.Menu {
         id: menu
 
@@ -181,6 +219,7 @@ MouseArea {
         placement: task.vertical ? PlasmaExtras.Menu.RightPosedTopAlignedPopup : PlasmaExtras.Menu.TopPosedLeftAlignedPopup
 
         PlasmaExtras.MenuItem {
+            id: newWindowItem
             text: i18n("New Window")
             icon: "window-new"
             visible: task.model.CanLaunchNewInstance === true
