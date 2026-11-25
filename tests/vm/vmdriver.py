@@ -135,7 +135,7 @@ def main() -> int:
                     break
                 time.sleep(0.25)
             steps = [
-                ("up", "stop the countdown, select the Arch Linux directory"),
+                ("up", "stop the countdown, select the Glassfort directory"),
                 ("up", "wrap around to Snapshots"),
                 ("right", "open Snapshots"),
                 ("down", "newest snapshot (post, broken)"),
