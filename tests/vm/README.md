@@ -71,3 +71,19 @@ desktop, the installer starting by itself. Results go to
 
 First run: 2026-11-25 – the live session reaches the Glassfort desktop and
 the installer opens on its first screen after about 40 seconds.
+
+## Installing from the ISO (manual, with `vmctl.py`)
+
+[`vmctl.py`](vmctl.py) drives a running VM: screenshots, keys and text
+(QEMU monitor), mouse clicks (QMP, absolute coordinates for the USB tablet;
+start QEMU with `vmport=off`, otherwise the VMware mouse emulation takes the
+pointer events) and commands in the live system (QEMU guest agent, which is
+on the ISO).
+
+First installation: 2026-11-25. Language and layout screen, Wi-Fi skipped
+when wired, disk and account screens driven in the UI; the installation
+itself through the backend with the plan the UI sends (mouse clicks in the
+VM are not reliable enough yet for the remaining screens). The installed
+system boots through the Plymouth LUKS prompt to a German SDDM and the
+Glassfort desktop. Not automated yet: a full unattended run like
+`tests/vm/phase1`.
