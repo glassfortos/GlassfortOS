@@ -12,7 +12,7 @@
 | Filesystem | Btrfs with subvolumes | See `02-system.md` |
 | Bootloader | Limine + limine-snapper-sync | GRUB + grub-btrfs only as plan B |
 | Kernels | `linux` (default) + `linux-lts` (fallback) | Both always installed |
-| Installer | QML/Kirigami frontend + archinstall backend | Calamares as interim solution |
+| Installer | QML/Kirigami frontend + archinstall backend | – (no interim installer, D-12) |
 | ISO | archiso | Built in CI |
 
 ## Repository layout

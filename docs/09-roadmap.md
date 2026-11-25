@@ -21,7 +21,8 @@ Order of priority: first what everything is judged by (look and usability), then
 
 ## Phase 2 – Own ISO, Time Machine, update app
 
-- archiso profile, ISO built in CI (interim installer: Calamares)
+- archiso profile, ISO built in CI
+- `glassfort-installer` (QML/Kirigami + archinstall), moved forward from Phase 4 (D-12: no interim Calamares)
 - `glassfort-timemachine`
 - `glassfort-update`
 - Secure Boot with Limine validated on 3–4 firmware vendors
@@ -35,11 +36,11 @@ Order of priority: first what everything is judged by (look and usability), then
 - Tools: search/install packages, system update with snapshot, 10 settings
 - **Done when:** "Install Steam" works end-to-end with confirmation, snapshot and undo; prompt-injection suite passes.
 
-## Phase 4 – Own installer and first boot
+## Phase 4 – First boot
 
-- `glassfort-installer` (QML/Kirigami + archinstall)
 - `glassfort-firstboot`
-- **Done when:** the five-screen install flow replaces Calamares.
+- Installer polish: dual boot alongside an existing system, more languages
+- **Done when:** a new user is guided from the first login to a set-up system (look, assistant, app packs) without a terminal.
 
 ## Phase 5 – Windows Apps
 

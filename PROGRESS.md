@@ -6,8 +6,8 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 ## Current task
 
 - **Status:** in progress  <!-- idle | in progress | blocked -->
-- **Task:** Phase 1 follow-ups (open items) before Phase 2
-- **Roadmap item:** Phase 1
+- **Task:** Phase 2 – own ISO, installer, Time Machine, update app
+- **Roadmap item:** Phase 2
 - **Started:** 2026-11-22T22:25:00+01:00 (sub-task started 2026-11-23T22:36:57+01:00)
 - **Plan:**
   - [x] Decisions from maintainer: dependencies of glassfort-settings, repo hosting + signing key, palette/fonts
@@ -52,7 +52,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] pacman -S glassfort-desktop + glassfort-setup, boot into Plasma – run 6: all first-boot checks ok incl. AppArmor
     - [x] break an update, roll back from the Limine snapshot menu – run 8 PASSED (15/15 checks)
 - **Files expected to change:** tests/vm/*, docs/07-testing.md, PROGRESS.md
-- **Next step if interrupted:** Phase 1 and follow-ups done; repo in org glassfortos (private). Open before going public: domains (D-30), trademark register check (docs/08). Then Phase 2. images/*.jpg stay untracked (reference only).
+- **Next step if interrupted:** Create iso/ archiso profile from /usr/share/archiso/configs/releng (check archiso availability; mkarchiso needs root -> build in CI container or inside a VM). images/*.jpg stay untracked (reference only).
 - **Blocked because:** –
 
 ### Follow-ups (sub-task started 2026-11-25, maintainer: open items first)
@@ -70,6 +70,16 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 ### Move to the glassfortos organisation (2026-11-25)
   - [x] maintainer created org glassfortos and transferred the repo; git remote updated
   - [x] replace the project URL in PKGBUILDs, metadata, docs (checksums)
+
+### Phase 2 (started 2026-11-25)
+  - [x] D-12: no interim Calamares; own installer moves into Phase 2 (docs/04, docs/09, docs/01)
+  - [ ] iso/: archiso profile (releng-based): live session with the Glassfort desktop, local [glassfort] repo baked in, installer autostart
+  - [ ] ISO build: script + CI job (privileged archlinux container), boot test in QEMU
+  - [ ] glassfort-installer: QML/Kirigami UI (5 screens, docs/04) + archinstall backend (Btrfs layout, LUKS, Limine, glassfort-desktop)
+  - [ ] VM test: install from the ISO without a terminal
+  - [ ] glassfort-timemachine (snapshot timeline, restore)
+  - [ ] glassfort-update (update flow, docs/02)
+  - [ ] Secure Boot with Limine (needs maintainer hardware on 3–4 vendors)
 
 ## Unpushed commits
 

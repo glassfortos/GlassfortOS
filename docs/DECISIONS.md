@@ -21,7 +21,7 @@ Claude Code adds new decisions as **Proposed**. Only the maintainer sets **Decid
 | D-09 | Encryption | LUKS2 by default, optional TPM2 unlock | Decided | 2026-11-19 |
 | D-10 | Firewall | firewalld with Windows-like network profiles | Decided | 2026-11-19 |
 | D-11 | Default apps | Firefox, LibreOffice (Tabbed UI), Thunderbird | Decided | 2026-11-19 |
-| D-12 | Installer | QML/Kirigami frontend + archinstall backend; Calamares as interim | Decided | 2026-11-19 |
+| D-12 | Installer | QML/Kirigami frontend + archinstall backend. No interim installer: Calamares is AUR-only, so the own installer moves forward into Phase 2 (maintainer, 2026-11-25) | Decided | 2026-11-25 |
 | D-13 | Assistant | Chat operates the system via typed tools; "AI plans, system executes"; off by default | Decided | 2026-11-19 |
 | D-14 | Assistant languages | Helper in Rust, assistant service in Python | Decided | 2026-11-19 |
 | D-15 | Settings registry | TOML with schema in `/usr/share/glassfort/settings.d/`, package-owned only; backends kconfig/dbus/exec, never a shell | Decided | 2026-11-19 |
