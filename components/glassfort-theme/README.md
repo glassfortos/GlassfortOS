@@ -100,17 +100,17 @@ Frost (light). Desktop version without logo (D-35); variants with the
 logo for login and lock screen follow with `glassfort-branding`.
 
 `generate` draws the shapes from a fixed list and seed, so the output is
-reproducible. Only gradients are used: blur filters looked better in
-places but leave light seams at the image edges. The PKGBUILD renders
+reproducible. The shapes use gradients only: blur filters looked better in
+places but leave light seams at the image edges. On top, a dither filter
+adds zero-mean grain (picture + k·(noise − 0.5), `feComposite
+arithmetic`), so the smooth dark gradients no longer band in 8-bit PNGs
+while the average colours stay the palette's. The PKGBUILD renders
 3840×2160 and 1920×1080 PNGs with `rsvg-convert` (makedepends
 `librsvg`), so no rendered images are committed. The Plasma wallpaper
 package has `contents/images` (light) and `contents/images_dark`
 (dark); Plasma switches between them with the colour scheme.
 
 Licence: CC BY-SA 4.0 (artwork, D-21).
-
-Known limitation: the dark radial gradients show slight banding when
-you look closely at 4K. Dithering at build time would fix it.
 
 ## Global theme
 

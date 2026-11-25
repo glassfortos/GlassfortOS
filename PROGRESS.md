@@ -52,12 +52,12 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] pacman -S glassfort-desktop + glassfort-setup, boot into Plasma – run 6: all first-boot checks ok incl. AppArmor
     - [x] break an update, roll back from the Limine snapshot menu – run 8 PASSED (15/15 checks)
 - **Files expected to change:** tests/vm/*, docs/07-testing.md, PROGRESS.md
-- **Next step if interrupted:** Wallpaper dithering: add a little noise to the dark wallpaper gradients (generate) or dither at render time. images/*.jpg stay untracked (reference only).
+- **Next step if interrupted:** glassfort-branding: SDDM login theme (Plasma's breeze SDDM theme as base? check licence), lock screen via the global themes, Plymouth theme with the logo. images/*.jpg stay untracked (reference only).
 - **Blocked because:** –
 
 ### Follow-ups (sub-task started 2026-11-25, maintainer: open items first)
   - [x] qmllint in CI (scripts/check-qml, CI job qml in an Arch container, allowlist)
-  - [ ] wallpaper dithering against banding
+  - [x] wallpaper dithering against banding (zero-mean grain filter)
   - [ ] SDDM login theme, lock screen, Plymouth (glassfort-branding)
   - [ ] dock jump lists
 
@@ -70,6 +70,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-25 | – | Wallpaper: zero-mean dithering against banding |
 | 2026-11-25 | – | CI: qmllint with allowlist (scripts/check-qml) |
 | 2026-11-25 | – | Phase 1 VM test passed (tests/vm/phase1); glassfort-setup boot fixes; Thunderbird launcher id |
 | 2026-11-24 | – | Fix CI: do not inject meta packages into later chroots |

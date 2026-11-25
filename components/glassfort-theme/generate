@@ -1343,7 +1343,12 @@ def blob(
 
 
 def build_wallpaper(dark: bool) -> str:
-    """Desktop wallpaper without logo. Gradients only, no filters."""
+    """Desktop wallpaper without logo.
+
+    Gradients only, plus one full-size grain layer (feTurbulence) on top:
+    it dithers the smooth dark gradients, which otherwise show bands in
+    8-bit PNGs at 4K. No blur filters: they leave seams at the edges.
+    """
     rng = random.Random(WALLPAPER_SEED)
     w, h = 1920, 1080
     centre, edge = ("#161D38", "#0A0E1B") if dark else ("#F8FAFD", "#E2E8F2")
@@ -1403,6 +1408,18 @@ def build_wallpaper(dark: bool) -> str:
                 f'<path d="{d}" fill="url(#sheen)"/>'
                 f'<path d="{d}" fill="none" stroke="url(#rim)" stroke-width="{(1.2, 1.6, 2.2)[depth]}"/>'
             )
+    # Dither: add zero-mean grain to the whole picture,
+    # result = picture + k * (noise - 0.5), so colours stay the palette's on
+    # average but gradients no longer band.
+    k = 0.035
+    defs.append(
+        '<filter id="dither" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">'
+        '<feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" stitchTiles="stitch" result="n"/>'
+        '<feColorMatrix in="n" type="matrix" values="1 0 0 0 0  1 0 0 0 0  1 0 0 0 0  0 0 0 0 1" result="g"/>'
+        f'<feComposite in="SourceGraphic" in2="g" operator="arithmetic" k1="0" k2="1" k3="{k}" k4="{-k / 2}"/>'
+        "</filter>"
+    )
+    body = ['<g filter="url(#dither)">', *body, "</g>"]
     return (
         '<?xml version="1.0" encoding="UTF-8"?>\n'
         "<!-- SPDX-License-Identifier: CC-BY-SA-4.0 -->\n"
