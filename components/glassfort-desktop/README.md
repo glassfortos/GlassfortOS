@@ -10,6 +10,7 @@ else comes through dependencies. Decisions: D-37 to D-40 in
 | Glassfort | glassfort-settings, glassfort-theme, glassfort-branding, glassfort-shell, glassfort-mirrorlist |
 | Plasma (curated, D-37) | plasma-desktop, plasma-workspace, kwin, systemsettings, kscreen, powerdevil + power-profiles-daemon, plasma-nm, plasma-pa, plasma-firewall, plasma-systemmonitor, kinfocenter, discover + flatpak, kde-gtk-config, breeze, xdg-desktop-portal-kde, kactivitymanagerd, kde-cli-tools, polkit-kde-agent, kwallet-pam, kio-extras, xdg-user-dirs |
 | Login (D-38) | sddm, sddm-kcm |
+| Boot splash (D-41) | plymouth |
 | Sound, network, Bluetooth | pipewire-pulse, wireplumber, networkmanager, bluez, bluez-utils, bluedevil |
 | Default apps (docs/03, D-39, D-40) | firefox, libreoffice-fresh, thunderbird, dolphin, okular, gwenview, kate, spectacle, haruna, keepassxc, kitty, ark |
 | Fonts | noto-fonts, noto-fonts-emoji (Inter and JetBrains Mono come with glassfort-theme) |

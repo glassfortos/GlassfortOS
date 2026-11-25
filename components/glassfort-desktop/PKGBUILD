@@ -46,6 +46,8 @@ depends=(
     'systemsettings'
     'xdg-desktop-portal-kde'
     'xdg-user-dirs'
+    # Boot splash (D-41)
+    'plymouth'
     # Login (D-38)
     'sddm'
     'sddm-kcm'
