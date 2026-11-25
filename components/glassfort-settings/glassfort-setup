@@ -83,7 +83,8 @@ root_is_btrfs=0
 find_limine_conf() {
     local dir
     for dir in /boot /efi /boot/efi; do
-        for conf in "$dir/limine.conf" "$dir/EFI/limine/limine.conf" "$dir/limine/limine.conf"; do
+        for conf in "$dir/limine.conf" "$dir/EFI/limine/limine.conf" "$dir/limine/limine.conf" \
+            "$dir/EFI/BOOT/limine.conf"; do
             if [[ -f $conf ]]; then
                 echo "$conf"
                 return 0
@@ -113,13 +114,18 @@ setup_snapper() {
     # create /.snapshots itself. Standard procedure: unmount, let snapper
     # create its config, replace snapper's nested subvolume with the
     # mount point again.
+    # The mount is restored from what was mounted, not from fstab: in the
+    # installer's chroot there is no fstab yet.
     if mountpoint -q /.snapshots; then
+        local src opts
+        src=$(findmnt -no SOURCE /.snapshots | sed 's/\[.*//')
+        opts=$(findmnt -no OPTIONS /.snapshots)
         apply umount /.snapshots
         apply rmdir /.snapshots
         apply snapper --no-dbus -c root create-config -t "$SNAPPER_TEMPLATE" /
         apply btrfs subvolume delete /.snapshots
         apply mkdir /.snapshots
-        apply mount /.snapshots
+        apply mount -o "$opts" "$src" /.snapshots
     else
         apply snapper --no-dbus -c root create-config -t "$SNAPPER_TEMPLATE" /
     fi
@@ -402,7 +408,9 @@ setup_boot_entries() {
         warn "No limine.conf found on the ESP – Limine is not the bootloader. Install Arch with Limine (for example archinstall) to get snapshot boot entries."
         return
     fi
-    if ((changed == 0)); then
+    # limine-entry-tool's managed entries are directories ("/+..."); without
+    # them (e.g. an earlier run had no limine.conf yet) generate them now.
+    if ((changed == 0)) && grep -qE '^ */\+' "$limine_conf"; then
         step "nothing changed, boot entries are current ($limine_conf)"
     else
         apply limine-update
