@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Glassfort
+Description=Glassfort boot splash: logo on Midnight, progress dots, passphrase prompt
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/glassfort
+ScriptFile=/usr/share/plymouth/themes/glassfort/glassfort.script

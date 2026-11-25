@@ -70,3 +70,14 @@ behind the user picture and the password field.
 SDDM reads these files with QSettings, so they carry no comments.
 
 Checked with `sddm-greeter-qt6 --test-mode` in an invisible KWin.
+
+## Boot splash (Plymouth)
+
+The Plymouth theme `glassfort` (D-41) uses the script plugin
+(`plymouth-glassfort.script`): the Glassfort symbol on Midnight, three
+pulsing dots below it, a passphrase prompt (for LUKS) with a teal-edged
+field, and the latest boot message at the bottom. The logo and the small
+images are rendered to PNG at build time (`rsvg-convert`).
+`glassfort-setup` (glassfort-settings) selects the theme, adds the
+`plymouth` initramfs hook and `quiet splash` to the kernel command line
+when plymouth and this theme are installed.
