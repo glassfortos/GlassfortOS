@@ -6,11 +6,13 @@
 #
 # Ignored everywhere: "Unqualified access" – plasmoid files reach the
 # PlasmoidItem's id (root) from Plasma's context, which qmllint cannot see.
-# The allowlist holds the remaining known warnings, without line numbers,
-# as "file: message [category]". They come from Plasma modules whose types
-# are dynamic (Kicker models) or registered at runtime (plasma-pa).
+# The allowlist holds extended regular expressions, one per known cause
+# (Plasma types that qmllint cannot know: configuration keys from main.xml,
+# Kicker's dynamic models, plasma-pa's runtime types). Warnings are matched
+# without line numbers as "file: message [category]"; the wording differs
+# between Qt/Plasma versions, so exact lines would be brittle.
 #
-# Usage: scripts/check-qml [--update]   (--update rewrites the allowlist)
+# Usage: scripts/check-qml
 #
 # Needs: qt6-declarative (qmllint) and the Plasma QML modules the files
 # import (plasma-workspace, libplasma, kirigami, kirigami-addons, plasma-nm,
@@ -35,27 +37,16 @@ while read -r dir; do
     (cd "$dir" && "$qmllint" -I /usr/lib/qt6/qml ./*.qml 2>&1 || true) |
         grep -E '^(Warning|Error): ' |
         grep -v 'Unqualified access' |
-        sed -E "s|^(Warning\|Error): (\./)?([^:]+):[0-9]+:[0-9]+: |\1: $dir/\3: |" >>"$found" || true
+        sed -E -e "s|^(Warning\|Error): (\./)?([^:]+\.qml):[0-9]+:[0-9]+: |\1: $dir/\3: |" \
+            -e "s|^(Warning\|Error): [0-9]+:[0-9]+: |\1: $dir: |" >>"$found" || true
 done < <(printf '%s\n' "${files[@]}" | xargs -n1 dirname | sort -u)
 sort -u -o "$found" "$found"
 
-if [[ ${1:-} == --update ]]; then
-    {
-        echo "# Known qmllint warnings (scripts/check-qml). Keep this list short:"
-        echo "# only warnings caused by Plasma's dynamic or runtime-registered types."
-        cat "$found"
-    } >"$allowed"
-    echo "Wrote $(wc -l <"$found") entries to ${allowed#"$root"/}"
-    exit 0
-fi
-
-new=$(grep -vxF -f <(grep -v '^#' "$allowed") "$found" || true)
-stale=$(grep -v '^#' "$allowed" | grep -vxF -f "$found" || true)
-echo "qmllint: ${#files[@]} files, $(wc -l <"$found") known warnings"
-if [[ -n $stale ]]; then
-    echo "Allowlist entries no longer reported (remove them):"
-    while IFS= read -r line; do echo "  $line"; done <<<"$stale"
-fi
+patterns=$(mktemp)
+trap 'rm -f "$found" "$patterns"' EXIT
+grep -vE '^(#|$)' "$allowed" >"$patterns"
+new=$(grep -vE -f "$patterns" "$found" || true)
+echo "qmllint: ${#files[@]} files, $(wc -l <"$found") warnings, all from known causes unless listed below"
 if [[ -n $new ]]; then
     echo "New qmllint warnings:" >&2
     while IFS= read -r line; do echo "  $line" >&2; done <<<"$new"

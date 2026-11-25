@@ -7,7 +7,7 @@ Test where distros typically break (NVIDIA, scaling, Secure Boot), automatically
 | Level | What |
 |---|---|
 | Unit tests | Rust helper (`cargo test`), Python assistant (`pytest`), registry schema validation |
-| Lint | shellcheck, namcap, clippy, ruff, qmllint (`scripts/check-qml` in an Arch container with the Plasma QML modules; known warnings from Plasma's dynamic types are allowlisted in `scripts/qmllint-allowed.txt`) |
+| Lint | shellcheck, namcap, clippy, ruff, qmllint (`scripts/check-qml` in an Arch container with the Plasma QML modules; known causes from Plasma types qmllint cannot know are allowlisted as patterns in `scripts/qmllint-allowed.txt`) |
 | Package builds | Every changed package in a clean chroot |
 | Install tests | ISO installed in QEMU/KVM with OVMF (UEFI) + swtpm (TPM 2.0); later with openQA |
 | Rollback tests | In a VM: break the system on purpose (e.g. remove a critical package), boot a snapshot, restore, verify. Phase 1 version: `tests/vm/phase1` (plain Arch → `pacman -S glassfort-desktop` → broken update → snapshot from the Limine menu → restore), run locally for now |

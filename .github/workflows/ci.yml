@@ -49,7 +49,7 @@ jobs:
         run: |
           pacman -Syu --noconfirm --needed git qt6-declarative plasma-workspace \
             libplasma kirigami kirigami-addons plasma-nm plasma-pa powerdevil \
-            bluez-qt kpipewire kcoreaddons
+            bluez-qt kpipewire kcoreaddons plasma5support
 
       - uses: actions/checkout@v4
 

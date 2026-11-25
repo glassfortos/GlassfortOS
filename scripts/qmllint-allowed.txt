@@ -1,8 +1,13 @@
-# Known qmllint warnings (scripts/check-qml). Keep this list short:
-# only warnings caused by Plasma's dynamic or runtime-registered types.
-Warning: components/glassfort-shell/controlcenter-main.qml: Member "PreferredDevice" not found on type "undefined" [missing-property]
-Warning: components/glassfort-shell/controlcenter-main.qml: Member "PulseAudio" not found on type "undefined" [missing-property]
-Warning: components/glassfort-shell/controlcenter-main.qml: Type not found in namespace [unresolved-type]
-Warning: components/glassfort-shell/startmenu-main.qml: Cannot assign binding of type QObject to AbstractModel [incompatible-type]
-Warning: components/glassfort-shell/startmenu-main.qml: Member "initForClient" not found on type "AbstractModel" [missing-property]
-Warning: components/glassfort-shell/startmenu-main.qml: Member "portOldFavorites" not found on type "AbstractModel" [missing-property]
+# Known qmllint warnings (scripts/check-qml): extended regular expressions,
+# one per cause. Keep this list short: only warnings caused by Plasma types
+# that qmllint cannot know. A warning matching none of them fails CI.
+#
+# Plasmoid.configuration entries come from each plasmoid's main.xml at runtime.
+not found on type "KConfigPropertyMap"
+not found on type Plasma::Applet::configuration
+# Plasmoid attached properties set by our plasmoids but missing from libplasma's type info.
+Member "activationTogglesExpanded" not found on type Plasma::Applet
+# Kicker's favorites model is a dynamic subclass of AbstractModel.
+startmenu-main\.qml: .*(AbstractModel|initForClient|portOldFavorites)
+# plasma-pa registers PreferredDevice and PulseAudio at runtime.
+controlcenter-main\.qml: (Type not found in namespace|Member "(PreferredDevice|PulseAudio)" not found)
