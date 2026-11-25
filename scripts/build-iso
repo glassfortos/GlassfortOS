@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Build the Glassfort ISO from iso/ with mkarchiso.
+#
+# Usage: scripts/build-iso <repo-root> <package-dir> <output-dir>
+#
+# Must run as root inside an archlinux container (mkarchiso needs root;
+# never run it on a development machine). <package-dir> holds the Glassfort
+# packages built in the same run (*.pkg.tar.zst); they become a local
+# [glassfort] repository for the build. The ISO and its SHA256SUMS land in
+# <output-dir>.
+
+set -euo pipefail
+
+if [[ ! -f /etc/arch-release ]] || ((EUID != 0)); then
+    echo "This script must run as root inside an Arch Linux container." >&2
+    exit 1
+fi
+
+root=$(realpath "${1:?usage: $0 <repo-root> <package-dir> <output-dir>}")
+pkgs=$(realpath "${2:?package dir}")
+out=${3:?output dir}
+mkdir -p "$out"
+out=$(realpath "$out")
+
+[[ -s /etc/machine-id ]] || systemd-machine-id-setup
+pacman-key --init
+pacman-key --populate archlinux
+# Full upgrade only - never a partial sync (CLAUDE.md §6.4).
+pacman -Syu --noconfirm --needed archiso
+
+repo=/var/tmp/glassfort-repo
+rm -rf "$repo"
+mkdir -p "$repo"
+cp "$pkgs"/*.pkg.tar.zst "$repo/"
+rm -f "$repo"/*-debug-*.pkg.tar.zst
+repo-add "$repo/glassfort.db.tar.gz" "$repo"/*.pkg.tar.zst
+
+profile=$(mktemp -d)
+work=/var/tmp/glassfort-iso-work
+trap 'rm -rf "$profile" "$work"' EXIT
+cp -a "$root/iso/." "$profile/"
+rm -f "$profile/README.md"
+sed -i "s|@GLASSFORT_REPO@|$repo|" "$profile/pacman.conf"
+
+mkarchiso -v -w "$work" -o "$out" "$profile"
+(cd "$out" && sha256sum ./*.iso >SHA256SUMS)
+ls -l "$out"

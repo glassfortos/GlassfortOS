@@ -1,0 +1,3 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Live session only: the live user may use sudo without a password.
+glassfort ALL=(ALL:ALL) NOPASSWD: ALL

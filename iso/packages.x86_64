@@ -1,0 +1,32 @@
+# Glassfort desktop, shell, theme and system defaults (and with them Plasma,
+# SDDM, the default apps and the snapshot tools)
+glassfort-desktop
+# Live system
+base
+linux
+linux-firmware
+linux-firmware-marvell
+sof-firmware
+intel-ucode
+amd-ucode
+mkinitcpio
+mkinitcpio-archiso
+sudo
+# Installer backend and disk tools (glassfort-installer uses archinstall)
+archinstall
+arch-install-scripts
+btrfs-progs
+cryptsetup
+dosfstools
+e2fsprogs
+exfatprogs
+ntfs-3g
+gptfdisk
+parted
+efibootmgr
+limine
+# Virtual machines (testing, trying Glassfort in a VM)
+qemu-guest-agent
+spice-vdagent
+open-vm-tools
+virtualbox-guest-utils
