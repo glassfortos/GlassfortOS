@@ -1,0 +1,134 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Phase 1 VM test agent. Installed only into the test VM by
+# tests/vm/guest/install.sh and started on every boot. It reports to the
+# serial console ("GFTEST ..." lines, read by tests/vm/phase1) and walks
+# through the test phases. Its state lives in /var/log, a separate
+# subvolume, so it survives a rollback of @.
+#
+#   phase 0  first boot: check the Glassfort setup, then a normal update
+#            (snapshot pair), then a broken one (removes systemd, so the next
+#            normal boot has no init), reboot
+#   phase 1  booted from a snapshot (chosen in the Limine menu by the host):
+#            report it, restore that snapshot, reboot
+#   phase 2  normal boot after the restore: check that the system is whole
+
+set -uo pipefail
+
+state_dir=/var/log/glassfort-vmtest
+state=$state_dir/phase
+mkdir -p "$state_dir"
+phase=$(cat "$state" 2>/dev/null || echo 0)
+
+say() { printf 'GFTEST %s\n' "$*" >/dev/ttyS0; printf 'GFTEST %s\n' "$*" >>"$state_dir/report.log"; }
+check() {
+    # check NAME COMMAND...: report ok/FAIL for one condition
+    local name=$1
+    shift
+    if "$@" >/dev/null 2>&1; then say "check ok $name"; else say "check FAIL $name"; fi
+}
+snapshot_root() {
+    # Prints the snapshot number if this boot is a snapper snapshot, else
+    # nothing (with btrfs-overlayfs, / is an overlay, so use the cmdline).
+    grep -oE 'subvol=/?@snapshots/[0-9]+/snapshot' /proc/cmdline | grep -oE '[0-9]+' | head -1
+}
+limine_conf() {
+    for f in /boot/limine.conf /boot/limine/limine.conf /boot/EFI/limine/limine.conf /boot/EFI/BOOT/limine.conf; do
+        [[ -f $f ]] && { echo "$f"; return; }
+    done
+}
+
+say "agent phase=$phase kernel=$(uname -r) root=$(findmnt -no SOURCE /)"
+say "cmdline: $(cat /proc/cmdline)"
+
+case $phase in
+0)
+    # Let the desktop come up first.
+    for _ in $(seq 90); do
+        systemctl is-active --quiet graphical.target && break
+        sleep 2
+    done
+    sleep 20
+    check graphical-target systemctl is-active graphical.target
+    check sddm systemctl is-active sddm.service
+    check networkmanager systemctl is-active NetworkManager.service
+    check firewalld systemctl is-active firewalld.service
+    check apparmor systemctl is-active apparmor.service
+    check plasmashell pgrep -x plasmashell
+    check snapper-root-config snapper -c root list
+    check lsm-apparmor grep -q apparmor /sys/kernel/security/lsm
+    check cmdline-lsm grep -q 'lsm=.*apparmor' /proc/cmdline
+    check glassfort-repo pacman -Sl glassfort
+    conf=$(limine_conf)
+    say "limine.conf=${conf:-missing}"
+    if [[ -n $conf ]]; then
+        grep -nE '^ */|cmdline' "$conf" | sed 's/^/limine.conf: /' | while read -r l; do say "$l"; done
+    fi
+    say "/etc/kernel/cmdline: $(cat /etc/kernel/cmdline 2>/dev/null)"
+    say "snapper: $(snapper -c root list --columns number,type,description 2>/dev/null | tail -n +3 | tr '\n' ';')"
+    say "boot1 ready"
+
+    # Wait for the host's screenshot, then the update test.
+    sleep 15
+    say "normal update"
+    pacman -S --noconfirm --needed cowsay >/dev/null 2>&1 && say "check ok update-cowsay" || say "check FAIL update-cowsay"
+    say "broken update"
+    echo 1 >"$state"
+    sync
+    # Removing systemd removes /usr/lib/systemd/systemd: the next normal boot
+    # has no init. snap-pac takes a "pre" snapshot before the removal, and
+    # limine-snapper-sync (a path unit; PID 1 keeps running) adds it to the
+    # boot menu.
+    pacman -Rdd --noconfirm systemd >/dev/null 2>&1
+    sleep 15
+    conf=$(limine_conf)
+    say "snapper: $(snapper -c root list --columns number,type,description 2>/dev/null | tail -n +3 | tr '\n' ';')"
+    [[ -n $conf ]] && say "snapshot entries after break: $(grep -ci 'snapshot' "$conf" || true)"
+    say "rebooting into the broken system"
+    sync
+    # systemctl is gone; reboot through SysRq.
+    echo 1 >/proc/sys/kernel/sysrq
+    echo s >/proc/sysrq-trigger
+    sleep 2
+    echo b >/proc/sysrq-trigger
+    ;;
+1)
+    num=$(snapshot_root)
+    if [[ -z $num ]]; then
+        say "check FAIL booted-snapshot"
+        say "FAIL agent: phase 1 but not booted from a snapshot"
+        exit 0
+    fi
+    say "check ok booted-snapshot $num"
+    check systemd-in-snapshot test -x /usr/lib/systemd/systemd
+    say "limine tools: $(ls /usr/bin/limine-* 2>/dev/null | tr '\n' ' ')"
+    echo 2 >"$state"
+    sync
+    if command -v limine-snapper-restore >/dev/null; then
+        say "restoring snapshot $num"
+        # The restore dialog asks "Restore snapshot N (method: replace)?
+        # [r] restore | [l] list | [c] cancel", then questions with sensible
+        # defaults, and finally "Reboot now? [Y/n]" – so answer "r", then
+        # take the defaults (the tool reboots by itself).
+        { printf 'r\n'; yes ''; } | limine-snapper-restore >"$state_dir/restore.log" 2>&1
+        say "restore exit $? ($(tail -5 "$state_dir/restore.log" | tr '\n' ' ' | cut -c1-300))"
+    else
+        say "check FAIL limine-snapper-restore missing"
+    fi
+    sync
+    systemctl reboot
+    ;;
+2)
+    sleep 30
+    check systemd-back test -x /usr/lib/systemd/systemd
+    check not-on-snapshot test -z "$(snapshot_root)"
+    check sddm systemctl is-active sddm.service
+    check plasmashell pgrep -x plasmashell
+    say "rollback done"
+    echo 3 >"$state"
+    ;;
+*)
+    say "nothing left to do"
+    ;;
+esac

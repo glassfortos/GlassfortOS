@@ -45,9 +45,14 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] decisions D-37 (curated Plasma), D-38 (SDDM), D-39 (apps as hard deps), D-40 (libreoffice-fresh)
     - [x] glassfort-setup applies every 50-glassfort*.preset (settings commit)
     - [x] glassfort-desktop PKGBUILD + 50-glassfort-desktop.preset (sddm, NetworkManager, bluetooth, power-profiles-daemon)
-  - [ ] VM test: plain Arch → pacman -S glassfort-desktop → break update → roll back from boot menu
-- **Files expected to change:** components/glassfort-shell/*, docs/03-desktop-design.md, docs/DECISIONS.md, PROGRESS.md
-- **Next step if interrupted:** Prepare the Phase 1 VM test (QEMU/OVMF): plain Arch on Btrfs with Limine, local [glassfort] repo signed with repo/vm-test-key, pacman -S glassfort-desktop, glassfort-setup, break an update, roll back from the boot menu. images/*.jpg stay untracked (reference only).
+  - [x] VM test: plain Arch → pacman -S glassfort-desktop → break update → roll back from boot menu (tests/vm/phase1 PASSED 2026-11-25):
+    - [x] check host tools (qemu, OVMF, KVM ok; no swtpm – not needed for Phase 1); maintainer approved a 3 GB VM
+    - [x] automated plain Arch install in QEMU/OVMF (Btrfs layout per docs/02, Limine) – tests/vm/phase1 (uncommitted)
+    - [x] local [glassfort] repo from CI packages, signed with repo/vm-test-key
+    - [x] pacman -S glassfort-desktop + glassfort-setup, boot into Plasma – run 6: all first-boot checks ok incl. AppArmor
+    - [x] break an update, roll back from the Limine snapshot menu – run 8 PASSED (15/15 checks)
+- **Files expected to change:** tests/vm/*, docs/07-testing.md, PROGRESS.md
+- **Next step if interrupted:** Commit the glassfort-setup boot fixes, the Thunderbird launcher fix and tests/vm (three commits), push, check CI. Then Phase 1 is done except glassfort-keyring (waits for the real key, D-26). images/*.jpg stay untracked (reference only).
 - **Blocked because:** –
 
 ## Unpushed commits

@@ -1,0 +1,164 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Phase 1 VM test (docs/09-roadmap.md): plain Arch -> pacman -S
+# glassfort-desktop -> break an update -> roll back from the boot menu.
+#
+# Usage: tests/vm/phase1 [--packages DIR] [--memory MiB] [--keep] [--reuse-disk]
+#   --packages DIR  built packages (*.pkg.tar.zst); default: the "packages"
+#                   artifact of the latest successful CI run (needs gh)
+#   --memory MiB    VM memory (default 3072)
+#   --reuse-disk    skip stage 1 and boot the existing disk again
+#   --keep          keep the disk image afterwards (default: delete it)
+#
+# Everything happens inside a QEMU/KVM VM with OVMF (UEFI); the host only
+# downloads the Arch ISO (checksum verified), serves files over HTTP on
+# 127.0.0.1 and reads the VM's serial console. The VM's disk is a qcow2
+# file in the cache directory ($GLASSFORT_VM_CACHE, default
+# ~/.cache/glassfort-vm). Results (serial logs, screenshots) go to
+# $cache/results/<timestamp>/.
+#
+# Needs: qemu-system-x86_64, qemu-img, edk2-ovmf, bsdtar, xorriso, curl,
+# python3, ImageMagick (magick), gh (for the CI packages).
+
+set -euo pipefail
+
+here=$(cd "$(dirname "$0")" && pwd)
+repo=$(cd "$here/../.." && pwd)
+cache=${GLASSFORT_VM_CACHE:-$HOME/.cache/glassfort-vm}
+port=8642
+memory=3072
+packages=""
+keep=0
+reuse=0
+
+while (($#)); do
+    case $1 in
+        --packages) packages=$(realpath "$2"); shift 2 ;;
+        --memory) memory=$2; shift 2 ;;
+        --keep) keep=1; shift ;;
+        --reuse-disk) reuse=1; keep=1; shift ;;
+        -h | --help) sed -n '4,22s/^# \{0,1\}//p' "$0"; exit 0 ;;
+        *) sed -n '4,22s/^# \{0,1\}//p' "$0" >&2; exit 2 ;;
+    esac
+done
+
+for tool in qemu-system-x86_64 qemu-img bsdtar xorriso curl python3 magick; do
+    command -v "$tool" >/dev/null || { echo "missing tool: $tool" >&2; exit 1; }
+done
+[[ -r /dev/kvm ]] || { echo "/dev/kvm is not accessible" >&2; exit 1; }
+ovmf_code=/usr/share/edk2/x64/OVMF_CODE.4m.fd
+ovmf_vars=/usr/share/edk2/x64/OVMF_VARS.4m.fd
+[[ -f $ovmf_code ]] || { echo "edk2-ovmf not installed" >&2; exit 1; }
+
+mkdir -p "$cache"
+results=$cache/results/$(date +%Y%m%d-%H%M%S)
+mkdir -p "$results"
+log() { printf '==> %s\n' "$*" | tee -a "$results/phase1.log"; }
+
+# --- Arch ISO ----------------------------------------------------------------------
+iso=$cache/archlinux-x86_64.iso
+mirror=https://geo.mirror.pkgbuild.com/iso/latest
+curl -fsSL "$mirror/sha256sums.txt" -o "$cache/sha256sums.txt"
+want=$(awk '$2 == "archlinux-x86_64.iso" { print $1 }' "$cache/sha256sums.txt")
+if [[ ! -f $iso ]] || [[ $(sha256sum "$iso" | cut -d' ' -f1) != "$want" ]]; then
+    log "downloading the Arch ISO"
+    curl -fL "$mirror/archlinux-x86_64.iso" -o "$iso.part"
+    mv "$iso.part" "$iso"
+fi
+[[ $(sha256sum "$iso" | cut -d' ' -f1) == "$want" ]] || { log "ISO checksum mismatch"; exit 1; }
+label=$(xorriso -indev "$iso" -pvd_info 2>/dev/null | awk -F': ' '/^Volume Id/ { print $2 }')
+log "ISO ok ($label)"
+
+# --- Files served to the VM ----------------------------------------------------------
+serve=$(mktemp -d)
+cleanup() {
+    [[ -n ${http_pid:-} ]] && kill "$http_pid" 2>/dev/null
+    [[ -n ${qemu_pid:-} ]] && kill "$qemu_pid" 2>/dev/null
+    rm -rf "$serve"
+    ((keep)) || rm -f "$cache/disk.qcow2" "$cache/OVMF_VARS.fd"
+}
+trap cleanup EXIT
+# Interrupted: keep the disk for a look or --reuse-disk.
+trap 'keep=1; exit 130' INT TERM
+
+mkdir -p "$serve"/{pkgs,repo,guest}
+if [[ -z $packages ]]; then
+    run=$(cd "$repo" && gh run list --workflow CI --status success --limit 1 --json databaseId -q '.[0].databaseId')
+    log "packages from CI run $run"
+    (cd "$repo" && gh run download "$run" -n packages -D "$serve/pkgs")
+else
+    cp "$packages"/*.pkg.tar.zst "$serve/pkgs/"
+fi
+(cd "$serve/pkgs" && ls -1 ./*.pkg.tar.zst | sed 's|^\./||' >index)
+log "$(wc -l <"$serve/pkgs/index") packages: $(tr '\n' ' ' <"$serve/pkgs/index")"
+cp "$repo/repo/publish" "$repo/repo/vm-test-key" "$serve/repo/"
+cp "$here/guest/"* "$serve/guest/"
+cp "$here/guest/install.sh" "$serve/install.sh"
+echo ok >"$serve/ok"
+python3 -m http.server "$port" --bind 127.0.0.1 --directory "$serve" >"$results/http.log" 2>&1 &
+http_pid=$!
+
+qemu_common=(
+    -machine q35,accel=kvm -cpu host -smp 4 -m "$memory"
+    -drive "if=pflash,format=raw,readonly=on,file=$ovmf_code"
+    -drive "if=pflash,format=raw,file=$cache/OVMF_VARS.fd"
+    -drive "file=$cache/disk.qcow2,if=virtio,format=qcow2"
+    -nic user,model=virtio-net-pci
+    -vga virtio -display none
+    -monitor "unix:$results/monitor.sock,server,nowait"
+    -serial "unix:$results/serial.sock,server,nowait"
+)
+
+run_boot() {
+    # run_boot NAME UNTIL TIMEOUT [driver args...] [-- qemu args...]
+    local name=$1 until=$2 timeout=$3
+    shift 3
+    local dargs=()
+    while (($#)) && [[ $1 != -- ]]; do dargs+=("$1"); shift; done
+    [[ ${1:-} == -- ]] && shift
+    rm -f "$results/serial.sock" "$results/monitor.sock"
+    qemu-system-x86_64 "${qemu_common[@]}" "$@" >"$results/qemu-$name.log" 2>&1 &
+    qemu_pid=$!
+    local rc=0
+    python3 "$here/vmdriver.py" --serial "$results/serial.sock" --monitor "$results/monitor.sock" \
+        --log "$results/serial-$name.log" --shots "$results" --until "$until" --timeout "$timeout" \
+        "${dargs[@]}" | tee -a "$results/phase1.log" || rc=$?
+    # Give the guest time to power off by itself, then stop QEMU.
+    for _ in $(seq 60); do kill -0 "$qemu_pid" 2>/dev/null || break; sleep 2; done
+    kill "$qemu_pid" 2>/dev/null || true
+    wait "$qemu_pid" 2>/dev/null || true
+    qemu_pid=""
+    return "$rc"
+}
+
+# --- Stage 1: install ------------------------------------------------------------------
+if ((!reuse)); then
+    rm -f "$cache/disk.qcow2"
+    qemu-img create -f qcow2 "$cache/disk.qcow2" 40G >/dev/null
+    cp "$ovmf_vars" "$cache/OVMF_VARS.fd"
+    work=$(mktemp -d)
+    bsdtar -xf "$iso" -C "$work" arch/boot/x86_64/vmlinuz-linux arch/boot/x86_64/initramfs-linux.img
+    log "stage 1: install plain Arch and glassfort-desktop (this takes a while)"
+    run_boot install "stage1 done" 5400 -- \
+        -cdrom "$iso" \
+        -kernel "$work/arch/boot/x86_64/vmlinuz-linux" \
+        -initrd "$work/arch/boot/x86_64/initramfs-linux.img" \
+        -append "archisobasedir=arch archisolabel=$label console=ttyS0,115200 script=http://10.0.2.2:$port/install.sh" ||
+        { rm -rf "$work"; keep=1; log "FAILED in stage 1 (see $results; disk kept in $cache)"; exit 1; }
+    rm -rf "$work"
+fi
+
+# --- Stage 2: first boot, broken update, rollback from the boot menu -------------------------
+log "stage 2: boot, update, break, roll back"
+if run_boot system "rollback done" 2700 --snapshot-menu; then
+    result=PASSED
+else
+    result=FAILED
+    keep=1
+fi
+grep -h 'GFTEST check' "$results"/serial-*.log | sed 's/\r//' | sort -u >"$results/checks.txt" || true
+log "checks: $(grep -c 'check ok' "$results/checks.txt" || true) ok, $(grep -c 'check FAIL' "$results/checks.txt" || true) failed"
+grep 'check FAIL' "$results/checks.txt" | sed 's/^/    /' | tee -a "$results/phase1.log" || true
+log "Phase 1 VM test $result; results in $results"
+[[ $result == PASSED ]] && ! grep -q 'check FAIL' "$results/checks.txt"

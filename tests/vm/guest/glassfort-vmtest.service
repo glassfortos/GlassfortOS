@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Phase 1 VM test agent (tests/vm). Never installed outside the test VM.
+[Unit]
+Description=Glassfort Phase 1 VM test agent
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/glassfort-vmtest
+StandardOutput=journal
+
+[Install]
+WantedBy=multi-user.target

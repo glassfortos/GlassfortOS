@@ -10,7 +10,7 @@ Test where distros typically break (NVIDIA, scaling, Secure Boot), automatically
 | Lint | shellcheck, namcap, clippy, ruff, qmllint |
 | Package builds | Every changed package in a clean chroot |
 | Install tests | ISO installed in QEMU/KVM with OVMF (UEFI) + swtpm (TPM 2.0); later with openQA |
-| Rollback tests | In a VM: break the system on purpose (e.g. remove a critical package), boot a snapshot, restore, verify |
+| Rollback tests | In a VM: break the system on purpose (e.g. remove a critical package), boot a snapshot, restore, verify. Phase 1 version: `tests/vm/phase1` (plain Arch → `pacman -S glassfort-desktop` → broken update → snapshot from the Limine menu → restore), run locally for now |
 | Secure Boot tests | OVMF with enrolled custom keys: Limine boots, checksum enrollment works, fallback path `BOOTX64.EFI` works |
 | Assistant security | Prompt-injection test suite; fuzzing of the helper D-Bus interface |
 
