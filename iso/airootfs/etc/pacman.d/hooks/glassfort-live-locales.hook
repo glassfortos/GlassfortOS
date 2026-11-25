@@ -1,0 +1,16 @@
+# remove from airootfs!
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Generate the locales of the installer's languages (installer_data.py) for
+# the live session; without them Qt falls back to "C".
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = glibc
+
+[Action]
+Description = Generating the live session's locales...
+When = PostTransaction
+Depends = glibc
+Depends = sed
+Exec = /bin/sh -c "sed -E -i 's/^#((en_US|en_GB|de_DE|de_AT|de_CH|fr_FR|es_ES|it_IT|nl_NL|pl_PL|pt_BR|pt_PT|sv_SE|tr_TR)\.UTF-8 UTF-8)/\\1/' /etc/locale.gen && locale-gen"

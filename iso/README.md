@@ -23,6 +23,11 @@ The archiso profile of the Glassfort live and installation medium
   medium (`/srv/glassfort/repo/x86_64`); installed systems get the full
   `glassfort-desktop` from there.
 - Boot entries: normal (`quiet`) and safe graphics (`nomodeset`).
+- Build-time pacman hooks (`airootfs/etc/pacman.d/hooks`, removed from
+  the medium after the build, as in releng): enable the HTTPS mirrors with
+  Arch's geo mirror first (archinstall syncs before it applies its own
+  mirror settings) and generate the locales of the installer's languages
+  (otherwise Qt falls back to "C").
 
 ## Build
 
