@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Maintainer: Glassfort project <https://github.com/jankln/GlassfortOS>
+# Maintainer: Glassfort project <https://github.com/glassfortos/GlassfortOS>
 
 # glassfort-desktop: meta package that turns a plain Arch install into
 # Glassfort: Plasma, default apps and all Glassfort packages. See README.md,
@@ -13,7 +13,7 @@ pkgver=0.1.0
 pkgrel=1
 pkgdesc='Glassfort desktop: Plasma, default apps and the Glassfort packages'
 arch=('any')
-url='https://github.com/jankln/GlassfortOS'
+url='https://github.com/glassfortos/GlassfortOS'
 license=('GPL-3.0-or-later')
 depends=(
     # Glassfort
@@ -77,7 +77,9 @@ depends=(
 )
 install=glassfort-desktop.install
 source=('50-glassfort-desktop.preset')
-sha256sums=('45c446ccc2d1249cb2d72616abea78ac46cdbc1e4725fc407642f79dec1c1237')
+sha256sums=(
+    '45c446ccc2d1249cb2d72616abea78ac46cdbc1e4725fc407642f79dec1c1237'
+)
 
 package() {
     install -Dm644 "${srcdir}/50-glassfort-desktop.preset" \

@@ -21,7 +21,8 @@ Every source file carries an SPDX header, e.g. `# SPDX-License-Identifier: GPL-3
 ## Domains and handles
 
 - Planned: `glassfort.org` (primary), `glassfortos.com` (redirect). `glassfort.com` is taken.
-- Secure: GitHub organisation, Flathub app IDs, social media handles.
+- GitHub organisation: `glassfortos` (secured 2026-11-25; `glassfort` belongs to an unrelated user account).
+- Secure: Flathub app IDs, social media handles.
 
 ## Hosting
 

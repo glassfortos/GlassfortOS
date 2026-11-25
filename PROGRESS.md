@@ -52,7 +52,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] pacman -S glassfort-desktop + glassfort-setup, boot into Plasma – run 6: all first-boot checks ok incl. AppArmor
     - [x] break an update, roll back from the Limine snapshot menu – run 8 PASSED (15/15 checks)
 - **Files expected to change:** tests/vm/*, docs/07-testing.md, PROGRESS.md
-- **Next step if interrupted:** Phase 1 and follow-ups done; only glassfort-keyring waits for the real key (D-26). Ask the maintainer about Phase 2. images/*.jpg stay untracked (reference only).
+- **Next step if interrupted:** Phase 1 and follow-ups done; repo in org glassfortos (private). Open before going public: domains (D-30), trademark register check (docs/08). Then Phase 2. images/*.jpg stay untracked (reference only).
 - **Blocked because:** –
 
 ### Follow-ups (sub-task started 2026-11-25, maintainer: open items first)
@@ -67,6 +67,10 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [x] README: status after Phase 1, features, screenshot
   - [x] About: description, topics (gh repo edit); social preview image only via web UI
 
+### Move to the glassfortos organisation (2026-11-25)
+  - [x] maintainer created org glassfortos and transferred the repo; git remote updated
+  - [x] replace the project URL in PKGBUILDs, metadata, docs (checksums)
+
 ## Unpushed commits
 
 <!-- Hash + summary of commits that could not be pushed. Cleared after a successful push. -->
@@ -76,6 +80,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-25 | – | Repository moved to the glassfortos organisation; URLs updated |
 | 2026-11-25 | – | README updated for the state after Phase 1 |
 | 2026-11-25 | – | Dock jump lists; all Phase 1 follow-ups done |
 | 2026-11-25 | – | Glassfort start splash (KSplash); VM test without serial console |

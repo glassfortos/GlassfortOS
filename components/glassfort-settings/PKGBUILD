@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Maintainer: Glassfort project <https://github.com/jankln/GlassfortOS>
+# Maintainer: Glassfort project <https://github.com/glassfortos/GlassfortOS>
 
 # glassfort-settings: system defaults for Glassfort (snapper, limine,
 # sysctl, firewalld, AppArmor, zram, keyd). See README.md and
@@ -10,7 +10,7 @@ pkgver=0.1.0
 pkgrel=1
 pkgdesc='System defaults for Glassfort'
 arch=('any')
-url='https://github.com/jankln/GlassfortOS'
+url='https://github.com/glassfortos/GlassfortOS'
 license=('GPL-3.0-or-later')
 depends=(
     'apparmor'

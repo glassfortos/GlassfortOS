@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Maintainer: Glassfort project <https://github.com/jankln/GlassfortOS>
+# Maintainer: Glassfort project <https://github.com/glassfortos/GlassfortOS>
 
 # glassfort-branding: the Glassfort logo (D-24), the SDDM login theme and the
 # Plymouth boot splash (D-41). See README.md and docs/03-desktop-design.md.
@@ -10,7 +10,7 @@ pkgver=0.1.0
 pkgrel=1
 pkgdesc='Glassfort logo and branding artwork'
 arch=('any')
-url='https://github.com/jankln/GlassfortOS'
+url='https://github.com/glassfortos/GlassfortOS'
 license=('LicenseRef-Glassfort-Trademark' 'GPL-3.0-or-later')  # logo / login theme config
 # The app icon goes into the hicolor icon theme.
 depends=('hicolor-icon-theme')
@@ -51,8 +51,8 @@ sha256sums=(
     'b5ab3f634f1351b26148e1b28692477cd3ecf4d18eaedaefc5d6ab5ae5ac57db'
     '85fbac4c4b4e28619bfa7e235cb0937e9dd37baeb3a10f8a0c6ada596ed9dc76'
     '5dddc3026e639fdd18b63e2843f888c63d25e053b235df041ffb69bf635d57d3'
-    'f096eb6271250bc4c91172e0a3b9a7671b2a03d1e9fd38625d865fe7603641a2'
-    '68974d61e00e409ee557057599f9c31320354845e1625bcb8cd75c35a931853f'
+    '9a9fcc9248513741dabbc53f63ce2ed518654d3537b55c671d64ef68e4084faa'
+    'b2a8b3b6df3c0533feb28dd46b8a760b91ad9386ca00311156a0554be2cf02be'
     '1b88c4aabdc6bcaa036a9e0e5bab90c718d51429e28364e46b8e41f6d40cdad6'
     '9739adbd777384b4da57d3f7d444b37e5fe0f64268d025d7ec1775edf4d36d51'
     '51203774c61a27d1392b4861c5b3db13f254a0d629c0082086134292849aecfa'

@@ -12,7 +12,7 @@
         "Id": "org.glassfort.dock",
         "License": "GPL-3.0-or-later",
         "Name": "Dock",
-        "Website": "https://github.com/jankln/GlassfortOS"
+        "Website": "https://github.com/glassfortos/GlassfortOS"
     },
     "X-Plasma-API-Minimum-Version": "6.0",
     "X-Plasma-Provides": [

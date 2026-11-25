@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Maintainer: Glassfort project <https://github.com/jankln/GlassfortOS>
+# Maintainer: Glassfort project <https://github.com/glassfortos/GlassfortOS>
 
 # glassfort-shell: Glassfort's own Plasma widgets (D-36): start menu, dock
 # and control center. See README.md and docs/03-desktop-design.md.
@@ -13,7 +13,7 @@ pkgver=0.1.0
 pkgrel=1
 pkgdesc='Glassfort start menu, dock and control center for Plasma'
 arch=('any')
-url='https://github.com/jankln/GlassfortOS'
+url='https://github.com/glassfortos/GlassfortOS'
 license=('GPL-3.0-or-later')
 # plasma-workspace: Kicker models (org.kde.plasma.private.kicker) and the
 # task model (org.kde.taskmanager);
@@ -57,7 +57,7 @@ source=(
     'layout.js'
 )
 sha256sums=(
-    '20a08734f94f54d1a2cf941f85c3416b9580c5160114f26faf6ce5de886700da'
+    'e19c6c8f733e9637f52f6c6813b1b7b8a7b6c626afb3c514aeba572749db9527'
     '38823d0a86b4566028784db8ad420b6fa464aad5741a0d0fe2ffd703783c967a'
     '6ae5eec65a9bd9cf8acd470f1362f4524df1b2a843a3fa2ce40e301ef2ddaa1d'
     '34984d8c0fad1552a2c4a022a242705f8cf7e3f1bad44f4db8cca449145a751e'
@@ -65,12 +65,12 @@ sha256sums=(
     '63195ac178a5eeaf67ea43c79b81c62726c5dea26b877764b347936adedf0eac'
     '5f5609d56805b4bf70d0570d7b4882b17ad3f9f67d0a6044aae334cbd02ffe1f'
     '92c175ffd09bbf4de30ab858710f1032d10b3fa07fa473e99caec686a4b4b519'
-    '24726705247f039ff66fa064eaa1c7847de881bea7b4951544ee7453bca39a60'
+    '8d11f1be5869e7411083388c786600ebbc008d6ba51f7cca4874884c1561beea'
     '9053635798bd175d4118c6d7d5857c4a548f21d7d3b4a4bb15326648573d2fda'
     'b681018f34ce029cd6271a2be2dbe53a8390c96e96d6aa090da0444e0a9184da'
     '085ee6e5f4f2e94d857a4d43cfc0822fe259655673e4859f0f043b649a5a3471'
     'cfe70cb2eb1ac91c69eccf616db7d57cb82ded9b93ded8aa5795ab55dd4699e2'
-    '2de673c02885741311c3f892eaa2bea0b239d863eb9c4d85b2217d15262253b9'
+    '4029e371e18f5d17b3f195d7dc3ff56349ea42a025f6f9cf0dddb9ce0dabcb47'
     '94c93a758fbecb3b1c9bcf54ccaf70c248d17d29e2483e38651af4a77972de3d'
     '940e63b245fc7f3831bce420850701f450afab90683c88ff4444a7aad4a2e303'
     'd3cd21d0ea3c9a87d4088417dfc00785d1238be8e7c5bc8e7f1c478de9b077b7'
