@@ -231,6 +231,60 @@ setup_mkinitcpio() {
     apply sed -i -E "/^HOOKS=/s/(^|[ (])filesystems([ )])/\1filesystems $hook\2/" "$conf"
 }
 
+# --- 3b. Boot splash (Plymouth, D-41) --------------------------------------------
+
+# Plymouth comes with glassfort-desktop and the theme with glassfort-branding.
+# Without them (e.g. a server with only glassfort-settings) nothing changes.
+setup_splash() {
+    info "Boot splash (Plymouth)"
+    if ! command -v plymouth-set-default-theme &>/dev/null || [[ ! -d /usr/share/plymouth/themes/glassfort ]]; then
+        step "plymouth or the Glassfort theme not installed – skipped"
+        return
+    fi
+
+    # initramfs: the plymouth hook right after udev/systemd, before any
+    # encryption hook, so the passphrase prompt shows in the splash.
+    local conf=/etc/mkinitcpio.conf hooks
+    hooks=$(grep -E '^HOOKS=' "$conf" | tail -n1)
+    if [[ $hooks =~ (^|[\ \(])plymouth([\ \)]|$) ]]; then
+        step "plymouth hook already present"
+    elif [[ $hooks =~ (^|[\ \(])(systemd|udev)([\ \)]|$) ]]; then
+        apply sed -i -E "/^HOOKS=/s/(^|[ (])(systemd|udev)([ )])/\1\2 plymouth\3/" "$conf"
+    else
+        warn "No 'systemd' or 'udev' hook in $conf. Add 'plymouth' after it manually."
+    fi
+
+    # Kernel command line: quiet splash (same file the AppArmor step uses).
+    local file=""
+    if [[ -f /etc/default/limine ]] && grep -q '^KERNEL_CMDLINE\[default\]' /etc/default/limine; then
+        file=/etc/default/limine
+    elif [[ -s /etc/kernel/cmdline ]]; then
+        file=/etc/kernel/cmdline
+    fi
+    if [[ -z $file ]]; then
+        warn "No kernel command line file to add 'quiet splash' to."
+    else
+        local word
+        for word in quiet splash; do
+            if grep -qE "(^|[ \"])$word([ \"]|$)" "$file"; then
+                step "$word already set in $file"
+            elif [[ $file == /etc/default/limine ]]; then
+                apply sed -i "s|^\(KERNEL_CMDLINE\[default\]+\{0,1\}=.*\)\(\"\)$|\1 $word\2|; t; s|^\(KERNEL_CMDLINE\[default\]+\{0,1\}=.*\)$|\1 $word|" "$file"
+            else
+                apply sed -i "1s|\$| $word|" "$file"
+            fi
+        done
+    fi
+
+    # Theme (plymouth-set-default-theme writes /etc/plymouth/plymouthd.conf;
+    # limine-update rebuilds the initramfs afterwards).
+    if [[ $(plymouth-set-default-theme) == glassfort ]]; then
+        step "Plymouth theme is glassfort"
+    else
+        apply plymouth-set-default-theme glassfort
+    fi
+}
+
 # --- 4. Firewall -------------------------------------------------------------
 
 setup_firewall() {
@@ -367,6 +421,7 @@ setup_boot_entries() {
 setup_snapper
 setup_cmdline
 setup_mkinitcpio
+setup_splash
 setup_firewall
 setup_services
 setup_boot_entries

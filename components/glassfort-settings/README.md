@@ -45,6 +45,11 @@ change. Steps:
    `/proc/cmdline` there belongs to the installer's kernel.
 3. **initramfs:** add `btrfs-overlayfs` (or `sd-btrfs-overlayfs` for
    systemd-based initramfs) after `filesystems`, so read-only snapshots boot.
+3b. **Boot splash (D-41):** if plymouth and the Glassfort theme
+   (glassfort-branding) are installed: add the `plymouth` hook after
+   `systemd`/`udev` (before any encryption hook, so the passphrase prompt
+   shows in the splash), add `quiet splash` to the kernel command line
+   file and select the `glassfort` theme.
 4. **Firewall:** set `glassfort-public` as default zone.
 5. **Services:** enable the units listed in every
    `/usr/lib/systemd/system-preset/50-glassfort*.preset` (this package's and,
