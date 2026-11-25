@@ -50,3 +50,4 @@ Claude Code adds new decisions as **Proposed**. Only the maintainer sets **Decid
 | D-38 | Login manager | SDDM (with `sddm-kcm`); Glassfort login theme follows with `glassfort-branding` | Decided | 2026-11-24 |
 | D-39 | Default apps in `glassfort-desktop` | Hard dependencies (installed with the meta package), not optdepends | Decided | 2026-11-24 |
 | D-40 | LibreOffice | `libreoffice-fresh` | Decided | 2026-11-24 |
+| D-41 | Boot splash | Plymouth with a Glassfort theme; `glassfort-desktop` depends on plymouth, `glassfort-setup` adds the initramfs hook and `quiet splash` | Decided | 2026-11-25 |

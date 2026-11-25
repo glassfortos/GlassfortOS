@@ -39,4 +39,4 @@ Then: progress screen with short slides about the six promises; restart.
 5. **App packs:** Browser choice, Office, Gaming
 6. **Windows Apps** (only offered if the hardware check is green or yellow, see `06-windows-apps.md`)
 
-Login screen (Plasma Login Manager), lock screen and Plymouth use the Glassfort design.
+Login screen (SDDM, D-38), lock screen and Plymouth use the Glassfort design.

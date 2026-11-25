@@ -52,7 +52,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] pacman -S glassfort-desktop + glassfort-setup, boot into Plasma – run 6: all first-boot checks ok incl. AppArmor
     - [x] break an update, roll back from the Limine snapshot menu – run 8 PASSED (15/15 checks)
 - **Files expected to change:** tests/vm/*, docs/07-testing.md, PROGRESS.md
-- **Next step if interrupted:** Plymouth theme with the logo (glassfort-branding); needs plymouth + mkinitcpio hook + 'quiet splash' – check docs/02 and ask before changing the boot command line. images/*.jpg stay untracked (reference only).
+- **Next step if interrupted:** Write the Plymouth script theme in components/glassfort-branding (plymouth-glassfort.script, .plymouth, logo PNG rendered at build). images/*.jpg stay untracked (reference only).
 - **Blocked because:** –
 
 ### Follow-ups (sub-task started 2026-11-25, maintainer: open items first)
@@ -60,7 +60,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [x] wallpaper dithering against banding (zero-mean grain filter)
   - [x] SDDM login theme (glassfort-branding: theme 'glassfort' reusing Breeze's QML, dark wallpaper, lockup as logo)
   - [x] lock screen wallpaper (glassfort-theme: /etc/xdg/kscreenlockerrc)
-  - [ ] Plymouth theme with the logo
+  - [ ] Plymouth (D-41): theme 'glassfort' (script: Midnight, logo, progress, password prompt for LUKS) in glassfort-branding; glassfort-setup: plymouth hook, 'quiet splash', default theme; glassfort-desktop depends on plymouth; VM test screenshot
   - [ ] dock jump lists
 
 ## Unpushed commits
@@ -72,6 +72,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-25 | – | Record D-41 (Plymouth); docs/04: SDDM instead of Plasma Login Manager |
 | 2026-11-25 | – | Login screen theme (SDDM) and lock screen wallpaper |
 | 2026-11-25 | – | Wallpaper: zero-mean dithering against banding |
 | 2026-11-25 | – | CI: qmllint with allowlist (scripts/check-qml) |
