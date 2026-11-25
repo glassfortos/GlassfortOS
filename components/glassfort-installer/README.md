@@ -11,7 +11,33 @@ archinstall, no interim Calamares).
 | Part | File | Status |
 |---|---|---|
 | Backend (root) | `glassfort_install.py`, `/usr/bin/glassfort-install` | done |
-| UI (QML/Kirigami, five screens) | – | next step |
+| UI (PySide6 + Kirigami QML) | `installer_ui.py`, `installer_data.py`, `*.qml`, `/usr/bin/glassfort-installer` | done; tested in a VM with the ISO |
+
+## UI
+
+Five screens (docs/04), then progress and the end:
+
+1. **Language and keyboard** (`LanguagePage.qml`): curated languages; the
+   keyboard layout and time zone follow and can be changed. The chosen
+   layout is used in the live session right away, so passwords are typed
+   with the layout of the installed system.
+2. **Wi-Fi** (`NetworkPage.qml`, NetworkManager via `nmcli`): skipped when
+   the computer is wired and online. The installer needs the internet for
+   Arch's base packages.
+3. **Disk** (`DiskPage.qml`): whole disk, encrypted by default; continuing
+   needs an explicit "erase everything" confirmation.
+4. **Account** (`UserPage.qml`): name, suggested user name, password;
+   "Use this password to unlock the disk" or a separate disk password.
+5. **Look** (`LookPage.qml`): light, dark or automatic.
+
+`ProgressPage.qml` shows the progress and the six promises;
+`DonePage.qml` shows the recovery key once and restarts.
+
+The UI runs as the live user and starts only the backend as root
+(`sudo -n glassfort-install`, allowed without a password in the live
+session). The plan goes to the backend on stdin. Strings are translatable
+(gettext domain `glassfort-installer`; QML calls `L10n.tr()`); the
+translations themselves follow.
 
 ## Backend
 
@@ -71,6 +97,7 @@ Progress events: `{"event": "progress", "stage": …, "percent": …}`,
 ruff check . && ruff format --check . && pytest
 ```
 
-The tests cover plan validation, the disk list and the generated
-configuration; they run without root and touch no disks. The whole
+`qmllint` runs over the QML files with `scripts/check-qml`. The tests
+cover plan validation, the disk list, the generated configuration, the
+language/keyboard tables and the `nmcli` parsing; they run without root and touch no disks. The whole
 installation is tested in a VM (`tests/vm/`).

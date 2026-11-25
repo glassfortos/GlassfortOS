@@ -65,7 +65,7 @@ LOG = Path("/var/log/glassfort-install.log")
 USERNAME_RE = re.compile(r"^[a-z_][a-z0-9_-]{0,31}$")
 HOSTNAME_RE = re.compile(r"^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$")
 LOCALE_RE = re.compile(r"^[a-z]{2,3}_[A-Z]{2}(@[a-z]+)?$")
-KEYBOARD_RE = re.compile(r"^[a-z]{2,8}(-[a-z0-9]+)*$")
+KEYBOARD_RE = re.compile(r"^[a-z]{2,8}[0-9]?(_[A-Z]{2})?(-[a-z0-9]+)*$")
 DISK_RE = re.compile(r"^/dev/(sd[a-z]+|vd[a-z]+|nvme[0-9]+n[0-9]+|mmcblk[0-9]+)$")
 
 

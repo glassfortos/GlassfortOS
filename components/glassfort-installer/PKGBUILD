@@ -7,7 +7,7 @@
 pkgname=glassfort-installer
 pkgver=0.1.0
 pkgrel=1
-pkgdesc='Glassfort installer (backend on top of archinstall)'
+pkgdesc='Glassfort installer (QML/Kirigami UI, backend on top of archinstall)'
 arch=('any')
 url='https://github.com/glassfortos/GlassfortOS'
 license=('GPL-3.0-or-later')
@@ -20,26 +20,68 @@ depends=(
     'e2fsprogs'
     'systemd'
     'util-linux'
+    # UI
+    'kirigami'
+    'networkmanager'
+    'pyside6'
+    'qt6-declarative'
+    'sudo'
 )
 checkdepends=('python-pytest')
 source=(
     'glassfort_install.py'
     'glassfort-install'
+    'installer_data.py'
+    'installer_ui.py'
+    'glassfort-installer'
+    'org.glassfort.installer.desktop'
+    'Main.qml'
+    'LanguagePage.qml'
+    'NetworkPage.qml'
+    'DiskPage.qml'
+    'UserPage.qml'
+    'LookPage.qml'
+    'ProgressPage.qml'
+    'DonePage.qml'
     'test_install.py'
+    'test_installer_data.py'
 )
 sha256sums=(
-    'e392b8f71e99df1d33986eac2884cd85a51de1158aa26b84d8cec1ee67af3652'
+    'cc9241a35ea7b01b550f1bfd0bbd3a25714bf6121e52f6d847013518304cc68f'
     '5c11e6250ae6cdb2405979859f80e5cae804888c50c97d7e0cb011e862caaf6a'
+    'd712c4236346cf17173c48a303ad95e17801ad1ac8f7bfe3db792b4b13ddb46f'
+    '2ef7d6d8d91523313a5624f584e9d0c970e582cb5e681484bd6d88a7877073b7'
+    'd5cd2ce289937a362dc6d64bc88d12198c27aa8940f383b0e41bb0499e0da947'
+    'f26ee3ef419a656be09a9c268ba9a6b65b724a8f6794f51dd03b8f5e8a09e20d'
+    '22465a8508f7e816f7a0094c20dc955659ae7f0db407b25292e26b8c29c5ca2d'
+    '2dd4c0def572d0bdd30bdca45d1357b5d7beb9bf1bfac146d6de10ae281320a4'
+    '487f03c60d57953584f0dbe79ced6d329bf7ab041af924018038bcd31b3c7d11'
+    'c167475f586875424a360e323d5b7a2a1eaac750192f4ee1bdd8493ced4b4831'
+    '7631eb32ba4d59e4ca67ea59dfadd8fabcafd3ebd4c1e0608375c46d779cd167'
+    '06ff417b3b0d34fa3ba3f796269eb70db4835e1cb858274989f4e750e67141e3'
+    '3138d5f47a6d736f4e9d6fab68ba10181867bb81f4735ad52fb8c0faa020f87a'
+    '19a6f2431d421c54fa528cafa6b35f74ccc3b69c044d3bfffecbe2810d2de1ce'
     'd0e76fe79c3890a45ab0454d39abd87759d80948f28a56b5baf7a9e230f5f8a5'
+    '5af99e8669569d2be866b5989f071d1cc8d32f448ffb242c9939d9cf43b5e139'
 )
 
 check() {
     cd "${srcdir}"
-    python -m pytest -q -p no:cacheprovider test_install.py
+    python -m pytest -q -p no:cacheprovider test_install.py test_installer_data.py
 }
 
 package() {
     install -Dm644 "${srcdir}/glassfort_install.py" \
         "${pkgdir}/usr/lib/glassfort-installer/glassfort_install.py"
     install -Dm755 "${srcdir}/glassfort-install" "${pkgdir}/usr/bin/glassfort-install"
+
+    install -Dm644 -t "${pkgdir}/usr/lib/glassfort-installer" \
+        "${srcdir}/installer_data.py" "${srcdir}/installer_ui.py"
+    install -Dm755 "${srcdir}/glassfort-installer" "${pkgdir}/usr/bin/glassfort-installer"
+    install -Dm644 "${srcdir}/org.glassfort.installer.desktop" \
+        "${pkgdir}/usr/share/applications/org.glassfort.installer.desktop"
+    local f
+    for f in Main.qml LanguagePage.qml NetworkPage.qml DiskPage.qml UserPage.qml LookPage.qml ProgressPage.qml DonePage.qml; do
+        install -Dm644 "${srcdir}/${f}" "${pkgdir}/usr/share/glassfort-installer/qml/${f}"
+    done
 }

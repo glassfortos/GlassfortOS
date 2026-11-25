@@ -1,0 +1,6 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Installer UI (runs as the live user; the backend runs as root via sudo).
+# -E -s instead of -I: the UI imports installer_data from its own (root-owned)
+# directory, which -I would leave out of sys.path.
+exec /usr/bin/python3 -E -s /usr/lib/glassfort-installer/installer_ui.py "$@"

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Install Glassfort
+Comment=Install Glassfort on this computer
+Exec=glassfort-installer
+Icon=glassfort
+Categories=System;
+Keywords=install;installer;setup;
