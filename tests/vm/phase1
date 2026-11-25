@@ -90,7 +90,7 @@ if [[ -z $packages ]]; then
 else
     cp "$packages"/*.pkg.tar.zst "$serve/pkgs/"
 fi
-(cd "$serve/pkgs" && ls -1 ./*.pkg.tar.zst | sed 's|^\./||' >index)
+(cd "$serve/pkgs" && printf '%s\n' *.pkg.tar.zst >index)
 log "$(wc -l <"$serve/pkgs/index") packages: $(tr '\n' ' ' <"$serve/pkgs/index")"
 cp "$repo/repo/publish" "$repo/repo/vm-test-key" "$serve/repo/"
 cp "$here/guest/"* "$serve/guest/"
@@ -100,11 +100,11 @@ python3 -m http.server "$port" --bind 127.0.0.1 --directory "$serve" >"$results/
 http_pid=$!
 
 qemu_common=(
-    -machine q35,accel=kvm -cpu host -smp 4 -m "$memory"
+    -machine "q35,accel=kvm" -cpu host -smp 4 -m "$memory"
     -drive "if=pflash,format=raw,readonly=on,file=$ovmf_code"
     -drive "if=pflash,format=raw,file=$cache/OVMF_VARS.fd"
     -drive "file=$cache/disk.qcow2,if=virtio,format=qcow2"
-    -nic user,model=virtio-net-pci
+    -nic "user,model=virtio-net-pci"
     -vga virtio -display none
     -monitor "unix:$results/monitor.sock,server,nowait"
     -serial "unix:$results/serial.sock,server,nowait"

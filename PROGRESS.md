@@ -52,7 +52,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] pacman -S glassfort-desktop + glassfort-setup, boot into Plasma – run 6: all first-boot checks ok incl. AppArmor
     - [x] break an update, roll back from the Limine snapshot menu – run 8 PASSED (15/15 checks)
 - **Files expected to change:** tests/vm/*, docs/07-testing.md, PROGRESS.md
-- **Next step if interrupted:** Commit the glassfort-setup boot fixes, the Thunderbird launcher fix and tests/vm (three commits), push, check CI. Then Phase 1 is done except glassfort-keyring (waits for the real key, D-26). images/*.jpg stay untracked (reference only).
+- **Next step if interrupted:** Phase 1 done except glassfort-keyring (waits for the real key, D-26). Open small items: dock jump lists, Plymouth/SDDM/lock screen artwork, wallpaper dithering, qmllint in CI. Ask the maintainer what comes next (Phase 2 or the open items). images/*.jpg stay untracked (reference only).
 - **Blocked because:** –
 
 ## Unpushed commits
@@ -64,6 +64,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-25 | – | Phase 1 VM test passed (tests/vm/phase1); glassfort-setup boot fixes; Thunderbird launcher id |
 | 2026-11-24 | – | Fix CI: do not inject meta packages into later chroots |
 | 2026-11-24 | – | Fix glassfort-settings checksum (CI was red after the preset change) |
 | 2026-11-24 | – | Add glassfort-desktop meta package |
