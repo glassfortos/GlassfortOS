@@ -25,6 +25,7 @@ crown and body is drawn lighter, like stacked glass.
 | `glassfort-mono-dark.svg`, `glassfort-mono-white.svg` | Flat symbol for 16–32 px, the pane is cut out |
 | `glassfort-lockup-horizontal{,-dark}.svg` | Symbol + wordmark side by side |
 | `glassfort-lockup-stacked{,-dark}.svg` | Symbol above the wordmark |
+| `glassfort-social-preview.svg` | GitHub social preview, 1280×640: dark wallpaper (from glassfort-theme), lockup and tagline. Not installed; rendered to `docs/images/social-preview.png` for uploading |
 
 Everything is installed to `/usr/share/glassfort/branding/`.
 
@@ -43,7 +44,8 @@ filters or CSS), because Plasma renders icons with QtSvg. Checked with
 QtSvg 6.11 and librsvg at 16, 32 and 256 px.
 
 The wordmark is "Glassfort" in Inter Semibold as outlines, so the files
-need no font. The outlines are stored in `wordmark-inter-semibold.txt`.
+need no font. The outlines are stored in `wordmark-inter-semibold.txt`; the tagline
+(Inter Regular) for the social preview in `tagline-inter-regular.txt`.
 To re-extract them (needs `fonttools` and `uharfbuzz`):
 
 ```sh

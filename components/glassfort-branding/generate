@@ -19,6 +19,7 @@ Writes, next to this script:
   glassfort-mono-white.svg           flat symbol in white (16-32 px)
   glassfort-lockup-horizontal{,-dark}.svg
   glassfort-lockup-stacked{,-dark}.svg
+  glassfort-social-preview.svg       GitHub social preview (1280 x 640)
 
 Usage:
   generate                         write the files
@@ -37,6 +38,14 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 WORDMARK = HERE / "wordmark-inter-semibold.txt"
+TAGLINE = HERE / "tagline-inter-regular.txt"
+# Outline files: text and Inter weight.
+OUTLINES = {
+    WORDMARK: ("Glassfort", 600),
+    TAGLINE: ("Beautiful as glass. Strong as a fortress.", 400),
+}
+# The social preview sits on the dark desktop wallpaper of glassfort-theme.
+WALLPAPER_DARK = HERE.parent / "glassfort-theme" / "wallpaper-dark.svg"
 
 TEAL = "#3DD6C6"
 INDIGO = "#4C4FE0"
@@ -185,9 +194,9 @@ def mono(color: str) -> str:
     return svg(256, 256, flat_shapes(color))
 
 
-def load_wordmark() -> tuple[float, str]:
+def load_outlines(file: Path) -> tuple[float, str]:
     advance, path = 0.0, ""
-    for line in WORDMARK.read_text(encoding="utf-8").splitlines():
+    for line in file.read_text(encoding="utf-8").splitlines():
         if line.startswith("advance "):
             advance = float(line.split()[1])
         elif line.startswith("path "):
@@ -196,7 +205,7 @@ def load_wordmark() -> tuple[float, str]:
 
 
 def lockup(stacked: bool, dark: bool) -> str:
-    advance, path = load_wordmark()
+    advance, path = load_outlines(WORDMARK)
     text_color = FROST if dark else MIDNIGHT
     cap = 1490  # Inter cap height in font units
     sym = symbol_shapes("g", dark)
@@ -229,6 +238,48 @@ def lockup(stacked: bool, dark: bool) -> str:
     return svg(width, height, body, gradients("g"))
 
 
+def social_preview() -> str:
+    """GitHub social preview, 1280 x 640: dark wallpaper, lockup, tagline.
+
+    The wallpaper (1920 x 1080) is scaled to the width and cropped
+    vertically to its middle, so its glass shapes frame the logo.
+    """
+    w, h = 1280, 640
+    wall = WALLPAPER_DARK.read_text(encoding="utf-8")
+    inner = wall[wall.index(">", wall.index("<svg")) + 1 : wall.rindex("</svg>")]
+    scale = w / 1920
+    wall = (
+        f'<svg x="0" y="{n((h - 1080 * scale) / 2)}" width="{w}" height="{n(1080 * scale)}" '
+        f'viewBox="0 0 1920 1080">{inner}</svg>'
+    )
+    # Lockup: symbol (186 units high) and wordmark, centred.
+    advance, path = load_outlines(WORDMARK)
+    cap = 1490
+    sym_h = 186.0
+    k = (sym_h * 0.42) / cap
+    gap = 40.0
+    lock_w = 164 + gap + advance * k
+    s = 1.05  # lockup scale on the preview
+    lx = (w - lock_w * s) / 2
+    ly = h / 2 - sym_h * s / 2 - 36
+    baseline = sym_h / 2 + (cap * k) / 2
+    lockup_body = (
+        f'<g transform="translate({n(lx)},{n(ly)}) scale({s})">'
+        f'<g transform="translate({n(-46)},{n(-36)})">{symbol_shapes("g", True)}</g>'
+        f'<path transform="translate({n(164 + gap)},{n(baseline)}) scale({k:.5f})" '
+        f'd="{path}" fill="{FROST}"/></g>'
+    )
+    t_adv, t_path = load_outlines(TAGLINE)
+    tk = 26.0 / cap  # cap height 26 px
+    tx = (w - t_adv * tk) / 2
+    ty = ly + sym_h * s + 70
+    tagline = (
+        f'<path transform="translate({n(tx)},{n(ty)}) scale({tk:.5f})" '
+        f'd="{t_path}" fill="{FROST}" fill-opacity="0.85"/>'
+    )
+    return svg(w, h, wall + lockup_body + tagline, gradients("g"))
+
+
 def outputs() -> dict[Path, str]:
     return {
         HERE / "glassfort-symbol.svg": symbol(False),
@@ -240,10 +291,12 @@ def outputs() -> dict[Path, str]:
         HERE / "glassfort-lockup-horizontal-dark.svg": lockup(False, True),
         HERE / "glassfort-lockup-stacked.svg": lockup(True, False),
         HERE / "glassfort-lockup-stacked-dark.svg": lockup(True, True),
+        HERE / "glassfort-social-preview.svg": social_preview(),
     }
 
 
 def extract_wordmark(font: Path) -> None:
+    """Re-extract all outline files (wordmark, tagline) from InterVariable.ttf."""
     import io
 
     import uharfbuzz as hb
@@ -252,31 +305,32 @@ def extract_wordmark(font: Path) -> None:
     from fontTools.ttLib import TTFont
     from fontTools.varLib.instancer import instantiateVariableFont
 
-    inst = instantiateVariableFont(TTFont(font), {"wght": 600, "opsz": 32})
-    buf = io.BytesIO()
-    inst.save(buf)
-    hbfont = hb.Font(hb.Face(buf.getvalue()))
-    b = hb.Buffer()
-    b.add_str("Glassfort")
-    b.guess_segment_properties()
-    hb.shape(hbfont, b, {"kern": True, "liga": True})
-    glyphs, order = inst.getGlyphSet(), inst.getGlyphOrder()
-    pen = SVGPathPen(glyphs, ntos=lambda v: f"{v:.1f}".rstrip("0").rstrip("."))
-    x = 0
-    for info, pos in zip(b.glyph_infos, b.glyph_positions):
-        glyphs[order[info.codepoint]].draw(
-            TransformPen(pen, (1, 0, 0, -1, x + pos.x_offset, -pos.y_offset))
+    for file, (text, weight) in OUTLINES.items():
+        inst = instantiateVariableFont(TTFont(font), {"wght": weight, "opsz": 32})
+        buf = io.BytesIO()
+        inst.save(buf)
+        hbfont = hb.Font(hb.Face(buf.getvalue()))
+        b = hb.Buffer()
+        b.add_str(text)
+        b.guess_segment_properties()
+        hb.shape(hbfont, b, {"kern": True, "liga": True})
+        glyphs, order = inst.getGlyphSet(), inst.getGlyphOrder()
+        pen = SVGPathPen(glyphs, ntos=lambda v: f"{v:.1f}".rstrip("0").rstrip("."))
+        x = 0
+        for info, pos in zip(b.glyph_infos, b.glyph_positions):
+            glyphs[order[info.codepoint]].draw(
+                TransformPen(pen, (1, 0, 0, -1, x + pos.x_offset, -pos.y_offset))
+            )
+            x += pos.x_advance
+        header = [
+            ln
+            for ln in file.read_text(encoding="utf-8").splitlines()
+            if ln.startswith("#")
+        ]
+        file.write_text(
+            "\n".join([*header, f"advance {x}", f"path {pen.getCommands()}"]) + "\n",
+            encoding="utf-8",
         )
-        x += pos.x_advance
-    header = [
-        ln
-        for ln in WORDMARK.read_text(encoding="utf-8").splitlines()
-        if ln.startswith("#")
-    ]
-    WORDMARK.write_text(
-        "\n".join([*header, f"advance {x}", f"path {pen.getCommands()}"]) + "\n",
-        encoding="utf-8",
-    )
 
 
 def main() -> int:
