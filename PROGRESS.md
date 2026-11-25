@@ -52,7 +52,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] pacman -S glassfort-desktop + glassfort-setup, boot into Plasma – run 6: all first-boot checks ok incl. AppArmor
     - [x] break an update, roll back from the Limine snapshot menu – run 8 PASSED (15/15 checks)
 - **Files expected to change:** tests/vm/*, docs/07-testing.md, PROGRESS.md
-- **Next step if interrupted:** Phase 1 follow-ups done; only glassfort-keyring waits for the real key (D-26). Ask the maintainer about Phase 2 (own ISO, Time Machine, update app, Secure Boot). images/*.jpg stay untracked (reference only).
+- **Next step if interrupted:** Rewrite README.md (status, features, docs/images/desktop.png), then gh repo edit --description/--add-topic. images/*.jpg stay untracked (reference only).
 - **Blocked because:** –
 
 ### Follow-ups (sub-task started 2026-11-25, maintainer: open items first)
@@ -63,6 +63,10 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [x] Plymouth (D-41) + Glassfort KSplash; VM test 18/18 with realistic cmdline, boot fully branded
   - [x] dock jump lists (Kicker app model, looked up per app on menu open)
 
+### GitHub page (sub-task started 2026-11-25)
+  - [x] README: status after Phase 1, features, screenshot
+  - [ ] About: description, topics (gh repo edit)
+
 ## Unpushed commits
 
 <!-- Hash + summary of commits that could not be pushed. Cleared after a successful push. -->
@@ -72,6 +76,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-25 | – | README updated for the state after Phase 1 |
 | 2026-11-25 | – | Dock jump lists; all Phase 1 follow-ups done |
 | 2026-11-25 | – | Glassfort start splash (KSplash); VM test without serial console |
 | 2026-11-25 | – | Plymouth boot splash (D-41); VM test 18/18 |
