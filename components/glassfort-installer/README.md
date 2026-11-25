@@ -78,7 +78,12 @@ What `install` does:
    D-26). No swap partition and no snapper setup here: zram, snapper and
    the Limine snapshot entries come from `glassfort-settings`
    (`glassfort-setup` runs when `glassfort-desktop` is installed).
-2. **Finishing** (the installed system is opened and mounted again):
+2. **Finishing** (on the installed system, which archinstall leaves
+   mounted; opened and mounted again if not): `limine.conf` moves from
+   `EFI/BOOT/` to the root of the ESP (the layout tested with snapshot
+   entries), `/.snapshots` gets its fstab entry, and `glassfort-setup`
+   runs once more in the complete system (during pacstrap it runs before
+   most packages and before fstab exists); then
    `[glassfort]` above `[core]` with `glassfort-mirrorlist`, a copy of the
    repository at the mirror list's path (until it is hosted, D-33), the
    Wi-Fi connections of the live session, `chattr +C` on the VM subvolume,

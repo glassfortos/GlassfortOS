@@ -157,6 +157,8 @@ def test_config_layout(zoneinfo: Path) -> None:
     assert "glassfort-desktop" in config["packages"]
     assert config["swap"] == {"enabled": False}
     assert config["locale_config"]["sys_lang"] == "de_DE.UTF-8"
+    servers = [s["url"] for s in config["mirror_config"]["custom_servers"]]
+    assert servers[0] == "https://geo.mirror.pkgbuild.com/$repo/os/$arch"
     (repo,) = config["mirror_config"]["custom_repositories"]
     assert repo["name"] == "glassfort" and repo["url"].startswith("file:///")
 
@@ -229,3 +231,20 @@ def test_cli_bad_plan(monkeypatch, capsys) -> None:
     assert gi.main(["install"]) == 2
     event = json.loads(capsys.readouterr().out)
     assert event["event"] == "error" and event["reason"] == "plan"
+
+
+FSTAB = """# /dev/mapper/root
+UUID=abc\t/\tbtrfs\trw,noatime,compress=zstd:1,space_cache=v2,subvolid=256,subvol=/@\t0 0
+UUID=abc\t/home     \tbtrfs     \trw,noatime,compress=zstd:1,space_cache=v2,subvol=/@home\t0 0
+UUID=E1\t/boot     \tvfat      \trw,relatime\t0 2
+"""
+
+
+def test_fstab_with_snapshots() -> None:
+    out = gi.fstab_with_snapshots(FSTAB)
+    line = out.splitlines()[-1].split("\t")
+    assert line[0] == "UUID=abc" and line[1] == "/.snapshots"
+    assert line[3] == "rw,noatime,compress=zstd:1,space_cache=v2,subvol=/@snapshots"
+    # Idempotent; no root entry -> unchanged.
+    assert gi.fstab_with_snapshots(out) == out
+    assert gi.fstab_with_snapshots("UUID=x /home btrfs rw 0 0\n") == "UUID=x /home btrfs rw 0 0\n"

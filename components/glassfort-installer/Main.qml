@@ -153,6 +153,7 @@ Kirigami.ApplicationWindow {
                 }
                 ProgressPage {
                     id: progressPage
+                    active: stack.currentIndex === window.steps.length
                 }
                 DonePage {
                     id: donePage

@@ -10,6 +10,7 @@ import org.kde.kirigami as Kirigami
 Item {
     id: page
 
+    property bool active: false
     property int percent: 0
     property string stage: "start"
     property string error: ""
@@ -43,7 +44,7 @@ Item {
     Timer {
         interval: 9000
         repeat: true
-        running: page.visible && page.error === ""
+        running: page.active && page.error === ""
         onTriggered: page.slide = (page.slide + 1) % page.promises.length
     }
 
@@ -91,12 +92,18 @@ Item {
             text: page.stageText[page.stage] || ""
             opacity: 0.8
         }
-        QQC2.ProgressBar {
+        // Created only while installing: Breeze's ProgressBar runs its
+        // indeterminate animation all the time (running: true), even when
+        // hidden, which keeps the whole window repainting.
+        Loader {
             Layout.fillWidth: true
-            from: 0
-            to: 100
-            value: page.percent
-            indeterminate: page.percent === 0 && page.error === ""
+            active: page.active
+            sourceComponent: QQC2.ProgressBar {
+                from: 0
+                to: 100
+                value: page.percent
+                indeterminate: page.percent === 0 && page.error === ""
+            }
         }
     }
 }

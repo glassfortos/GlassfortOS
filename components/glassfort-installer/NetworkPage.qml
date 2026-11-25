@@ -84,7 +84,8 @@ Item {
                 }
                 QQC2.BusyIndicator {
                     anchors.centerIn: parent
-                    visible: parent.count === 0
+                    running: page.active && parent.count === 0
+                    visible: running
                 }
             }
         }

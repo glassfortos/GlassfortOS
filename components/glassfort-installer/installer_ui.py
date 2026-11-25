@@ -103,18 +103,14 @@ class Installer(QObject):
         """Use the chosen layout in the live session right away, so passwords
         are typed with the layout the installed system will have."""
         _keymap, layout, variant, _name = data.keyboard(keymap)
-        cfg = Path.home() / ".config" / "kxkbrc"
-        cfg.parent.mkdir(parents=True, exist_ok=True)
-        cfg.write_text(f"[Layout]\nUse=true\nLayoutList={layout}\nVariantList={variant}\n")
-        _run(
-            [
-                "dbus-send",
-                "--session",
-                "--type=signal",
-                "/Layouts",
-                "org.kde.keyboard.reloadConfig",
-            ]
+        # KWin watches kxkbrc with KConfigWatcher: the change must be written
+        # with a notification (--notify), a plain file write is not seen.
+        # Detached, so the UI does not wait for it.
+        script = "; ".join(
+            f"kwriteconfig6 --file kxkbrc --group Layout --key {key} --notify '{value}'"
+            for key, value in (("Use", "true"), ("LayoutList", layout), ("VariantList", variant))
         )
+        QProcess.startDetached("sh", ["-c", script])
 
     # --- Network ---------------------------------------------------------------
 

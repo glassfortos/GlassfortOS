@@ -49,6 +49,10 @@ SUBVOLUMES = [  # docs/02-system.md
     ("@vm", "/var/lib/glassfort/vm"),
 ]
 KERNELS = ["linux", "linux-lts"]
+ARCH_MIRRORS = [
+    "https://geo.mirror.pkgbuild.com/$repo/os/$arch",
+    "https://mirror.rackspace.com/archlinux/$repo/os/$arch",
+]
 PACKAGES = ["glassfort-desktop", "linux-headers", "linux-lts-headers"]
 # The [glassfort] repository baked into the medium (scripts/build-iso). The
 # same path is the server in glassfort-mirrorlist, so the installed system
@@ -259,6 +263,10 @@ def archinstall_config(plan: Plan, disk: dict, repo_url: str) -> tuple[dict, dic
             "sys_lang": f"{plan.locale}.UTF-8",
         },
         "mirror_config": {
+            # The live medium's mirror list is all commented out; Arch's
+            # geo-routed mirror first (archinstall puts it at the top of the
+            # live and the target mirror list).
+            "custom_servers": [{"url": url} for url in ARCH_MIRRORS],
             "custom_repositories": [
                 {
                     "name": "glassfort",
@@ -350,41 +358,79 @@ def run_archinstall(config: dict, creds: dict, emit: Emitter, log) -> None:
             text=True,
             errors="replace",
         )
+        last = 0
         for line in proc.stdout or ():
             log.write(line)
             for marker, stage, percent in STAGES:
-                if marker in line:
+                # Report each stage once, never going backwards.
+                if marker in line and percent > last:
+                    last = percent
                     emit("progress", stage=stage, percent=percent)
         if proc.wait() != 0:
             raise RuntimeError(f"archinstall failed (exit {proc.returncode})")
 
 
+def _is_mounted(path: Path) -> bool:
+    return subprocess.run(["mountpoint", "-q", str(path)], check=False).returncode == 0
+
+
+def _close_crypt(partition: str) -> None:
+    """Close every dm-crypt mapping on a partition (archinstall's or ours)."""
+    out = subprocess.run(
+        ["lsblk", "-nro", "NAME,TYPE", partition], capture_output=True, text=True, check=False
+    ).stdout
+    for line in out.splitlines():
+        name, _, kind = line.partition(" ")
+        if kind == "crypt":
+            subprocess.run(["cryptsetup", "close", name], check=False)
+
+
 @contextlib.contextmanager
 def mounted_target(plan: Plan):
-    """Open and mount the installed system again (archinstall unmounts it)."""
+    """The installed system, mounted at TARGET.
+
+    archinstall leaves it mounted (and the LUKS container open) when it
+    finishes; if it is not, open and mount it again. Afterwards everything is
+    unmounted and closed.
+    """
     system = partition_path(plan.disk, 2)
-    mapper = None
-    if plan.encrypt:
-        mapper = "glassfort-finish"
-        subprocess.run(
-            ["cryptsetup", "open", "--key-file=-", system, mapper],
-            input=plan.passphrase.encode(),
-            check=True,
-        )
-        system = f"/dev/mapper/{mapper}"
     TARGET.mkdir(parents=True, exist_ok=True)
     try:
-        subprocess.run(["mount", "-o", "subvol=@", system, str(TARGET)], check=True)
-        for name, mnt in SUBVOLUMES[1:]:
+        if not _is_mounted(TARGET):
+            dev = system
+            if plan.encrypt:
+                subprocess.run(
+                    ["cryptsetup", "open", "--key-file=-", system, "glassfort-finish"],
+                    input=plan.passphrase.encode(),
+                    check=True,
+                )
+                dev = "/dev/mapper/glassfort-finish"
+            subprocess.run(["mount", "-o", "subvol=@", dev, str(TARGET)], check=True)
+            for name, mnt in SUBVOLUMES[1:]:
+                subprocess.run(
+                    ["mount", "-o", f"subvol={name}", dev, str(TARGET) + mnt], check=True
+                )
             subprocess.run(
-                ["mount", "-o", f"subvol={name}", system, str(TARGET) + mnt],
-                check=True,
+                ["mount", partition_path(plan.disk, 1), str(TARGET / "boot")], check=True
             )
         yield TARGET
     finally:
         subprocess.run(["umount", "-R", str(TARGET)], check=False)
-        if mapper:
-            subprocess.run(["cryptsetup", "close", mapper], check=False)
+        if plan.encrypt:
+            _close_crypt(system)
+
+
+def fstab_with_snapshots(text: str) -> str:
+    """Add /.snapshots (subvolume @snapshots) to fstab if it is missing, with
+    the root entry's device and options."""
+    if re.search(r"^\S+\s+/\.snapshots\s", text, re.MULTILINE):
+        return text
+    m = re.search(r"^(\S+)\s+/\s+btrfs\s+(\S+)\s+(\d+)\s+(\d+)\s*$", text, re.MULTILINE)
+    if not m:
+        return text
+    opts = re.sub(r"subvol(id)?=[^,]*,?", "", m.group(2)).rstrip(",")
+    line = f"{m.group(1)}\t/.snapshots\tbtrfs\t{opts},subvol=/@snapshots\t0 0\n"
+    return text.rstrip("\n") + "\n" + line
 
 
 def finish(plan: Plan, emit: Emitter, root: Path) -> None:
@@ -403,6 +449,36 @@ def finish(plan: Plan, emit: Emitter, root: Path) -> None:
         for f in nm.glob("*.nmconnection"):
             shutil.copy2(f, nm_dest / f.name)
             os.chmod(nm_dest / f.name, 0o600)
+
+    # snapper's mount point (see glassfort-setup); then the Glassfort setup
+    # again on the complete system: during pacstrap it runs early, before
+    # most packages and before fstab exists. It is idempotent.
+    # archinstall writes limine.conf next to the removable EFI binary
+    # (EFI/BOOT/); Glassfort keeps it at the root of the ESP, the layout
+    # tested with snapshot entries and rollback (tests/vm). Limine finds it
+    # there as well.
+    esp_conf, root_conf = root / "boot/EFI/BOOT/limine.conf", root / "boot/limine.conf"
+    if esp_conf.exists() and not root_conf.exists():
+        shutil.move(esp_conf, root_conf)
+
+    fstab = root / "etc/fstab"
+    fstab.write_text(fstab_with_snapshots(fstab.read_text()))
+    (root / ".snapshots").mkdir(exist_ok=True)
+    if not _is_mounted(root / ".snapshots"):
+        dev = subprocess.run(
+            ["findmnt", "-no", "SOURCE", str(root)], capture_output=True, text=True, check=True
+        ).stdout.strip()
+        dev = re.sub(r"\[.*\]$", "", dev)
+        subprocess.run(
+            ["mount", "-o", "subvol=@snapshots", dev, str(root / ".snapshots")], check=True
+        )
+    with LOG.open("a") as log:
+        subprocess.run(
+            ["arch-chroot", str(root), "glassfort-setup"],
+            stdout=log,
+            stderr=subprocess.STDOUT,
+            check=True,
+        )
 
     # Windows VM images: no copy-on-write (docs/02-system.md).
     subprocess.run(["chattr", "+C", str(root / "var/lib/glassfort/vm")], check=False)
