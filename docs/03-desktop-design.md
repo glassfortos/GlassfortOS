@@ -94,7 +94,8 @@ Teal/indigo is deliberate: it stays clearly distinct from Arch blue and KDE blue
 ### Wallpapers
 
 - Default: abstract frosted-glass shapes in the palette on Midnight (dark) and Frost (light), empty calm centre.
-- Variants **with** centred logo: login screen, lock screen, installer, website, GitHub social preview.
+- Variants **with** centred logo: installer, website, GitHub social preview.
+- Login screen (SDDM theme `glassfort`, Breeze's QML) and lock screen use the dark resp. light/dark wallpaper **without** logo, because the user picture and password field sit in the centre; the login screen shows the Glassfort lockup at the bottom while idle.
 - Variants **without** logo: desktop.
 - Deliver at least 3840×2160. Current state: the desktop wallpaper (light + dark, no logo) is a vector recreation of the maintainer's draft, generated in `components/glassfort-theme` and rendered to PNG at build time.
 

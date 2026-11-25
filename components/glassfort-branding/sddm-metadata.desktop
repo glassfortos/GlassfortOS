@@ -1,0 +1,14 @@
+[SddmGreeterTheme]
+Name=Glassfort
+Description=Glassfort login screen (Breeze with Glassfort artwork)
+Author=Glassfort project
+License=GPL-3.0-or-later
+Type=sddm-theme
+Version=0.1
+Website=https://github.com/jankln/GlassfortOS
+MainScript=../breeze/Main.qml
+ConfigFile=theme.conf
+TranslationsDirectory=../breeze/translations
+Theme-Id=glassfort
+Theme-API=2.0
+QtVersion=6

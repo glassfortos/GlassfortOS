@@ -51,3 +51,22 @@ To re-extract them (needs `fonttools` and `uharfbuzz`):
 ```
 
 After a change, update the `sha256sums` in the PKGBUILD (`updpkgsums`).
+
+## Login screen (SDDM)
+
+The SDDM theme `glassfort` (`/usr/share/sddm/themes/glassfort/`) is
+Plasma's Breeze login screen with Glassfort artwork: its
+`metadata.desktop` points `MainScript` at `../breeze/Main.qml`, so only
+the configuration is ours and the QML stays in step with Plasma.
+`theme.conf` sets the dark Glassfort wallpaper as background, Midnight as
+fallback colour and the horizontal lockup (white wordmark) as logo.
+`/etc/sddm.conf.d/10-glassfort.conf` selects the theme; a choice made in
+System Settings (sddm-kcm writes `kde_settings.conf`) wins.
+
+Breeze shows the logo at the bottom centre while the screen is idle,
+so the background has no logo of its own: a logo in the middle would sit
+behind the user picture and the password field.
+
+SDDM reads these files with QSettings, so they carry no comments.
+
+Checked with `sddm-greeter-qt6 --test-mode` in an invisible KWin.
