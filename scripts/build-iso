@@ -37,12 +37,27 @@ cp "$pkgs"/*.pkg.tar.zst "$repo/"
 rm -f "$repo"/*-debug-*.pkg.tar.zst
 repo-add "$repo/glassfort.db.tar.gz" "$repo"/*.pkg.tar.zst
 
+# The live system: glassfort-desktop's dependencies without glassfort-settings
+# (see iso/packages.x86_64).
+desktop_pkg=$(find "$repo" -name 'glassfort-desktop-[0-9]*.pkg.tar.zst' | head -n1)
+[[ -n $desktop_pkg ]] || { echo "glassfort-desktop package missing" >&2; exit 1; }
+desktop_deps=$(bsdtar -xOf "$desktop_pkg" .PKGINFO |
+    sed -n 's/^depend = //p' | sed -E 's/[<>=].*//' | grep -vx 'glassfort-settings')
+
 profile=$(mktemp -d)
 work=/var/tmp/glassfort-iso-work
 trap 'rm -rf "$profile" "$work"' EXIT
 cp -a "$root/iso/." "$profile/"
 rm -f "$profile/README.md"
 sed -i "s|@GLASSFORT_REPO@|$repo|" "$profile/pacman.conf"
+printf '%s\n' "$desktop_deps" >"$profile/desktop.deps"
+sed -i -e "/^@GLASSFORT_DESKTOP@$/r $profile/desktop.deps" -e '/^@GLASSFORT_DESKTOP@$/d' \
+    "$profile/packages.x86_64"
+rm "$profile/desktop.deps"
+# The installer installs from the [glassfort] repository on the medium
+# (glassfort-installer: /srv/glassfort/repo/x86_64).
+mkdir -p "$profile/airootfs/srv/glassfort/repo/x86_64"
+cp -a "$repo/." "$profile/airootfs/srv/glassfort/repo/x86_64/"
 
 mkarchiso -v -w "$work" -o "$out" "$profile"
 (cd "$out" && sha256sum ./*.iso >SHA256SUMS)

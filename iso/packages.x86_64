@@ -1,6 +1,10 @@
-# Glassfort desktop, shell, theme and system defaults (and with them Plasma,
-# SDDM, the default apps and the snapshot tools)
-glassfort-desktop
+# Glassfort desktop: scripts/build-iso replaces the next line with the
+# dependencies of glassfort-desktop *without* glassfort-settings. The live
+# system has no Btrfs, ESP or Limine; glassfort-settings' Limine and snapper
+# hooks would fail there. Installed systems get the full glassfort-desktop.
+@GLASSFORT_DESKTOP@
+# Installer
+glassfort-installer
 # Live system
 base
 linux

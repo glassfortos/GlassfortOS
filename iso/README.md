@@ -9,12 +9,19 @@ The archiso profile of the Glassfort live and installation medium
 - **Live session:** user `glassfort` (no password, sudo without password),
   logged in automatically by SDDM into the Glassfort desktop. The home
   directory is created from `/etc/skel` at boot (Glassfort defaults).
-- **Packages** (`packages.x86_64`): `glassfort-desktop` and the tools the
-  installer needs (archinstall, partitioning, LUKS, Limine). The Glassfort
-  packages come from a local `[glassfort]` repository built in the same CI
-  run (`pacman.conf`: `@GLASSFORT_REPO@`, unsigned until the real key
-  exists, D-26).
-- Snapshot services are masked in the live session (no Btrfs there).
+- **Packages** (`packages.x86_64`): the dependencies of `glassfort-desktop`
+  **without** `glassfort-settings` (`@GLASSFORT_DESKTOP@`, filled in by
+  `scripts/build-iso` from the built package): the live system has no
+  Btrfs, ESP or Limine, and glassfort-settings' Limine and snapper hooks
+  fail there. Plus `glassfort-installer` and the tools it needs
+  (archinstall, partitioning, LUKS, Limine). The Glassfort packages come
+  from a local `[glassfort]` repository built in the same CI run
+  (`pacman.conf`: `@GLASSFORT_REPO@`, unsigned until the real key exists,
+  D-26).
+- **Installer:** starts automatically in the live session
+  (`/etc/xdg/autostart`). The `[glassfort]` repository is copied onto the
+  medium (`/srv/glassfort/repo/x86_64`); installed systems get the full
+  `glassfort-desktop` from there.
 - Boot entries: normal (`quiet`) and safe graphics (`nomodeset`).
 
 ## Build

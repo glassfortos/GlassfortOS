@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Install Glassfort
+Exec=glassfort-installer
+Icon=glassfort
+X-KDE-autostart-phase=2
+OnlyShowIn=KDE;
