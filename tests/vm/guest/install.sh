@@ -114,19 +114,20 @@ chmod 0440 /etc/sudoers.d/10-wheel
 EOF
 
 # Limine the way archinstall installs it: removable-path EFI binary and a
-# limine.conf with one entry for the installed kernel.
+# limine.conf with one entry for the installed kernel. No serial console:
+# the kernel command line stays realistic (it ends up in Glassfort's
+# entries), so the boot splash shows; the agent writes to ttyS0 directly.
 say "limine"
 mkdir -p /mnt/boot/EFI/BOOT
 cp /mnt/usr/share/limine/BOOTX64.EFI /mnt/boot/EFI/BOOT/BOOTX64.EFI
 root_uuid=$(blkid -s UUID -o value "${disk}2")
 cat >/mnt/boot/limine.conf <<EOF
 timeout: 5
-serial: yes
 
 /Arch Linux (linux)
     protocol: linux
     path: boot():/vmlinuz-linux
-    cmdline: root=UUID=$root_uuid rw rootflags=subvol=@ console=tty0 console=ttyS0,115200
+    cmdline: root=UUID=$root_uuid rw rootflags=subvol=@
     module_path: boot():/initramfs-linux.img
 EOF
 

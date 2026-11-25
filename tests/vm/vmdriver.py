@@ -105,6 +105,10 @@ def main() -> int:
     pending = ""
     shot_no = 0
     broken_seen = False
+    splash_shot = False
+    # The broken boot prints nothing on the serial console (no console=ttyS0,
+    # quiet splash); the agent's silence after the reboot is the signal.
+    broken_deadline = None
     boot_count = 0
     with args.log.open("a", encoding="utf-8", errors="replace") as log:
 
@@ -153,6 +157,20 @@ def main() -> int:
             mon.key("ret")
 
         while time.monotonic() < deadline:
+            if (
+                args.snapshot_menu
+                and not broken_seen
+                and broken_deadline
+                and time.monotonic() > broken_deadline
+            ):
+                broken_seen = True
+                print(
+                    "[driver] no agent after the broken update; treating the boot as broken, resetting",
+                    flush=True,
+                )
+                shot("broken-boot")
+                mon.cmd("system_reset")
+                pick_snapshot()
             try:
                 data = ser.recv(65536)
             except TimeoutError:
@@ -178,6 +196,8 @@ def main() -> int:
                         return 1
                     if msg.endswith("boot1 ready"):
                         shot("desktop")
+                    if msg.endswith("rebooting into the broken system"):
+                        broken_deadline = time.monotonic() + 240
                     if args.until in msg:
                         time.sleep(3)
                         shot("final")
@@ -200,6 +220,13 @@ def main() -> int:
                     shot("broken-boot")
                     mon.cmd("system_reset")
                     pick_snapshot()
+                if not splash_shot and "BdsDxe: starting" in clean:
+                    # First boot of this run: catch the boot splash after
+                    # Limine's 5 s countdown, early and a bit later.
+                    splash_shot = True
+                    for t in (12, 16, 20, 24):
+                        time.sleep(4 if t > 12 else 12)
+                        shot(f"boot-{t}s")
                 if "Linux version" in clean and line is not pending:
                     boot_count += 1
                     print(f"[driver] kernel boot #{boot_count}", flush=True)

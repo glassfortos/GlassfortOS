@@ -60,6 +60,9 @@ case $phase in
     check lsm-apparmor grep -q apparmor /sys/kernel/security/lsm
     check cmdline-lsm grep -q 'lsm=.*apparmor' /proc/cmdline
     check glassfort-repo pacman -Sl glassfort
+    check plymouth-hook grep -qE '^HOOKS=.*[ (]plymouth[ )]' /etc/mkinitcpio.conf
+    check cmdline-splash grep -qw splash /proc/cmdline
+    check plymouth-theme test "$(plymouth-set-default-theme)" = glassfort
     conf=$(limine_conf)
     say "limine.conf=${conf:-missing}"
     if [[ -n $conf ]]; then

@@ -22,11 +22,15 @@ tests/vm/phase1 --packages out/ # or locally built packages
    in automatically.
 2. **Stage 2 (system):** [`guest/glassfort-vmtest`](guest/glassfort-vmtest)
    runs on every boot and reports `GFTEST` lines on the serial console:
-   - first boot: checks services, Plasma, snapper, AppArmor, the repository
-     and the Limine snapshot entries; the host takes a screenshot; then a
+   - first boot: checks services, Plasma, snapper, AppArmor, the repository,
+     the boot splash setup (plymouth hook, `splash`, theme) and the Limine
+     snapshot entries; the host takes screenshots of the boot (splash) and
+     the desktop; then a
      normal update and a broken one (`pacman -Rdd systemd`: the next normal
      boot has no init), reboot;
-   - the normal boot fails ("Switch root target contains no usable init") – [`vmdriver.py`](vmdriver.py)
+   - the normal boot fails (no init) – the kernel command line is realistic
+     (no serial console, `quiet splash`), so the driver notices it by the
+     agent staying silent (or "no usable init" if visible), then [`vmdriver.py`](vmdriver.py)
      resets the VM and, like a user, boots the snapshot taken *before* the
      broken update from the Limine menu (the newest snapshot is the "post"
      snapshot of the broken update and is broken too). Keys are sent once
@@ -41,7 +45,7 @@ the serial console; nothing is installed or changed on the host. Not
 covered here: LUKS (the passphrase prompt cannot be automated in this
 setup), Secure Boot and TPM (Phase 2).
 
-First green run: 2026-11-25, 15 checks ok (about 25 minutes, most of it
+First green run: 2026-11-25, 15 checks ok; with the boot splash 18 (about 25 minutes, most of it
 downloads).
 
 Results go to `~/.cache/glassfort-vm/results/<time>/`: `phase1.log`,
