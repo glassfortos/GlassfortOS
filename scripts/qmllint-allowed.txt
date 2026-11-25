@@ -1,0 +1,8 @@
+# Known qmllint warnings (scripts/check-qml). Keep this list short:
+# only warnings caused by Plasma's dynamic or runtime-registered types.
+Warning: components/glassfort-shell/controlcenter-main.qml: Member "PreferredDevice" not found on type "undefined" [missing-property]
+Warning: components/glassfort-shell/controlcenter-main.qml: Member "PulseAudio" not found on type "undefined" [missing-property]
+Warning: components/glassfort-shell/controlcenter-main.qml: Type not found in namespace [unresolved-type]
+Warning: components/glassfort-shell/startmenu-main.qml: Cannot assign binding of type QObject to AbstractModel [incompatible-type]
+Warning: components/glassfort-shell/startmenu-main.qml: Member "initForClient" not found on type "AbstractModel" [missing-property]
+Warning: components/glassfort-shell/startmenu-main.qml: Member "portOldFavorites" not found on type "AbstractModel" [missing-property]

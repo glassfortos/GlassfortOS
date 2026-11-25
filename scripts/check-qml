@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Run qmllint on every QML file under components/ and fail on warnings
+# that are not in scripts/qmllint-allowed.txt.
+#
+# Ignored everywhere: "Unqualified access" – plasmoid files reach the
+# PlasmoidItem's id (root) from Plasma's context, which qmllint cannot see.
+# The allowlist holds the remaining known warnings, without line numbers,
+# as "file: message [category]". They come from Plasma modules whose types
+# are dynamic (Kicker models) or registered at runtime (plasma-pa).
+#
+# Usage: scripts/check-qml [--update]   (--update rewrites the allowlist)
+#
+# Needs: qt6-declarative (qmllint) and the Plasma QML modules the files
+# import (plasma-workspace, libplasma, kirigami, kirigami-addons, plasma-nm,
+# plasma-pa, powerdevil, bluez-qt, kpipewire, kcoreaddons).
+
+set -euo pipefail
+
+root=$(cd "$(dirname "$0")/.." && pwd)
+allowed=$root/scripts/qmllint-allowed.txt
+qmllint=$(command -v qmllint6 || command -v qmllint || echo /usr/lib/qt6/bin/qmllint)
+[[ -x $qmllint ]] || { echo "qmllint not found (qt6-declarative)" >&2; exit 1; }
+
+cd "$root"
+mapfile -t files < <(git ls-files 'components/*.qml')
+((${#files[@]})) || { echo "No QML files."; exit 0; }
+
+found=$(mktemp)
+trap 'rm -f "$found"' EXIT
+# Lint each component directory together, so types defined in sibling
+# files (StartMenuPopup.qml, ...) resolve.
+while read -r dir; do
+    (cd "$dir" && "$qmllint" -I /usr/lib/qt6/qml ./*.qml 2>&1 || true) |
+        grep -E '^(Warning|Error): ' |
+        grep -v 'Unqualified access' |
+        sed -E "s|^(Warning\|Error): (\./)?([^:]+):[0-9]+:[0-9]+: |\1: $dir/\3: |" >>"$found" || true
+done < <(printf '%s\n' "${files[@]}" | xargs -n1 dirname | sort -u)
+sort -u -o "$found" "$found"
+
+if [[ ${1:-} == --update ]]; then
+    {
+        echo "# Known qmllint warnings (scripts/check-qml). Keep this list short:"
+        echo "# only warnings caused by Plasma's dynamic or runtime-registered types."
+        cat "$found"
+    } >"$allowed"
+    echo "Wrote $(wc -l <"$found") entries to ${allowed#"$root"/}"
+    exit 0
+fi
+
+new=$(grep -vxF -f <(grep -v '^#' "$allowed") "$found" || true)
+stale=$(grep -v '^#' "$allowed" | grep -vxF -f "$found" || true)
+echo "qmllint: ${#files[@]} files, $(wc -l <"$found") known warnings"
+if [[ -n $stale ]]; then
+    echo "Allowlist entries no longer reported (remove them):"
+    sed 's/^/  /' <<<"$stale"
+fi
+if [[ -n $new ]]; then
+    echo "New qmllint warnings:" >&2
+    sed 's/^/  /' <<<"$new" >&2
+    exit 1
+fi
+echo "No new qmllint warnings."

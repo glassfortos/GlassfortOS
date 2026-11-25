@@ -120,7 +120,7 @@ screenshot of a complete, invisible Plasma session with them (global
 theme, layout and widgets as on a new user's first login).
 
 ```sh
-qmllint -I /usr/lib/qt6/qml *.qml
+../../scripts/check-qml   # qmllint, known Plasma warnings allowlisted
 makepkg -d -f            # assembles pkg/glassfort-shell/usr/share/plasma/plasmoids/
 ../../scripts/plasmoid-screenshot out.png \
     pkg/glassfort-shell/usr/share/plasma/plasmoids/org.glassfort.startmenu -f planar -s 760x900

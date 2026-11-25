@@ -39,6 +39,25 @@ jobs:
           components/glassfort-theme/generate --check
           components/glassfort-branding/generate --check
 
+  qml:
+    name: qmllint (Plasma QML modules)
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+    steps:
+      - name: Install qmllint and the Plasma QML modules
+        # Full upgrade only - never a partial sync (CLAUDE.md §6.4).
+        run: |
+          pacman -Syu --noconfirm --needed git qt6-declarative plasma-workspace \
+            libplasma kirigami kirigami-addons plasma-nm plasma-pa powerdevil \
+            bluez-qt kpipewire kcoreaddons
+
+      - uses: actions/checkout@v4
+
+      - name: qmllint
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          scripts/check-qml
+
   packages:
     name: Build packages (clean chroot)
     runs-on: ubuntu-latest

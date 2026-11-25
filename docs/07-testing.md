@@ -7,7 +7,7 @@ Test where distros typically break (NVIDIA, scaling, Secure Boot), automatically
 | Level | What |
 |---|---|
 | Unit tests | Rust helper (`cargo test`), Python assistant (`pytest`), registry schema validation |
-| Lint | shellcheck, namcap, clippy, ruff, qmllint |
+| Lint | shellcheck, namcap, clippy, ruff, qmllint (`scripts/check-qml` in an Arch container with the Plasma QML modules; known warnings from Plasma's dynamic types are allowlisted in `scripts/qmllint-allowed.txt`) |
 | Package builds | Every changed package in a clean chroot |
 | Install tests | ISO installed in QEMU/KVM with OVMF (UEFI) + swtpm (TPM 2.0); later with openQA |
 | Rollback tests | In a VM: break the system on purpose (e.g. remove a critical package), boot a snapshot, restore, verify. Phase 1 version: `tests/vm/phase1` (plain Arch → `pacman -S glassfort-desktop` → broken update → snapshot from the Limine menu → restore), run locally for now |
@@ -20,7 +20,6 @@ Test where distros typically break (NVIDIA, scaling, Secure Boot), automatically
 |---|---|
 | Plasmoid screenshots | `scripts/plasmoid-screenshot OUT.png PLASMOID_DIR`: runs the widget in an invisible KWin (`kwin_wayland --virtual`) on a private D-Bus session with empty config and data dirs and takes a screenshot. Needs a Plasma host (kwin, plasma-sdk, spectacle). |
 | Session screenshot | `scripts/session-screenshot OUT.png`: builds the desktop components with makepkg into a temporary root and screenshots a complete Plasma session (invisible KWin + plasmashell, empty config) that uses them. Shows global theme, panel layout and widgets as on a new user's first login. |
-| qmllint for plasmoids | Run locally for now; the CI lint job has no Plasma QML modules yet. |
 
 ## Real hardware matrix
 

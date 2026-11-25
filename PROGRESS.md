@@ -6,7 +6,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 ## Current task
 
 - **Status:** in progress  <!-- idle | in progress | blocked -->
-- **Task:** Phase 1 – foundation on plain Arch (now: glassfort-theme)
+- **Task:** Phase 1 follow-ups (open items) before Phase 2
 - **Roadmap item:** Phase 1
 - **Started:** 2026-11-22T22:25:00+01:00 (sub-task started 2026-11-23T22:36:57+01:00)
 - **Plan:**
@@ -52,8 +52,14 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] pacman -S glassfort-desktop + glassfort-setup, boot into Plasma – run 6: all first-boot checks ok incl. AppArmor
     - [x] break an update, roll back from the Limine snapshot menu – run 8 PASSED (15/15 checks)
 - **Files expected to change:** tests/vm/*, docs/07-testing.md, PROGRESS.md
-- **Next step if interrupted:** Phase 1 done except glassfort-keyring (waits for the real key, D-26). Open small items: dock jump lists, Plymouth/SDDM/lock screen artwork, wallpaper dithering, qmllint in CI. Ask the maintainer what comes next (Phase 2 or the open items). images/*.jpg stay untracked (reference only).
+- **Next step if interrupted:** Wallpaper dithering: add a little noise to the dark wallpaper gradients (generate) or dither at render time. images/*.jpg stay untracked (reference only).
 - **Blocked because:** –
+
+### Follow-ups (sub-task started 2026-11-25, maintainer: open items first)
+  - [x] qmllint in CI (scripts/check-qml, CI job qml in an Arch container, allowlist)
+  - [ ] wallpaper dithering against banding
+  - [ ] SDDM login theme, lock screen, Plymouth (glassfort-branding)
+  - [ ] dock jump lists
 
 ## Unpushed commits
 
@@ -64,6 +70,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-25 | – | CI: qmllint with allowlist (scripts/check-qml) |
 | 2026-11-25 | – | Phase 1 VM test passed (tests/vm/phase1); glassfort-setup boot fixes; Thunderbird launcher id |
 | 2026-11-24 | – | Fix CI: do not inject meta packages into later chroots |
 | 2026-11-24 | – | Fix glassfort-settings checksum (CI was red after the preset change) |
