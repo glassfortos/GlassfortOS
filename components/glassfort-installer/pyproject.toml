@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Tooling for the installer (not a Python package; PKGBUILD installs the files).
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "RUF", "PLW", "S"]
+# S603/S607: the backend runs fixed system tools by name on purpose.
+ignore = ["S603", "S607"]
+
+[tool.ruff.lint.per-file-ignores]
+"test_*.py" = ["S101", "S105", "S106", "S108", "S604", "E402"]
+
+[tool.pytest.ini_options]
+testpaths = ["."]

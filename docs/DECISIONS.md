@@ -51,3 +51,4 @@ Claude Code adds new decisions as **Proposed**. Only the maintainer sets **Decid
 | D-39 | Default apps in `glassfort-desktop` | Hard dependencies (installed with the meta package), not optdepends | Decided | 2026-11-24 |
 | D-40 | LibreOffice | `libreoffice-fresh` | Decided | 2026-11-24 |
 | D-41 | Boot splash | Plymouth with a Glassfort theme; `glassfort-desktop` depends on plymouth, `glassfort-setup` adds the initramfs hook and `quiet splash` | Decided | 2026-11-25 |
+| D-42 | Installer backend | `glassfort-install` (Python, root) drives archinstall through a generated configuration file instead of its Python API (the API changes between releases; the configuration format is its stable interface), then finishes the system itself (repository, Wi-Fi, look, recovery key). UI and backend talk JSON over stdin/stdout | Proposed | 2026-11-25 |

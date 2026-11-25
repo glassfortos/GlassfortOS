@@ -34,6 +34,14 @@ jobs:
       - name: Relative Markdown links
         run: scripts/check-links
 
+      - name: Python (installer backend)
+        working-directory: components/glassfort-installer
+        run: |
+          pip install --quiet ruff pytest
+          ruff check .
+          ruff format --check .
+          pytest -q -p no:cacheprovider
+
       - name: Generated theme files up to date
         run: |
           components/glassfort-theme/generate --check

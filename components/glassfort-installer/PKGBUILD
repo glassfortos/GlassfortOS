@@ -1,0 +1,45 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Maintainer: Glassfort project <https://github.com/glassfortos/GlassfortOS>
+
+# glassfort-installer: installs Glassfort from the live medium.
+# See README.md and docs/04-installer.md.
+
+pkgname=glassfort-installer
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='Glassfort installer (backend on top of archinstall)'
+arch=('any')
+url='https://github.com/glassfortos/GlassfortOS'
+license=('GPL-3.0-or-later')
+depends=(
+    'python'
+    'archinstall'
+    'arch-install-scripts'
+    'btrfs-progs'
+    'cryptsetup'
+    'e2fsprogs'
+    'systemd'
+    'util-linux'
+)
+checkdepends=('python-pytest')
+source=(
+    'glassfort_install.py'
+    'glassfort-install'
+    'test_install.py'
+)
+sha256sums=(
+    'e392b8f71e99df1d33986eac2884cd85a51de1158aa26b84d8cec1ee67af3652'
+    '5c11e6250ae6cdb2405979859f80e5cae804888c50c97d7e0cb011e862caaf6a'
+    'd0e76fe79c3890a45ab0454d39abd87759d80948f28a56b5baf7a9e230f5f8a5'
+)
+
+check() {
+    cd "${srcdir}"
+    python -m pytest -q -p no:cacheprovider test_install.py
+}
+
+package() {
+    install -Dm644 "${srcdir}/glassfort_install.py" \
+        "${pkgdir}/usr/lib/glassfort-installer/glassfort_install.py"
+    install -Dm755 "${srcdir}/glassfort-install" "${pkgdir}/usr/bin/glassfort-install"
+}

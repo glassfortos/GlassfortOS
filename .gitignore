@@ -27,3 +27,8 @@ cache/
 *~
 *.swp
 .DS_Store
+
+# Python tooling
+__pycache__/
+.pytest_cache/
+.ruff_cache/

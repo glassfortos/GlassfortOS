@@ -1,0 +1,4 @@
+#!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Installer backend entry point (see /usr/lib/glassfort-installer/).
+exec /usr/bin/python3 -I /usr/lib/glassfort-installer/glassfort_install.py "$@"

@@ -39,7 +39,7 @@ glassfort/
 │   ├── glassfort-helper/      # Rust: privileged helper (D-Bus system service)
 │   ├── glassfort-assistant/   # Python: AI service, MCP server; QML chat Plasmoid
 │   ├── glassfort-windows/     # Windows apps module (System Settings + tray)
-│   ├── glassfort-installer/   # installer frontend
+│   ├── glassfort-installer/   # installer (UI + backend on archinstall)
 │   ├── glassfort-firstboot/   # first-boot experience (extends Plasma Setup)
 │   ├── glassfort-keyring/     # repository signing keys (public)
 │   ├── glassfort-mirrorlist/  # mirrors for [glassfort]
@@ -69,7 +69,7 @@ Each component folder contains its source, a `PKGBUILD`, a short `README.md` and
 | `glassfort-helper` | Privileged helper: validated actions, snapshots, audit log | Rust |
 | `glassfort-assistant` | AI service, MCP server, chat Plasmoid | Python + QML |
 | `glassfort-windows` | VM lifecycle, app integration, hardware check | QML + Python |
-| `glassfort-installer` | Installer UI | QML/Kirigami + Python (archinstall) |
+| `glassfort-installer` | Installer UI and backend (`glassfort-install`, D-42) | QML/Kirigami + Python (archinstall) |
 | `glassfort-firstboot` | First-boot screens | QML |
 | `glassfort-keyring` | Public signing keys | – |
 | `glassfort-mirrorlist` | Server list for `[glassfort]` (Phase 1: local `file://` repo, D-33) | Config |

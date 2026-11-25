@@ -8,7 +8,7 @@
 ## Installer (`glassfort-installer`)
 
 - **Frontend:** own QML/Kirigami UI in Glassfort's look.
-- **Backend:** archinstall used as a Python library. We do not write our own partitioning logic.
+- **Backend:** `glassfort-install` drives archinstall with a generated configuration (D-42). We do not write our own partitioning logic.
 - **No interim installer** (D-12): Calamares is only in the AUR; the own installer is built in Phase 2 together with the ISO.
 
 ### Screens (at most 5)
