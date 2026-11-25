@@ -54,11 +54,11 @@ stale=$(grep -v '^#' "$allowed" | grep -vxF -f "$found" || true)
 echo "qmllint: ${#files[@]} files, $(wc -l <"$found") known warnings"
 if [[ -n $stale ]]; then
     echo "Allowlist entries no longer reported (remove them):"
-    sed 's/^/  /' <<<"$stale"
+    while IFS= read -r line; do echo "  $line"; done <<<"$stale"
 fi
 if [[ -n $new ]]; then
     echo "New qmllint warnings:" >&2
-    sed 's/^/  /' <<<"$new" >&2
+    while IFS= read -r line; do echo "  $line" >&2; done <<<"$new"
     exit 1
 fi
 echo "No new qmllint warnings."
