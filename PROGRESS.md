@@ -52,13 +52,15 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] pacman -S glassfort-desktop + glassfort-setup, boot into Plasma – run 6: all first-boot checks ok incl. AppArmor
     - [x] break an update, roll back from the Limine snapshot menu – run 8 PASSED (15/15 checks)
 - **Files expected to change:** tests/vm/*, docs/07-testing.md, PROGRESS.md
-- **Next step if interrupted:** glassfort-branding: SDDM login theme (Plasma's breeze SDDM theme as base? check licence), lock screen via the global themes, Plymouth theme with the logo. images/*.jpg stay untracked (reference only).
+- **Next step if interrupted:** Plymouth theme with the logo (glassfort-branding); needs plymouth + mkinitcpio hook + 'quiet splash' – check docs/02 and ask before changing the boot command line. images/*.jpg stay untracked (reference only).
 - **Blocked because:** –
 
 ### Follow-ups (sub-task started 2026-11-25, maintainer: open items first)
   - [x] qmllint in CI (scripts/check-qml, CI job qml in an Arch container, allowlist)
   - [x] wallpaper dithering against banding (zero-mean grain filter)
-  - [ ] SDDM login theme, lock screen, Plymouth (glassfort-branding)
+  - [x] SDDM login theme (glassfort-branding: theme 'glassfort' reusing Breeze's QML, dark wallpaper, lockup as logo)
+  - [x] lock screen wallpaper (glassfort-theme: /etc/xdg/kscreenlockerrc)
+  - [ ] Plymouth theme with the logo
   - [ ] dock jump lists
 
 ## Unpushed commits
@@ -70,6 +72,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-25 | – | Login screen theme (SDDM) and lock screen wallpaper |
 | 2026-11-25 | – | Wallpaper: zero-mean dithering against banding |
 | 2026-11-25 | – | CI: qmllint with allowlist (scripts/check-qml) |
 | 2026-11-25 | – | Phase 1 VM test passed (tests/vm/phase1); glassfort-setup boot fixes; Thunderbird launcher id |

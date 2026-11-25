@@ -1,0 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Lock screen wallpaper: the Glassfort wallpaper package (light/dark follow
+# the colour scheme). Users override it in System Settings.
+[Greeter][Wallpaper][org.kde.image][General]
+Image=/usr/share/wallpapers/Glassfort/

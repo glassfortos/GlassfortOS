@@ -26,6 +26,7 @@ backup=(
     'etc/skel/.config/gtk-4.0/settings.ini'
     'etc/xdg/Kvantum/kvantum.kvconfig'
     'etc/xdg/kdeglobals'
+    'etc/xdg/kscreenlockerrc'
     'etc/xdg/kitty/kitty.conf'
 )
 source=(
@@ -55,6 +56,7 @@ source=(
     'lnf-dark-defaults'
     'xdg-kdeglobals'
     'xdg-kvantum.kvconfig'
+    'xdg-kscreenlockerrc'
 )
 sha256sums=(
     '073d208e59ecfb5d078361056d6721f868b9afdf2aee89800bf8f3be9314ae82'
@@ -81,6 +83,7 @@ sha256sums=(
     'f4dd81b070e6773c763e9b44fbd8aeea6cce62e6f86b86208c9976c535be4e21'
     'c25b628ea09c2bec8c3b792a3b655b05456ab4b4750238cadc0c8dd27acddc38'
     '76e4fb9934f2916c2b65bf3a065292a10592b770e94243dfa6c8dc47016d9b53'
+    'c9750267592604cf6dfec940535805fa5af866131c41c304a8d1a5716de814ae'
 )
 
 # Wallpaper sizes: 16:9 in 4K and Full HD; Plasma picks the closest one.
@@ -148,4 +151,6 @@ package() {
     done
     install -Dm644 xdg-kdeglobals "${pkgdir}/etc/xdg/kdeglobals"
     install -Dm644 xdg-kvantum.kvconfig "${pkgdir}/etc/xdg/Kvantum/kvantum.kvconfig"
+    # Lock screen wallpaper.
+    install -Dm644 xdg-kscreenlockerrc "${pkgdir}/etc/xdg/kscreenlockerrc"
 }
