@@ -55,3 +55,19 @@ take about 4 GB.
 
 Needs: qemu, edk2-ovmf, libarchive (bsdtar), libisoburn (xorriso), curl,
 python, imagemagick, github-cli.
+
+## Live ISO: boot and screenshots
+
+```sh
+tests/vm/live-iso               # ISO from the newest green CI run on main
+tests/vm/live-iso --iso FILE    # or a local ISO
+```
+
+Boots the Glassfort ISO (UEFI, 4 GiB RAM, an empty 60 GiB sparse disk as
+installer target) and takes screenshots for four minutes: boot menu, live
+desktop, the installer starting by itself. Results go to
+`~/.cache/glassfort-vm/results/live-<time>/`. The ISO download is about
+2.5 GB and is kept in the cache (checksum verified).
+
+First run: 2026-11-25 – the live session reaches the Glassfort desktop and
+the installer opens on its first screen after about 40 seconds.

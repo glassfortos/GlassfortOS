@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Boot the Glassfort ISO in QEMU/KVM (OVMF, UEFI) and take screenshots of
+# the live session: boot menu, desktop, installer.
+#
+# Usage: tests/vm/live-iso [--iso FILE] [--memory MiB] [--wait SECONDS]
+#   --iso     the ISO to boot (default: download the "iso" artifact of the
+#             latest green CI run on main)
+#   --memory  VM memory (default 4096)
+#   --wait    how long to take screenshots (default 240)
+#
+# The VM gets an empty 60 GiB sparse disk, so the installer has a target.
+# Nothing is installed or changed on the host. Results (screenshots,
+# serial log) go to ~/.cache/glassfort-vm/results/live-<time>/.
+#
+# Needs: qemu-system-x86_64, qemu-img, edk2-ovmf, python3, ImageMagick
+# (magick), gh (for the CI artifact).
+
+set -euo pipefail
+
+here=$(cd "$(dirname "$0")" && pwd)
+cache=${GLASSFORT_VM_CACHE:-$HOME/.cache/glassfort-vm}
+memory=4096
+wait_s=240
+iso=""
+
+while (($#)); do
+    case $1 in
+        --iso) iso=$(realpath "$2"); shift 2 ;;
+        --memory) memory=$2; shift 2 ;;
+        --wait) wait_s=$2; shift 2 ;;
+        -h | --help) sed -n '4,18s/^# \{0,1\}//p' "$0"; exit 0 ;;
+        *) sed -n '4,18s/^# \{0,1\}//p' "$0" >&2; exit 2 ;;
+    esac
+done
+
+for tool in qemu-system-x86_64 qemu-img python3 magick; do
+    command -v "$tool" >/dev/null || { echo "missing tool: $tool" >&2; exit 1; }
+done
+[[ -r /dev/kvm ]] || { echo "/dev/kvm is not accessible" >&2; exit 1; }
+ovmf_code=/usr/share/edk2/x64/OVMF_CODE.4m.fd
+ovmf_vars=/usr/share/edk2/x64/OVMF_VARS.4m.fd
+[[ -f $ovmf_code ]] || { echo "edk2-ovmf not installed" >&2; exit 1; }
+
+mkdir -p "$cache"
+results=$cache/results/live-$(date +%Y%m%d-%H%M%S)
+mkdir -p "$results"
+
+if [[ -z $iso ]]; then
+    # The newest green run on main that has an ISO (artifacts are kept 3 days).
+    run=""
+    for id in $(gh run list --branch main --limit 20 --json databaseId,conclusion \
+        -q '.[] | select(.conclusion == "success") | .databaseId'); do
+        if gh api "repos/{owner}/{repo}/actions/runs/$id/artifacts" \
+            -q '.artifacts[] | select(.name == "iso" and (.expired | not)) | .name' | grep -q .; then
+            run=$id
+            break
+        fi
+    done
+    [[ -n $run ]] || { echo "no green CI run with an ISO artifact" >&2; exit 1; }
+    dl=$cache/iso-$run
+    if [[ ! -d $dl ]]; then
+        echo "==> downloading the ISO of CI run $run"
+        gh run download "$run" -n iso -D "$dl.part"
+        mv "$dl.part" "$dl"
+    fi
+    (cd "$dl" && sha256sum -c SHA256SUMS)
+    iso=$(find "$dl" -name '*.iso' | head -n1)
+fi
+echo "==> ISO: $iso"
+
+cp "$ovmf_vars" "$results/OVMF_VARS.fd"
+qemu-img create -q -f qcow2 "$results/disk.qcow2" 60G
+
+qemu-system-x86_64 \
+    -machine "q35,accel=kvm" -cpu host -smp 4 -m "$memory" \
+    -drive "if=pflash,format=raw,readonly=on,file=$ovmf_code" \
+    -drive "if=pflash,format=raw,file=$results/OVMF_VARS.fd" \
+    -drive "file=$results/disk.qcow2,if=virtio,format=qcow2" \
+    -drive "file=$iso,media=cdrom,readonly=on" \
+    -nic "user,model=virtio-net-pci" \
+    -vga virtio -display none \
+    -monitor "unix:$results/monitor.sock,server,nowait" \
+    -serial "file:$results/serial.log" \
+    >"$results/qemu.log" 2>&1 &
+qemu_pid=$!
+trap 'kill "$qemu_pid" 2>/dev/null || true; rm -f "$results/disk.qcow2"' EXIT
+
+python3 - "$here" "$results" "$wait_s" <<'PYEOF'
+import sys
+import time
+from pathlib import Path
+
+here, results, wait_s = Path(sys.argv[1]), Path(sys.argv[2]), int(sys.argv[3])
+sys.path.insert(0, str(here))
+from vmdriver import Monitor  # noqa: E402
+
+sock = results / "monitor.sock"
+for _ in range(100):
+    if sock.exists():
+        break
+    time.sleep(0.1)
+mon = Monitor(sock)
+start = time.monotonic()
+for t in [3, 20, 45, 75, 110, 150, 200, 240, 300, 400]:
+    if t > wait_s:
+        break
+    time.sleep(max(0, start + t - time.monotonic()))
+    png = results / f"{t:03d}s.png"
+    mon.screenshot(png)
+    print(f"[live-iso] screenshot {png}", flush=True)
+PYEOF
+echo "==> results: $results"

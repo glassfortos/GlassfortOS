@@ -52,7 +52,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] pacman -S glassfort-desktop + glassfort-setup, boot into Plasma – run 6: all first-boot checks ok incl. AppArmor
     - [x] break an update, roll back from the Limine snapshot menu – run 8 PASSED (15/15 checks)
 - **Files expected to change:** tests/vm/*, docs/07-testing.md, PROGRESS.md
-- **Next step if interrupted:** Check CI 'Build ISO' for the ISO fix commit; then download the iso artifact and boot it in QEMU (live desktop, installer starts). images/*.jpg stay untracked (reference only).
+- **Next step if interrupted:** Automated install test from the ISO (drive the installer UI via QEMU monitor), then fix what it finds. images/*.jpg stay untracked (reference only).
 - **Blocked because:** –
 
 ### Follow-ups (sub-task started 2026-11-25, maintainer: open items first)
@@ -74,7 +74,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 ### Phase 2 (started 2026-11-25)
   - [x] D-12: no interim Calamares; own installer moves into Phase 2 (docs/04, docs/09, docs/01)
   - [x] iso/: archiso profile (releng-based): live session with the Glassfort desktop, local [glassfort] repo (installer autostart follows with the installer)
-  - [ ] ISO build: script + CI job (privileged archlinux container), boot test in QEMU
+  - [x] ISO build: script + CI job (privileged archlinux container), boot test in QEMU (tests/vm/live-iso)
   - [x] glassfort-installer backend: glassfort-install (plan JSON -> archinstall config, run, post-install: repo, Wi-Fi, look, recovery key) + pytest
   - [x] glassfort-installer frontend: PySide6 + Kirigami QML, 5 screens (docs/04)
   - [x] ISO: bake [glassfort] repo into /srv/glassfort/repo, installer autostart
@@ -92,6 +92,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 | Date | Commit | Summary |
 |---|---|---|
+| 2026-11-25 | – | First ISO boots in QEMU: live desktop, installer starts |
 | 2026-11-25 | – | ISO: live system without glassfort-settings, repository on the medium, installer autostart |
 | 2026-11-25 | – | Installer UI (PySide6 + Kirigami, five screens) |
 | 2026-11-25 | – | Installer backend glassfort-install (archinstall config, finishing, recovery key) |
