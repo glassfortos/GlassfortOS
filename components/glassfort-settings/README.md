@@ -38,8 +38,11 @@ change. Steps:
    standard unmount → create-config → remount procedure.
 2. **Kernel command line:** add `lsm=landlock,lockdown,yama,integrity,apparmor,bpf`
    to the command line that limine-entry-tool uses (`/etc/default/limine`,
-   else `/etc/kernel/cmdline`, else a new `/etc/kernel/cmdline` derived from
-   the running system – never from a snapshot).
+   else `/etc/kernel/cmdline`, else a new `/etc/kernel/cmdline`). A new one
+   is derived from the running system – never from a snapshot. In a chroot
+   (installer) it comes from the first `cmdline:` in the installer's
+   `limine.conf`, else from the root filesystem (UUID, subvolume), because
+   `/proc/cmdline` there belongs to the installer's kernel.
 3. **initramfs:** add `btrfs-overlayfs` (or `sd-btrfs-overlayfs` for
    systemd-based initramfs) after `filesystems`, so read-only snapshots boot.
 4. **Firewall:** set `glassfort-public` as default zone.
@@ -47,7 +50,15 @@ change. Steps:
    `/usr/lib/systemd/system-preset/50-glassfort*.preset` (this package's and,
    for example, glassfort-desktop's). A unit that cannot be enabled (such as
    SDDM while another login manager is active) gives a warning.
-6. **Boot menu:** run `limine-update` if anything changed.
+6. **Boot menu:** run `limine-update` if anything changed (also in a chroot).
+   Then, once limine-entry-tool's managed entry exists, comment out plain
+   installer entries that boot `/vmlinuz-*` directly (archinstall writes
+   one); otherwise Limine would keep booting them by default, without the
+   Glassfort command line and away from the snapshot menu. Then
+   `default_entry` is pointed at the first kernel in Glassfort's entry:
+   Limine numbers directories too, and the managed entry is a directory
+   that cannot boot, so the menu would otherwise wait forever. A backup is
+   kept as `limine.conf.glassfort-bak`, and `limine-update` runs again.
 
 ## Why some defaults live elsewhere
 

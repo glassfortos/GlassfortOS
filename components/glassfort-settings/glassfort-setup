@@ -67,8 +67,8 @@ if ((EUID != 0)) && ((!check_only)); then
     exit 1
 fi
 
-# Inside a chroot without a running system (installer, package build
-# environment) systemctl and limine-update cannot do their work.
+# Inside a chroot (installer, package build environment) /proc/cmdline
+# belongs to the installer's kernel, not to the system being set up.
 in_chroot=0
 if command -v systemd-detect-virt &>/dev/null && systemd-detect-virt --chroot &>/dev/null; then
     in_chroot=1
@@ -131,6 +131,25 @@ setup_snapper() {
 
 # limine-entry-tool reads the kernel command line from KERNEL_CMDLINE in
 # /etc/default/limine, then /etc/kernel/cmdline, then /proc/cmdline.
+# Kernel command line of the installed system, for use in a chroot: the
+# first "cmdline:" of the Limine config the installer wrote (it knows about
+# encryption and the like), else built from the root filesystem.
+target_cmdline() {
+    local conf line uuid subvol
+    for conf in /boot/limine.conf /boot/limine/limine.conf /boot/EFI/limine/limine.conf /boot/EFI/BOOT/limine.conf; do
+        [[ -f $conf ]] || continue
+        line=$(grep -m1 -E '^[[:space:]]*(cmdline|kernel_cmdline):' "$conf" | sed -E 's/^[[:space:]]*[a-z_]+:[[:space:]]*//')
+        if [[ $line == *root=* ]]; then
+            printf '%s\n' "$line"
+            return 0
+        fi
+    done
+    uuid=$(findmnt -no UUID /) || return 1
+    [[ -n $uuid ]] || return 1
+    subvol=$(findmnt -no OPTIONS / | tr ',' '\n' | sed -n 's/^subvol=//p' | sed 's|^/||')
+    printf 'root=UUID=%s rw%s\n' "$uuid" "${subvol:+ rootflags=subvol=$subvol}"
+}
+
 setup_cmdline() {
     info "Kernel command line (AppArmor)"
     local file=""
@@ -157,14 +176,24 @@ setup_cmdline() {
         apply sed -i "1s|\$| lsm=$LSM|" "$file"
         ;;
     *)
-        # Create /etc/kernel/cmdline from the running system, without the
-        # parts that limine-entry-tool adds itself.
-        if [[ $(findmnt -no FSTYPE / 2>/dev/null) == overlay ]] || grep -q 'subvol=[^ ]*snapshots' /proc/cmdline; then
-            warn "Running from a snapshot – not deriving the command line from it."
-            return
-        fi
+        # Create /etc/kernel/cmdline without the parts that limine-entry-tool
+        # adds itself.
         local cmdline
-        cmdline=$(tr ' ' '\n' </proc/cmdline | grep -vE '^(BOOT_IMAGE|initrd)=' | grep -v '^lsm=' | tr '\n' ' ')
+        if ((in_chroot)); then
+            # /proc/cmdline belongs to the installer's kernel here (e.g. the
+            # Arch ISO), not to the system being set up.
+            cmdline=$(target_cmdline) || {
+                warn "Cannot tell the installed system's kernel command line; not writing /etc/kernel/cmdline."
+                return
+            }
+        else
+            if [[ $(findmnt -no FSTYPE / 2>/dev/null) == overlay ]] || grep -q 'subvol=[^ ]*snapshots' /proc/cmdline; then
+                warn "Running from a snapshot – not deriving the command line from it."
+                return
+            fi
+            cmdline=$(</proc/cmdline)
+        fi
+        cmdline=$(tr ' ' '\n' <<<"$cmdline" | grep -vE '^(BOOT_IMAGE|initrd)=' | grep -v '^lsm=' | grep -v '^$' | tr '\n' ' ')
         cmdline="${cmdline% } lsm=$LSM"
         changed=$((changed + 1))
         if ((check_only)); then
@@ -238,6 +267,77 @@ setup_services() {
 
 # --- 6. Boot entries -------------------------------------------------------------
 
+# Installers (e.g. archinstall) write a plain entry such as "/Arch Linux
+# (linux)" that boots /vmlinuz-linux directly. Once limine-entry-tool's
+# managed entry ("/+...") exists, that old entry would still be the default
+# (Limine boots the first entry) – without Glassfort's kernel command line
+# and away from the snapshot menu. Comment such entries out, with a backup.
+disable_installer_entries() {
+    local conf=$1
+    grep -q '^/+' "$conf" || return 0
+    local plan
+    plan=$(awk '
+        /^\/[^\/+]/ { block = NR; name[NR] = $0; direct[NR] = 0 }
+        /^\/\/|^\/\+/ { block = 0 }
+        block && /^[[:space:]]*(path|kernel_path):[[:space:]]*boot\(\):\/vmlinuz-/ { direct[block] = 1 }
+        END { for (b in direct) if (direct[b]) print b ":" name[b] }
+    ' "$conf")
+    [[ -n $plan ]] || return 0
+    local line
+    while IFS= read -r line; do
+        step "disable installer entry ${line#*:} (Glassfort's entry boots the same kernel)"
+    done <<<"$plan"
+    changed=$((changed + 1))
+    ((check_only)) && return 0
+    cp -p "$conf" "$conf.glassfort-bak"
+    awk -v starts="$(cut -d: -f1 <<<"$plan" | tr '\n' ' ')" '
+        BEGIN { n = split(starts, a, " "); for (i = 1; i <= n; i++) start[a[i]] = 1 }
+        start[NR] { off = 1 }
+        off && NR > 1 && !start[NR] && /^\// { off = 0 }
+        { print (off ? "#" $0 : $0) }
+    ' "$conf.glassfort-bak" >"$conf"
+    step "backup: $conf.glassfort-bak"
+}
+
+# Limine numbers every entry in order, directories included, and boots
+# default_entry (1 if unset) after the timeout. limine-entry-tool's managed
+# entry is a directory ("/+Arch Linux"), which cannot boot, so the menu
+# would wait forever. Point default_entry at its first kernel.
+set_default_entry() {
+    local conf=$1
+    grep -q '^/+' "$conf" || return 0
+    local want have
+    want=$(awk '
+        /^[[:space:]]*#/ { next }
+        /^[[:space:]]*\// { n++ }
+        /^\/\+/ { inside = 1; next }
+        inside && /^[[:space:]]*\/\/[^\/]/ { print n; exit }
+        inside && /^\/[^\/+]/ { inside = 0 }
+    ' "$conf")
+    [[ -n $want ]] || return 0
+    have=$(sed -n 's/^default_entry:[[:space:]]*//p' "$conf" | head -1)
+    if [[ $have == "$want" ]]; then
+        step "default boot entry is $want (Glassfort's kernel)"
+        return 0
+    fi
+    changed=$((changed + 1))
+    if ((check_only)); then
+        step "would set default_entry: $want in $conf"
+        return 0
+    fi
+    [[ -f $conf.glassfort-bak ]] || cp -p "$conf" "$conf.glassfort-bak"
+    if [[ -n $have ]]; then
+        sed -i "s/^default_entry:.*/default_entry: $want/" "$conf"
+    else
+        # Global options go before the first entry.
+        awk -v want="$want" '
+            !done && /^[[:space:]]*\// { print "default_entry: " want; done = 1 }
+            { print }
+        ' "$conf" >"$conf.glassfort-tmp" && cat "$conf.glassfort-tmp" >"$conf" && rm -f "$conf.glassfort-tmp"
+    fi
+    step "set default_entry: $want in $conf (Glassfort's kernel)"
+}
+
 setup_boot_entries() {
     info "Boot menu (Limine)"
     if ((!is_uefi)); then
@@ -248,15 +348,20 @@ setup_boot_entries() {
         warn "No limine.conf found on the ESP – Limine is not the bootloader. Install Arch with Limine (for example archinstall) to get snapshot boot entries."
         return
     fi
-    if ((in_chroot)); then
-        step "in a chroot – boot entries are updated on first boot"
-        return
-    fi
     if ((changed == 0)); then
         step "nothing changed, boot entries are current ($limine_conf)"
-        return
+    else
+        apply limine-update
     fi
-    apply limine-update
+    # limine-update creates the managed entry on first setup; afterwards the
+    # installer's entry can go. Changing limine.conf needs another
+    # limine-update (it re-enrolls the config checksum when that is used).
+    local before=$changed
+    disable_installer_entries "$limine_conf"
+    set_default_entry "$limine_conf"
+    if ((changed > before)); then
+        apply limine-update
+    fi
 }
 
 setup_snapper
