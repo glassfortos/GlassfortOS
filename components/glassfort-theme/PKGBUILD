@@ -57,6 +57,7 @@ source=(
     'xdg-kdeglobals'
     'xdg-kvantum.kvconfig'
     'xdg-kscreenlockerrc'
+    'lnf-splash.qml'
 )
 sha256sums=(
     '073d208e59ecfb5d078361056d6721f868b9afdf2aee89800bf8f3be9314ae82'
@@ -78,12 +79,13 @@ sha256sums=(
     'c340c767076726f4c440933a474cd5b86e216a4446b82b1310391ddc6d600acb'
     'a65aa69dc201a101e51562ffbc9b479a6dd2877a8834da630f6ce135292aa3d4'
     '3e9c29b0811d307ba856032cba8f2336bbdfd59e2e22b9fe7c36a0c5bd40d44a'
-    '1b77fab3669f73985d06a9ef2f81fd701e7b8effa410c4dd0a13543a2db3f89c'
+    '66cefe4146000abc03687cc8e25ed29ef7d257f95b6c5eb74c4bc23feda109bd'
     '9200f5bcf4346388c486ee40f73574476313848902d2e4f212a25c4554feac4a'
-    'f4dd81b070e6773c763e9b44fbd8aeea6cce62e6f86b86208c9976c535be4e21'
+    '818a280613a4eab832ebf345aeb607bab2d498eea5a506d1ba007ca6f054b6f5'
     'c25b628ea09c2bec8c3b792a3b655b05456ab4b4750238cadc0c8dd27acddc38'
     '76e4fb9934f2916c2b65bf3a065292a10592b770e94243dfa6c8dc47016d9b53'
     'c9750267592604cf6dfec940535805fa5af866131c41c304a8d1a5716de814ae'
+    'ffb2b4a4185e3f1ad52b037b20e7212bb357d1cd4832cee0c44cf54c08265b57'
 )
 
 # Wallpaper sizes: 16:9 in 4K and Full HD; Plasma picks the closest one.
@@ -149,6 +151,9 @@ package() {
         install -Dm644 "lnf-${variant}-defaults" "${lnf}/contents/defaults"
         install -Dm644 "lnf-${variant}-preview.png" "${lnf}/contents/previews/preview.png"
     done
+    # Start splash between login and desktop (KSplash); both themes use it.
+    install -Dm644 lnf-splash.qml \
+        "${pkgdir}/usr/share/plasma/look-and-feel/org.glassfort.desktop/contents/splash/Splash.qml"
     install -Dm644 xdg-kdeglobals "${pkgdir}/etc/xdg/kdeglobals"
     install -Dm644 xdg-kvantum.kvconfig "${pkgdir}/etc/xdg/Kvantum/kvantum.kvconfig"
     # Lock screen wallpaper.

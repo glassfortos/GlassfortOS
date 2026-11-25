@@ -19,6 +19,7 @@ Palette: D-22, dependencies: D-34 in
 | `wallpaper-{light,dark}.svg` (generated), `wallpaper-metadata.json` | `/usr/share/wallpapers/Glassfort/` | Desktop wallpaper; PNGs rendered at build time |
 | `lnf-{light,dark}-metadata.json`, `lnf-{light,dark}-defaults` | `/usr/share/plasma/look-and-feel/org.glassfort{,.dark}.desktop/` | Global themes Glassfort and Glassfort Dark (preview rendered at build time) |
 | `xdg-kdeglobals` | `/etc/xdg/kdeglobals` | Glassfort as default global theme, light/dark by time of day |
+| `lnf-splash.qml` | `…/org.glassfort.desktop/contents/splash/Splash.qml` | Start splash after login (Midnight, Glassfort symbol, dots – continues the Plymouth splash); both global themes use it |
 | `xdg-kscreenlockerrc` | `/etc/xdg/kscreenlockerrc` | Glassfort wallpaper on the lock screen (light/dark with the colour scheme) |
 | `xdg-kvantum.kvconfig` | `/etc/xdg/Kvantum/kvantum.kvconfig` | Glassfort as default Kvantum theme |
 | `gtk-settings.ini` | `/etc/gtk-{3,4}.0/`, `/etc/skel/.config/gtk-{3,4}.0/` | Makes `Glassfort` the default GTK theme |
@@ -125,8 +126,8 @@ Two Plasma global themes tie everything together:
 | Wallpaper | Glassfort | Glassfort |
 | Icons | Breeze | Breeze Dark |
 
-Cursor, Plasma style, window decoration and splash stay Breeze until
-Glassfort ships its own (`glassfort-shell`, `glassfort-branding`). No
+Cursor, Plasma style and window decoration stay Breeze until Glassfort
+ships its own (`glassfort-shell`, `glassfort-branding`). No
 panel layout yet; that also comes with `glassfort-shell`.
 
 How the defaults reach a user (from plasma-workspace's `startplasma`):

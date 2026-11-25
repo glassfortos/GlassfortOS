@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # Glassfort global theme. Plasma writes these values to ~/.config/kdedefaults
 # at login, so they act as defaults the user can still override.
-# Icons, cursor, Plasma style, window decoration and splash stay Breeze
-# until Glassfort ships its own.
+# Icons, cursor, Plasma style and window decoration stay Breeze until
+# Glassfort ships its own.
 
 [kdeglobals][KDE]
 # Kvantum: "kvantum" uses the Glassfort theme, "kvantum-dark" GlassfortDark.
@@ -36,4 +36,5 @@ library=org.kde.breeze
 theme=Breeze
 
 [ksplashrc][KSplash]
-Theme=org.kde.breeze.desktop
+# Glassfort's start splash (contents/splash of org.glassfort.desktop).
+Theme=org.glassfort.desktop
