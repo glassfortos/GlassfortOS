@@ -52,7 +52,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] pacman -S glassfort-desktop + glassfort-setup, boot into Plasma – run 6: all first-boot checks ok incl. AppArmor
     - [x] break an update, roll back from the Limine snapshot menu – run 8 PASSED (15/15 checks)
 - **Files expected to change:** tests/vm/*, docs/07-testing.md, PROGRESS.md
-- **Next step if interrupted:** Rewrite README.md (status, features, docs/images/desktop.png), then gh repo edit --description/--add-topic. images/*.jpg stay untracked (reference only).
+- **Next step if interrupted:** Phase 1 and follow-ups done; only glassfort-keyring waits for the real key (D-26). Ask the maintainer about Phase 2. images/*.jpg stay untracked (reference only).
 - **Blocked because:** –
 
 ### Follow-ups (sub-task started 2026-11-25, maintainer: open items first)
@@ -65,7 +65,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 
 ### GitHub page (sub-task started 2026-11-25)
   - [x] README: status after Phase 1, features, screenshot
-  - [ ] About: description, topics (gh repo edit)
+  - [x] About: description, topics (gh repo edit); social preview image only via web UI
 
 ## Unpushed commits
 
