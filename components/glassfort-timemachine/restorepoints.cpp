@@ -64,7 +64,15 @@ void RestorePoints::refresh()
         m_loading = false;
         Q_EMIT loadingChanged();
         if (reply.isError()) {
-            setError(i18n("The list of restore points could not be read: %1", reply.error().message()));
+            if (m_booted) {
+                // snapper does not work while a snapshot is booted (its "/"
+                // is not the configured subvolume): explain instead of
+                // showing snapper's error.
+                setError(i18n("While the computer runs from a restore point, the list is not available. Restore this state to keep it, or restart to go back to the current state."));
+            } else {
+                setError(i18n("The list of restore points could not be read: %1", reply.error().message()));
+            }
+            m_model->setSnapshots({}, m_booted);
             return;
         }
         setError(QString());

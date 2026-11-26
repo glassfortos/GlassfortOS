@@ -39,15 +39,17 @@ KCM.ScrollViewKCM {
         Kirigami.InlineMessage {
             Layout.fillWidth: true
             visible: kcm.error !== ""
-            type: Kirigami.MessageType.Error
+            // Booted from a restore point, the missing list is expected.
+            type: kcm.bootedSnapshot > 0 ? Kirigami.MessageType.Information : Kirigami.MessageType.Error
             text: kcm.error
-            actions: [
-                Kirigami.Action {
-                    text: i18n("Try again")
-                    icon.name: "view-refresh"
-                    onTriggered: kcm.refresh()
-                }
-            ]
+            actions: kcm.bootedSnapshot > 0 ? [] : [retryAction]
+        }
+
+        Kirigami.Action {
+            id: retryAction
+            text: i18n("Try again")
+            icon.name: "view-refresh"
+            onTriggered: kcm.refresh()
         }
 
         QQC2.Label {

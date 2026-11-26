@@ -49,119 +49,125 @@ msgstr ""
 msgid "the state you are running now"
 msgstr ""
 
-#: main.qml:46
+#: main.qml:50
 msgid "Try again"
 msgstr ""
 
-#: main.qml:57
+#: main.qml:59
 msgid ""
 "Glassfort saves a restore point before and after every software change. If "
 "something stops working, go back to a point from before the change. Your "
 "personal files are not affected."
 msgstr ""
 
-#: main.qml:77
+#: main.qml:79
 msgid "Today"
 msgstr ""
 
-#: main.qml:79
+#: main.qml:81
 msgid "Yesterday"
 msgstr ""
 
-#: main.qml:115
+#: main.qml:117
 msgid "%1 · running now"
 msgstr ""
 
-#: main.qml:116
+#: main.qml:118
 msgid "%1 · kept"
 msgstr ""
 
-#: main.qml:129
+#: main.qml:131
 msgid "Do not keep"
 msgstr ""
 
-#: main.qml:129
+#: main.qml:131
 msgid "Keep"
 msgstr ""
 
-#: main.qml:130
+#: main.qml:132
 msgid "Allow this restore point to be removed when it gets old"
 msgstr ""
 
-#: main.qml:130
+#: main.qml:132
 msgid "Keep this restore point when older ones are removed"
 msgstr ""
 
-#: main.qml:137
+#: main.qml:139
 msgid "Restore…"
 msgstr ""
 
-#: main.qml:150
+#: main.qml:152
 msgid "No restore points yet"
 msgstr ""
 
-#: main.qml:151
+#: main.qml:153
 msgid ""
 "A restore point is saved automatically before and after the next software "
 "change."
 msgstr ""
 
-#: main.qml:169
+#: main.qml:171
 msgid "Restore an earlier state?"
 msgstr ""
 
-#: main.qml:170
+#: main.qml:172
 msgid ""
 "The system goes back to %1. Programs and settings installed after it are "
 "undone; your personal files stay as they are. The current state is kept as a "
 "restore point, so you can come back."
 msgstr ""
 
-#: main.qml:174
+#: main.qml:176
 msgid "Restore"
 msgstr ""
 
-#: main.qml:182
+#: main.qml:184
 msgid "Cancel"
 msgstr ""
 
-#: main.qml:191
+#: main.qml:193
 msgid "Restoring…"
 msgstr ""
 
-#: main.qml:192
+#: main.qml:194
 msgid "This takes a few seconds. Please do not turn off the computer."
 msgstr ""
 
-#: main.qml:201
+#: main.qml:203
 msgid "Restart to finish"
 msgstr ""
 
-#: main.qml:202
+#: main.qml:204
 msgid "The earlier state is restored. It is used from the next restart on."
 msgstr ""
 
-#: main.qml:206
+#: main.qml:208
 msgid "Restart now"
 msgstr ""
 
-#: main.qml:211
+#: main.qml:213
 msgid "Later"
 msgstr ""
 
-#: main.qml:220
+#: main.qml:222
 msgid "Not restored"
 msgstr ""
 
-#: restorepoints.cpp:67
+#: restorepoints.cpp:71
+msgid ""
+"While the computer runs from a restore point, the list is not available. "
+"Restore this state to keep it, or restart to go back to the current state."
+msgstr ""
+
+#: restorepoints.cpp:73
 msgid "The list of restore points could not be read: %1"
 msgstr ""
 
-#: restorepoints.cpp:94
+#: restorepoints.cpp:102
 msgid "The restore point could not be changed: %1"
 msgstr ""
 
-#: restorepoints.cpp:119
+#: restorepoints.cpp:127
 msgid "The restore was cancelled or not allowed."
 msgstr ""
 

@@ -55,11 +55,11 @@ msgstr "Diesen Zustand wiederherstellen"
 msgid "the state you are running now"
 msgstr "den Zustand, den du gerade verwendest"
 
-#: main.qml:46
+#: main.qml:50
 msgid "Try again"
 msgstr "Erneut versuchen"
 
-#: main.qml:57
+#: main.qml:59
 msgid ""
 "Glassfort saves a restore point before and after every software change. If "
 "something stops working, go back to a point from before the change. Your "
@@ -69,47 +69,47 @@ msgstr ""
 "Wiederherstellungspunkt. Wenn etwas nicht mehr funktioniert, kehre zu einem "
 "Punkt vor der Änderung zurück. Deine persönlichen Dateien bleiben unberührt."
 
-#: main.qml:77
+#: main.qml:79
 msgid "Today"
 msgstr "Heute"
 
-#: main.qml:79
+#: main.qml:81
 msgid "Yesterday"
 msgstr "Gestern"
 
-#: main.qml:115
+#: main.qml:117
 msgid "%1 · running now"
 msgstr "%1 · gerade in Verwendung"
 
-#: main.qml:116
+#: main.qml:118
 msgid "%1 · kept"
 msgstr "%1 · behalten"
 
-#: main.qml:129
+#: main.qml:131
 msgid "Do not keep"
 msgstr "Nicht behalten"
 
-#: main.qml:129
+#: main.qml:131
 msgid "Keep"
 msgstr "Behalten"
 
-#: main.qml:130
+#: main.qml:132
 msgid "Allow this restore point to be removed when it gets old"
 msgstr "Diesen Wiederherstellungspunkt entfernen lassen, wenn er alt wird"
 
-#: main.qml:130
+#: main.qml:132
 msgid "Keep this restore point when older ones are removed"
 msgstr "Diesen Wiederherstellungspunkt behalten, wenn ältere entfernt werden"
 
-#: main.qml:137
+#: main.qml:139
 msgid "Restore…"
 msgstr "Wiederherstellen …"
 
-#: main.qml:150
+#: main.qml:152
 msgid "No restore points yet"
 msgstr "Noch keine Wiederherstellungspunkte"
 
-#: main.qml:151
+#: main.qml:153
 msgid ""
 "A restore point is saved automatically before and after the next software "
 "change."
@@ -117,11 +117,11 @@ msgstr ""
 "Vor und nach der nächsten Softwareänderung wird automatisch ein "
 "Wiederherstellungspunkt gespeichert."
 
-#: main.qml:169
+#: main.qml:171
 msgid "Restore an earlier state?"
 msgstr "Früheren Zustand wiederherstellen?"
 
-#: main.qml:170
+#: main.qml:172
 msgid ""
 "The system goes back to %1. Programs and settings installed after it are "
 "undone; your personal files stay as they are. The current state is kept as a "
@@ -132,53 +132,62 @@ msgstr ""
 "aktuelle Zustand wird als Wiederherstellungspunkt behalten, du kannst also "
 "zurück."
 
-#: main.qml:174
+#: main.qml:176
 msgid "Restore"
 msgstr "Wiederherstellen"
 
-#: main.qml:182
+#: main.qml:184
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: main.qml:191
+#: main.qml:193
 msgid "Restoring…"
 msgstr "Wird wiederhergestellt …"
 
-#: main.qml:192
+#: main.qml:194
 msgid "This takes a few seconds. Please do not turn off the computer."
 msgstr "Das dauert einige Sekunden. Bitte schalte den Computer nicht aus."
 
-#: main.qml:201
+#: main.qml:203
 msgid "Restart to finish"
 msgstr "Zum Abschließen neu starten"
 
-#: main.qml:202
+#: main.qml:204
 msgid "The earlier state is restored. It is used from the next restart on."
 msgstr ""
 "Der frühere Zustand ist wiederhergestellt. Er wird ab dem nächsten Neustart "
 "verwendet."
 
-#: main.qml:206
+#: main.qml:208
 msgid "Restart now"
 msgstr "Jetzt neu starten"
 
-#: main.qml:211
+#: main.qml:213
 msgid "Later"
 msgstr "Später"
 
-#: main.qml:220
+#: main.qml:222
 msgid "Not restored"
 msgstr "Nicht wiederhergestellt"
 
-#: restorepoints.cpp:67
+#: restorepoints.cpp:71
+msgid ""
+"While the computer runs from a restore point, the list is not available. "
+"Restore this state to keep it, or restart to go back to the current state."
+msgstr ""
+"Solange der Computer von einem Wiederherstellungspunkt läuft, ist die Liste "
+"nicht verfügbar. Stelle diesen Zustand wieder her, um ihn zu behalten, oder "
+"starte neu, um zum aktuellen Zustand zurückzukehren."
+
+#: restorepoints.cpp:73
 msgid "The list of restore points could not be read: %1"
 msgstr "Die Liste der Wiederherstellungspunkte konnte nicht gelesen werden: %1"
 
-#: restorepoints.cpp:94
+#: restorepoints.cpp:102
 msgid "The restore point could not be changed: %1"
 msgstr "Der Wiederherstellungspunkt konnte nicht geändert werden: %1"
 
-#: restorepoints.cpp:119
+#: restorepoints.cpp:127
 msgid "The restore was cancelled or not allowed."
 msgstr "Die Wiederherstellung wurde abgebrochen oder nicht erlaubt."
 
@@ -229,4 +238,3 @@ msgstr "Vorher: %1"
 msgctxt "snapshot taken after a change"
 msgid "After: %1"
 msgstr "Nachher: %1"
-
