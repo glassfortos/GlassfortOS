@@ -17,6 +17,9 @@ depends=(
     'inter-font'
     'kvantum'
     'ttf-jetbrains-mono'
+    # KSplash screen (Splash.qml): QtQuick, org.kde.kirigami
+    'qt6-declarative'
+    'kirigami'
 )
 makedepends=('librsvg')
 backup=(
