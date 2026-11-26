@@ -117,7 +117,7 @@ case $phase in
             org.opensuse.Snapper "$@"
     }
     check snapper-list-as-user snapper_call ListSnapshots s root
-    check snapper-pin-as-user snapper_call SetSnapshot susssa{ss} root "$num" "vmtest pinned" number 1 important yes
+    check snapper-pin-as-user snapper_call SetSnapshot 'susssa{ss}' root "$num" "vmtest pinned" number 1 important yes
     check snapshot-pinned sh -c "snapper -c root list --columns number,userdata | grep -E '^ *$num .*important=yes'"
     # ... but may not restore without the admin password (no polkit agent
     # here, so polkit must refuse) ...
