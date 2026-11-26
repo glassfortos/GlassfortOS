@@ -7,6 +7,16 @@ the most useful contributions right now are feedback on the specification in
 By taking part you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 Security problems are reported privately – see [`SECURITY.md`](SECURITY.md).
 
+## Where to go
+
+- **Questions and help:** [Discussions → Q&A](https://github.com/glassfortos/GlassfortOS/discussions/categories/q-a).
+  Glassfort is based on Arch Linux but is not supported by the Arch
+  community, so please do not ask the Arch forums about it.
+- **Ideas and feedback:** [Discussions → Ideas](https://github.com/glassfortos/GlassfortOS/discussions/categories/ideas).
+- **Bugs and concrete feature requests:** [Issues](https://github.com/glassfortos/GlassfortOS/issues/new/choose),
+  using the bug report or feature request form. New issues get the
+  `triage` label; maintainers add an `area: …` label.
+
 ## Before you start
 
 - Read [`docs/00-overview.md`](docs/00-overview.md) and the doc for the area

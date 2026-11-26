@@ -1,0 +1,34 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+name: Feature request
+description: Suggest something Glassfort should do or do differently.
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Glassfort is curated on purpose: fewer, better options
+        (docs/00-overview.md). Ideas that are still vague are welcome in
+        Discussions → Ideas first.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem do you want to solve?
+      description: Describe the situation, not the solution yet.
+      placeholder: When I switch from Windows, I miss …
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would you like to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: who
+    attributes:
+      label: Who benefits?
+      description: For example Windows switchers, people with older hardware, everyone.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives you considered

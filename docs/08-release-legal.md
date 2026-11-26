@@ -49,7 +49,7 @@ Every source file carries an SPDX header, e.g. `# SPDX-License-Identifier: GPL-3
 
 ## Community *(Open)*
 
-- Support channel: forum, Matrix or Discord
+- Support channel: GitHub Discussions for now (Q&A, Ideas; D-46, Proposed); a chat (Matrix or Discord) may follow
 - `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md` (vulnerability reporting)
 
 ## Legal, Germany *(Open – not legal advice)*

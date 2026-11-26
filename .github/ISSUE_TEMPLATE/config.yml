@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+blank_issues_enabled: false
+contact_links:
+  - name: Question or help
+    url: https://github.com/glassfortos/GlassfortOS/discussions/categories/q-a
+    about: Ask in Discussions. Glassfort is based on Arch Linux, but please do not ask the Arch forums about Glassfort.
+  - name: Security problem
+    url: https://github.com/glassfortos/GlassfortOS/security/advisories/new
+    about: Report it privately, never in a public issue (SECURITY.md).
+  - name: Idea or feedback
+    url: https://github.com/glassfortos/GlassfortOS/discussions/categories/ideas
+    about: Talk about an idea before it becomes a feature request.

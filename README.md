@@ -54,6 +54,13 @@ Glassfort is based on Arch Linux but is not affiliated with or endorsed by the
 Arch Linux project. Please do not ask for Glassfort support in Arch Linux
 channels.
 
+## Help and feedback
+
+Questions and ideas go to [Discussions](https://github.com/glassfortos/GlassfortOS/discussions),
+bugs to [Issues](https://github.com/glassfortos/GlassfortOS/issues/new/choose),
+security problems privately (see [`SECURITY.md`](SECURITY.md)). More in
+[`CONTRIBUTING.md`](CONTRIBUTING.md).
+
 ## Licence
 
 Code: GPL-3.0-or-later ([`LICENSE`](LICENSE)). Documentation and artwork:

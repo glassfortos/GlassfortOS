@@ -52,8 +52,14 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] pacman -S glassfort-desktop + glassfort-setup, boot into Plasma – run 6: all first-boot checks ok incl. AppArmor
     - [x] break an update, roll back from the Limine snapshot menu – run 8 PASSED (15/15 checks)
 - **Files expected to change:** tests/vm/*, docs/07-testing.md, PROGRESS.md
-- **Next step if interrupted:** all fixes pushed up to d1d846a (unlock service verified in VM: pacman-unlocked ok; snapper fails in booted snapshots by design -> KCM explains it, user checks moved to phase 2; UI polished, screenshots on website). Wait for green CI of d1d846a, run tests/vm/phase2 --keep, expect 0 failed checks. Then Phase 2 remaining: glassfort-update (update app), Secure Boot validation. images/*.jpg stay untracked.
+- **Next step if interrupted:** CI 45884008454 (34962c3) green. The Phase 2 VM run started 20:49 was killed by Claude Code because the host ran low on memory (7.1 GiB host, 4 GiB VM); not restarted, waiting for the maintainer. Rerun: tests/vm/phase2 --keep (or --memory 3072), expect 0 failed checks. Then glassfort-update, Secure Boot validation. images/*.jpg stay untracked.
 - **Blocked because:** –
+
+### GitHub issues and discussions (sub-task started 2026-11-26T21:20:00+01:00, maintainer request)
+  - [x] issue forms: bug report, feature request; config.yml (no blank issues, links: Q&A discussions, private security report, website)
+  - [x] discussion category forms (Q&A, Ideas); enable Discussions (gh api); labels triage + area labels
+  - [x] D-46 (Proposed): GitHub Discussions as the support channel for now (docs/08 "Support channel" was Open); CONTRIBUTING, README links
+  - [x] check private vulnerability reporting is enabled (SECURITY.md relies on it)
 
 ### Restore Points / glassfort-timemachine (sub-task started 2026-11-26T16:10:00+01:00, roadmap Phase 2)
   - [x] research (2026-11-26): snapper root config already has ALLOW_GROUPS="wheel" (list/pin via snapper D-Bus without root); `limine-snapper-sync --restore` can restore any snapshot in its manifest, also from the normal system, but only interactively (stdin prompts) -> needs a small non-interactive patch (`--restore <id> --yes`); no Rust/cmake/ECM on this host. Was: research: snapper D-Bus permissions, limine-snapper-restore (non-interactive?), helper/polkit per docs/02, tooling here (Rust, KF6 dev)

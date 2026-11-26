@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Share an idea or feedback. Good ideas describe a situation first:
+        what you do, what gets in the way. Ideas that are clear enough
+        become feature requests (issues).
+  - type: textarea
+    id: idea
+    attributes:
+      label: Your idea
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why it matters
+      description: Who would use it, and how often?
