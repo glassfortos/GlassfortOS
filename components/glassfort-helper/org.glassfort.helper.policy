@@ -9,7 +9,9 @@
 
   <action id="org.glassfort.helper.restore-snapshot">
     <description>Restore an earlier state of the system</description>
+    <description xml:lang="de">Einen früheren Zustand des Systems wiederherstellen</description>
     <message>Authentication is required to restore an earlier state of the system.</message>
+    <message xml:lang="de">Zum Wiederherstellen eines früheren Systemzustands ist eine Authentifizierung erforderlich.</message>
     <defaults>
       <allow_any>no</allow_any>
       <allow_inactive>no</allow_inactive>
