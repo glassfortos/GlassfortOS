@@ -29,8 +29,12 @@ done
 # The creation date changes on every run; leave it out so --check is stable.
 msgcat --use-first --sort-by-file "$tmp"/cpp.pot "$tmp"/qml.pot "$tmp"/sh.pot | sed '/^"POT-Creation-Date:/d' >"$tmp/$pot"
 
+# Messages only: line numbers, wrapping and the header differ between
+# gettext versions (CI runs a different one than Arch).
+normalize() { msgcat --no-location --no-wrap --sort-output "$1" | sed '1,/^$/d'; }
+
 if [[ ${1:-} == --check ]]; then
-    if ! diff -q "$tmp/$pot" "$pot" >/dev/null 2>&1; then
+    if ! diff -q <(normalize "$tmp/$pot") <(normalize "$pot") >/dev/null; then
         echo "$pot is out of date; run ./update-po" >&2
         exit 1
     fi
