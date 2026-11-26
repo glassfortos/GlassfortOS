@@ -52,7 +52,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] pacman -S glassfort-desktop + glassfort-setup, boot into Plasma – run 6: all first-boot checks ok incl. AppArmor
     - [x] break an update, roll back from the Limine snapshot menu – run 8 PASSED (15/15 checks)
 - **Files expected to change:** tests/vm/*, docs/07-testing.md, PROGRESS.md
-- **Next step if interrupted:** (2026-11-26) phase2 run 20261125-230816: installed system fails with "/sbin/init does not exist" (Limine loads archinstall's /boot/EFI/BOOT/limine.conf). Inspect that disk from the live ISO, confirm the cause, then commit the limine.conf fix in glassfort_install.py (separate from translations), push, rerun tests/vm/phase2 with the new CI ISO. Translations + tests/vm/phase2 commit afterwards. images/*.jpg stay untracked (reference only).
+- **Next step if interrupted:** limine fix pushed (d429c1c), CI builds ISO. Live check of German UI found: (a) GettextTranslator returned "" -> blank English labels (fixed in installer_ui.py, verified live); (b) `nmcli networking connectivity check` not authorized for live user -> stuck on Wi-Fi page; (c) iso locale.gen hook writes literal "\1" -> no locales. Commit order: translations, (b), (c), then tests/vm/phase2 + vmctl.py; then fresh phase2 run with the new CI ISO. images/*.jpg stay untracked.
 - **Blocked because:** –
 
 ### Follow-ups (sub-task started 2026-11-25, maintainer: open items first)
@@ -80,4 +80,4 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [x] ISO: bake [glassfort] repo into /srv/glassfort/repo, installer autostart
   - [x] VM test: install from the ISO (first install 2026-11-25; fixes committed; boots to the desktop)
   - [ ] Automate the ISO install test end to end (UI clicks are flaky in QEMU) + rollback on the installed system
-  - [ ] Follow-ups: Limine menu label (TARGET_OS_NAME=Glassfort committed, verify in next install), tray network icon missing on installed desktop (check), UI translations (de): written (qsTr + gettext QTranslator, update-po, de.po, CI check) – uncommitted until verified live in a VM
+  - [ ] Follow-ups: Limine menu label (TARGET_OS_NAME=Glassfort committed, verify in next install), tray network icon missing on installed desktop (check), UI translations (de): done, verified live in the ISO VM 2026-11-26 (language switch retranslates the running UI)

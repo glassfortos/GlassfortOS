@@ -36,8 +36,11 @@ Five screens (docs/04), then progress and the end:
 The UI runs as the live user and starts only the backend as root
 (`sudo -n glassfort-install`, allowed without a password in the live
 session). The plan goes to the backend on stdin. Strings are translatable
-(gettext domain `glassfort-installer`; QML calls `L10n.tr()`); the
-translations themselves follow.
+(gettext domain `glassfort-installer`; QML uses `qsTr()`, served from the
+same gettext catalogue by a `QTranslator`, so choosing a language on the
+first screen retranslates the running UI). Translations live in
+`glassfort-installer-<lang>.po`; `./update-po` refreshes them from the
+sources.
 
 ## Backend
 

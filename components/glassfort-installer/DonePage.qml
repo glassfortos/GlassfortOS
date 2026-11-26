@@ -29,7 +29,7 @@ Item {
         Kirigami.Heading {
             Layout.alignment: Qt.AlignHCenter
             level: 1
-            text: L10n.tr("Glassfort is installed")
+            text: qsTr("Glassfort is installed")
         }
 
         ColumnLayout {
@@ -40,7 +40,7 @@ Item {
             QQC2.Label {
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
-                text: L10n.tr("This is your recovery key. If you ever forget your disk password, it is the only way to get to your files. Write it down or take a photo and keep it somewhere safe – it is shown only now.")
+                text: qsTr("This is your recovery key. If you ever forget your disk password, it is the only way to get to your files. Write it down or take a photo and keep it somewhere safe – it is shown only now.")
             }
             QQC2.TextArea {
                 Layout.fillWidth: true
@@ -53,7 +53,7 @@ Item {
             }
             QQC2.CheckBox {
                 id: saved
-                text: L10n.tr("I have written down my recovery key")
+                text: qsTr("I have written down my recovery key")
             }
         }
 
@@ -64,13 +64,13 @@ Item {
             Layout.alignment: Qt.AlignHCenter
             highlighted: true
             icon.name: "system-reboot"
-            text: L10n.tr("Restart now")
+            text: qsTr("Restart now")
             enabled: page.recoveryKey === "" || saved.checked
             onClicked: installer.reboot()
         }
         QQC2.Label {
             Layout.alignment: Qt.AlignHCenter
-            text: L10n.tr("Remove the USB stick when the computer turns off.")
+            text: qsTr("Remove the USB stick when the computer turns off.")
             opacity: 0.7
         }
     }

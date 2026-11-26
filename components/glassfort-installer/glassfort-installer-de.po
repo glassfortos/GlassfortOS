@@ -1,0 +1,338 @@
+# German translation of the Glassfort installer.
+# SPDX-License-Identifier: GPL-3.0-or-later
+msgid ""
+msgstr ""
+"Project-Id-Version: glassfort-installer\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: DiskPage.qml
+msgid "Disk"
+msgstr "Festplatte"
+
+#: DiskPage.qml
+msgid "Glassfort uses the whole disk. It is encrypted, so nobody can read your files without your password – even if the computer is stolen."
+msgstr "Glassfort nutzt die ganze Festplatte. Sie wird verschlüsselt, damit niemand ohne dein Passwort deine Dateien lesen kann – auch nicht, wenn der Computer gestohlen wird."
+
+#: DiskPage.qml
+msgid "%1 – too small (at least 40 GB)"
+msgstr "%1 – zu klein (mindestens 40 GB)"
+
+#: DiskPage.qml
+msgid "No disk found"
+msgstr "Keine Festplatte gefunden"
+
+#: DiskPage.qml
+msgid "Glassfort needs a disk with at least 40 GB."
+msgstr "Glassfort braucht eine Festplatte mit mindestens 40 GB."
+
+#: DiskPage.qml
+msgid "Erase everything on this disk and install Glassfort"
+msgstr "Alles auf dieser Festplatte löschen und Glassfort installieren"
+
+#: DiskPage.qml
+msgid "All files, programs and systems on %1 will be deleted."
+msgstr "Alle Dateien, Programme und Systeme auf %1 werden gelöscht."
+
+#: DiskPage.qml
+msgid "Encrypt the disk (recommended)"
+msgstr "Festplatte verschlüsseln (empfohlen)"
+
+#: DonePage.qml
+msgid "Glassfort is installed"
+msgstr "Glassfort ist installiert"
+
+#: DonePage.qml
+msgid "This is your recovery key. If you ever forget your disk password, it is the only way to get to your files. Write it down or take a photo and keep it somewhere safe – it is shown only now."
+msgstr "Das ist dein Wiederherstellungsschlüssel. Falls du dein Festplatten-Passwort einmal vergisst, kommst du nur damit an deine Dateien. Schreib ihn auf oder fotografiere ihn und bewahre ihn sicher auf – er wird nur jetzt angezeigt."
+
+#: DonePage.qml
+msgid "I have written down my recovery key"
+msgstr "Ich habe meinen Wiederherstellungsschlüssel notiert"
+
+#: DonePage.qml
+msgid "Restart now"
+msgstr "Jetzt neu starten"
+
+#: DonePage.qml
+msgid "Remove the USB stick when the computer turns off."
+msgstr "Zieh den USB-Stick ab, sobald sich der Computer ausschaltet."
+
+#: LanguagePage.qml
+msgid "Language and keyboard"
+msgstr "Sprache und Tastatur"
+
+#: LanguagePage.qml
+msgid "Welcome to Glassfort. Choose your language – the keyboard layout and time zone follow, and you can change them below."
+msgstr "Willkommen bei Glassfort. Wähle deine Sprache – Tastaturbelegung und Zeitzone passen sich an, du kannst sie unten ändern."
+
+#: LanguagePage.qml
+msgid "Keyboard layout:"
+msgstr "Tastaturbelegung:"
+
+#: LanguagePage.qml
+msgid "Try your keyboard:"
+msgstr "Tastatur testen:"
+
+#: LanguagePage.qml
+msgid "Type here to test the layout"
+msgstr "Hier tippen, um die Belegung zu testen"
+
+#: LanguagePage.qml
+msgid "Time zone:"
+msgstr "Zeitzone:"
+
+#: LookPage.qml
+msgid "Look"
+msgstr "Aussehen"
+
+#: LookPage.qml
+msgid "Light"
+msgstr "Hell"
+
+#: LookPage.qml
+msgid "Dark"
+msgstr "Dunkel"
+
+#: LookPage.qml
+msgid "Automatic"
+msgstr "Automatisch"
+
+#: LookPage.qml
+msgid "Automatic switches to dark in the evening. You can change this any time in System Settings."
+msgstr "„Automatisch“ wechselt abends auf dunkel. Du kannst das jederzeit in den Systemeinstellungen ändern."
+
+#: Main.qml installer_ui.py
+msgid "Install Glassfort"
+msgstr "Glassfort installieren"
+
+#: Main.qml
+msgid "Back"
+msgstr "Zurück"
+
+#: Main.qml
+msgid "Install"
+msgstr "Installieren"
+
+#: Main.qml
+msgid "Continue"
+msgstr "Weiter"
+
+#: NetworkPage.qml
+msgid "Wi-Fi"
+msgstr "WLAN"
+
+#: NetworkPage.qml
+msgid "You are connected to the internet."
+msgstr "Du bist mit dem Internet verbunden."
+
+#: NetworkPage.qml
+msgid "Glassfort needs the internet to install. Choose a network."
+msgstr "Für die Installation braucht Glassfort Internet. Wähle ein Netzwerk."
+
+#: NetworkPage.qml
+msgid "Connected"
+msgstr "Verbunden"
+
+#: NetworkPage.qml
+msgid "Password for %1"
+msgstr "Passwort für %1"
+
+#: NetworkPage.qml
+msgid "Connect"
+msgstr "Verbinden"
+
+#: ProgressPage.qml
+msgid "Preparing…"
+msgstr "Vorbereiten …"
+
+#: ProgressPage.qml
+msgid "Preparing the disk…"
+msgstr "Festplatte wird vorbereitet …"
+
+#: ProgressPage.qml
+msgid "Installing the system…"
+msgstr "System wird installiert …"
+
+#: ProgressPage.qml
+msgid "Setting up the boot menu…"
+msgstr "Startmenü wird eingerichtet …"
+
+#: ProgressPage.qml
+msgid "Installing the desktop and apps…"
+msgstr "Desktop und Apps werden installiert …"
+
+#: ProgressPage.qml
+msgid "Applying settings…"
+msgstr "Einstellungen werden übernommen …"
+
+#: ProgressPage.qml
+msgid "Finishing…"
+msgstr "Abschluss …"
+
+#: ProgressPage.qml
+msgid "Familiar"
+msgstr "Vertraut"
+
+#: ProgressPage.qml
+msgid "Taskbar, Start menu and the shortcuts you know – Glassfort works the way you expect."
+msgstr "Taskleiste, Startmenü und die Tastenkürzel, die du kennst – Glassfort funktioniert, wie du es erwartest."
+
+#: ProgressPage.qml
+msgid "Beautiful"
+msgstr "Schön"
+
+#: ProgressPage.qml
+msgid "One consistent glass design, light or dark, across the whole system."
+msgstr "Ein einheitliches Glas-Design, hell oder dunkel, im ganzen System."
+
+#: ProgressPage.qml
+msgid "Unbreakable"
+msgstr "Unzerbrechlich"
+
+#: ProgressPage.qml
+msgid "Every change can be undone – even if your system won't start."
+msgstr "Jede Änderung lässt sich rückgängig machen – selbst wenn dein System nicht mehr startet."
+
+#: ProgressPage.qml
+msgid "Secure"
+msgstr "Sicher"
+
+#: ProgressPage.qml
+msgid "Encryption, firewall and AppArmor are on from the first minute."
+msgstr "Verschlüsselung, Firewall und AppArmor sind ab der ersten Minute aktiv."
+
+#: ProgressPage.qml
+msgid "No excuses"
+msgstr "Keine Ausreden"
+
+#: ProgressPage.qml
+msgid "Need a Windows app? It can run in a window next to your other apps."
+msgstr "Du brauchst eine Windows-App? Sie kann in einem Fenster neben deinen anderen Apps laufen."
+
+#: ProgressPage.qml
+msgid "Open"
+msgstr "Offen"
+
+#: ProgressPage.qml
+msgid "Open source, no hidden extras. Your computer belongs to you."
+msgstr "Open Source, ohne versteckte Extras. Dein Computer gehört dir."
+
+#: ProgressPage.qml
+msgid "The installation failed: %1. Your data on other disks was not touched. Details: /var/log/glassfort-install.log"
+msgstr "Die Installation ist fehlgeschlagen: %1. Daten auf anderen Festplatten wurden nicht angerührt. Details: /var/log/glassfort-install.log"
+
+#: UserPage.qml
+msgid "Your account"
+msgstr "Dein Konto"
+
+#: UserPage.qml
+msgid "Your name:"
+msgstr "Dein Name:"
+
+#: UserPage.qml
+msgid "User name:"
+msgstr "Benutzername:"
+
+#: UserPage.qml
+msgid "Lower-case letters, digits, - and _ only."
+msgstr "Nur Kleinbuchstaben, Ziffern, - und _."
+
+#: UserPage.qml
+msgid "Password:"
+msgstr "Passwort:"
+
+#: UserPage.qml
+msgid "Repeat password:"
+msgstr "Passwort wiederholen:"
+
+#: UserPage.qml
+msgid "The passwords do not match."
+msgstr "Die Passwörter stimmen nicht überein."
+
+#: UserPage.qml
+msgid "Use this password to unlock the disk"
+msgstr "Dieses Passwort auch zum Entsperren der Festplatte verwenden"
+
+#: UserPage.qml
+msgid "The disk password needs at least 8 characters."
+msgstr "Das Festplatten-Passwort braucht mindestens 8 Zeichen."
+
+#: UserPage.qml
+msgid "Disk password:"
+msgstr "Festplatten-Passwort:"
+
+#: UserPage.qml
+msgid "Repeat disk password:"
+msgstr "Festplatten-Passwort wiederholen:"
+
+#: installer_ui.py
+msgid "The installation stopped unexpectedly."
+msgstr "Die Installation wurde unerwartet abgebrochen."
+
+#: installer_data.py
+msgid "English (US)"
+msgstr "Englisch (USA)"
+
+#: installer_data.py
+msgid "English (UK)"
+msgstr "Englisch (Großbritannien)"
+
+#: installer_data.py
+msgid "German"
+msgstr "Deutsch"
+
+#: installer_data.py
+msgid "German (no dead keys)"
+msgstr "Deutsch (ohne Tottasten)"
+
+#: installer_data.py
+msgid "German (Austria)"
+msgstr "Deutsch (Österreich)"
+
+#: installer_data.py
+msgid "German (Switzerland)"
+msgstr "Deutsch (Schweiz)"
+
+#: installer_data.py
+msgid "French"
+msgstr "Französisch"
+
+#: installer_data.py
+msgid "French (Switzerland)"
+msgstr "Französisch (Schweiz)"
+
+#: installer_data.py
+msgid "Spanish"
+msgstr "Spanisch"
+
+#: installer_data.py
+msgid "Italian"
+msgstr "Italienisch"
+
+#: installer_data.py
+msgid "Polish"
+msgstr "Polnisch"
+
+#: installer_data.py
+msgid "Portuguese (Brazil)"
+msgstr "Portugiesisch (Brasilien)"
+
+#: installer_data.py
+msgid "Portuguese"
+msgstr "Portugiesisch"
+
+#: installer_data.py
+msgid "Swedish"
+msgstr "Schwedisch"
+
+#: installer_data.py
+msgid "Turkish"
+msgstr "Türkisch"
+
+#: installer_data.py
+msgid "English (Dvorak)"
+msgstr "Englisch (Dvorak)"

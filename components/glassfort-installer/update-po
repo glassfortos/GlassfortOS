@@ -1,0 +1,79 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+"""Refresh the installer's translation catalogues.
+
+Collects the strings from the QML files (qsTr("...")), the Python files
+(_("...")) and the keyboard layout names in installer_data.py, writes
+glassfort-installer.pot and merges it into every glassfort-installer-*.po
+(msgmerge). With --check, only reports whether the template is current
+(used in CI).
+
+Usage: ./update-po [--check]
+"""
+
+from __future__ import annotations
+
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+here = Path(__file__).resolve().parent
+sys.path.insert(0, str(here))
+
+import installer_data  # noqa: E402
+
+POT = here / "glassfort-installer.pot"
+
+
+def strings() -> list[tuple[str, str]]:
+    found: list[tuple[str, str]] = []
+    for f in sorted(here.glob("*.qml")):
+        for m in re.finditer(r'qsTr\("((?:[^"\\]|\\.)*)"\)', f.read_text()):
+            found.append((m.group(1), f.name))
+    for f in ("installer_ui.py",):
+        for m in re.finditer(r'\b_\("((?:[^"\\]|\\.)*)"\)', (here / f).read_text()):
+            found.append((m.group(1), f))
+    for kb in installer_data.KEYBOARDS:
+        found.append((kb[3], "installer_data.py"))
+    out: dict[str, list[str]] = {}
+    for text, where in found:
+        out.setdefault(text, [])
+        if where not in out[text]:
+            out[text].append(where)
+    return [(t, " ".join(w)) for t, w in out.items()]
+
+
+def pot() -> str:
+    lines = [
+        "# Glassfort installer translations.",
+        "# SPDX-License-Identifier: GPL-3.0-or-later",
+        'msgid ""',
+        'msgstr ""',
+        '"Content-Type: text/plain; charset=UTF-8\\n"',
+        "",
+    ]
+    for text, where in strings():
+        lines += [f"#: {where}", f'msgid "{text}"', 'msgstr ""', ""]
+    return "\n".join(lines)
+
+
+def main() -> int:
+    text = pot()
+    if "--check" in sys.argv:
+        if not POT.exists() or POT.read_text() != text:
+            print("glassfort-installer.pot is out of date; run ./update-po", file=sys.stderr)
+            return 1
+        return 0
+    POT.write_text(text)
+    for po in sorted(here.glob("glassfort-installer-*.po")):
+        subprocess.run(
+            ["msgmerge", "--quiet", "--update", "--backup=none", "--no-wrap", str(po), str(POT)],
+            check=True,
+        )
+        print(f"updated {po.name}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

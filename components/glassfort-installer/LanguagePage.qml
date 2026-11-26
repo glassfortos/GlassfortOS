@@ -11,7 +11,7 @@ Item {
     id: page
 
     required property var plan
-    readonly property string title: L10n.tr("Language and keyboard")
+    readonly property string title: qsTr("Language and keyboard")
     readonly property bool canContinue: plan.locale !== "" && plan.keyboard !== ""
 
     signal edited(string key, var value)
@@ -31,7 +31,7 @@ Item {
         QQC2.Label {
             Layout.fillWidth: true
             wrapMode: Text.WordWrap
-            text: L10n.tr("Welcome to Glassfort. Choose your language – the keyboard layout and time zone follow, and you can change them below.")
+            text: qsTr("Welcome to Glassfort. Choose your language – the keyboard layout and time zone follow, and you can change them below.")
         }
 
         QQC2.ScrollView {
@@ -64,7 +64,7 @@ Item {
             Layout.fillWidth: true
 
             QQC2.ComboBox {
-                Kirigami.FormData.label: L10n.tr("Keyboard layout:")
+                Kirigami.FormData.label: qsTr("Keyboard layout:")
                 model: installer.keyboards
                 textRole: "name"
                 valueRole: "keymap"
@@ -75,11 +75,11 @@ Item {
                 }
             }
             QQC2.TextField {
-                Kirigami.FormData.label: L10n.tr("Try your keyboard:")
-                placeholderText: L10n.tr("Type here to test the layout")
+                Kirigami.FormData.label: qsTr("Try your keyboard:")
+                placeholderText: qsTr("Type here to test the layout")
             }
             QQC2.ComboBox {
-                Kirigami.FormData.label: L10n.tr("Time zone:")
+                Kirigami.FormData.label: qsTr("Time zone:")
                 model: installer.timezones
                 currentIndex: page.indexOf(installer.timezones, "", page.plan.timezone)
                 onActivated: page.edited("timezone", currentText)

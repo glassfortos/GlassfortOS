@@ -12,7 +12,7 @@ Item {
 
     required property var plan
     property bool active: false
-    readonly property string title: L10n.tr("Disk")
+    readonly property string title: qsTr("Disk")
     readonly property bool canContinue: plan.disk !== "" && confirm.checked
 
     signal edited(string key, var value)
@@ -37,7 +37,7 @@ Item {
         QQC2.Label {
             Layout.fillWidth: true
             wrapMode: Text.WordWrap
-            text: L10n.tr("Glassfort uses the whole disk. It is encrypted, so nobody can read your files without your password – even if the computer is stolen.")
+            text: qsTr("Glassfort uses the whole disk. It is encrypted, so nobody can read your files without your password – even if the computer is stolen.")
         }
 
         QQC2.ScrollView {
@@ -75,7 +75,7 @@ Item {
                                 Layout.fillWidth: true
                             }
                             QQC2.Label {
-                                text: disk.modelData.big_enough ? disk.modelData.sizeText + " · " + disk.modelData.path : L10n.tr("%1 – too small (at least 40 GB)").replace("%1", disk.modelData.sizeText)
+                                text: disk.modelData.big_enough ? disk.modelData.sizeText + " · " + disk.modelData.path : qsTr("%1 – too small (at least 40 GB)").replace("%1", disk.modelData.sizeText)
                                 opacity: 0.7
                             }
                         }
@@ -86,8 +86,8 @@ Item {
                     width: parent.width - Kirigami.Units.gridUnit * 4
                     visible: parent.count === 0
                     icon.name: "drive-harddisk"
-                    text: L10n.tr("No disk found")
-                    explanation: L10n.tr("Glassfort needs a disk with at least 40 GB.")
+                    text: qsTr("No disk found")
+                    explanation: qsTr("Glassfort needs a disk with at least 40 GB.")
                 }
             }
         }
@@ -96,20 +96,20 @@ Item {
             id: confirm
             Layout.fillWidth: true
             enabled: page.plan.disk !== ""
-            text: L10n.tr("Erase everything on this disk and install Glassfort")
+            text: qsTr("Erase everything on this disk and install Glassfort")
         }
 
         Kirigami.InlineMessage {
             Layout.fillWidth: true
             visible: confirm.checked
             type: Kirigami.MessageType.Warning
-            text: L10n.tr("All files, programs and systems on %1 will be deleted.").replace("%1", page.plan.disk)
+            text: qsTr("All files, programs and systems on %1 will be deleted.").replace("%1", page.plan.disk)
         }
 
         QQC2.CheckBox {
             Layout.fillWidth: true
             checked: page.plan.encrypt
-            text: L10n.tr("Encrypt the disk (recommended)")
+            text: qsTr("Encrypt the disk (recommended)")
             onToggled: page.edited("encrypt", checked)
         }
     }

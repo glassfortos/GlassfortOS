@@ -29,7 +29,7 @@ Kirigami.ApplicationWindow {
     readonly property var steps: [languagePage, networkPage, diskPage, userPage, lookPage]
     readonly property bool installing: stack.currentIndex >= steps.length
 
-    title: L10n.tr("Install Glassfort")
+    title: qsTr("Install Glassfort")
     width: Kirigami.Units.gridUnit * 46
     height: Kirigami.Units.gridUnit * 34
     minimumWidth: Kirigami.Units.gridUnit * 34
@@ -167,7 +167,7 @@ Kirigami.ApplicationWindow {
                 visible: !window.installing
 
                 QQC2.Button {
-                    text: L10n.tr("Back")
+                    text: qsTr("Back")
                     icon.name: "go-previous"
                     visible: window.step > 0
                     onClicked: window.back()
@@ -178,7 +178,7 @@ Kirigami.ApplicationWindow {
                 QQC2.Button {
                     id: nextButton
                     readonly property bool last: window.step === window.steps.length - 1
-                    text: last ? L10n.tr("Install") : L10n.tr("Continue")
+                    text: last ? qsTr("Install") : qsTr("Continue")
                     icon.name: last ? "run-install" : "go-next"
                     highlighted: true
                     enabled: window.steps[window.step].canContinue

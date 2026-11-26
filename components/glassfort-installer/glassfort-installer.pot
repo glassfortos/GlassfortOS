@@ -1,0 +1,333 @@
+# Glassfort installer translations.
+# SPDX-License-Identifier: GPL-3.0-or-later
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+#: DiskPage.qml
+msgid "Disk"
+msgstr ""
+
+#: DiskPage.qml
+msgid "Glassfort uses the whole disk. It is encrypted, so nobody can read your files without your password – even if the computer is stolen."
+msgstr ""
+
+#: DiskPage.qml
+msgid "%1 – too small (at least 40 GB)"
+msgstr ""
+
+#: DiskPage.qml
+msgid "No disk found"
+msgstr ""
+
+#: DiskPage.qml
+msgid "Glassfort needs a disk with at least 40 GB."
+msgstr ""
+
+#: DiskPage.qml
+msgid "Erase everything on this disk and install Glassfort"
+msgstr ""
+
+#: DiskPage.qml
+msgid "All files, programs and systems on %1 will be deleted."
+msgstr ""
+
+#: DiskPage.qml
+msgid "Encrypt the disk (recommended)"
+msgstr ""
+
+#: DonePage.qml
+msgid "Glassfort is installed"
+msgstr ""
+
+#: DonePage.qml
+msgid "This is your recovery key. If you ever forget your disk password, it is the only way to get to your files. Write it down or take a photo and keep it somewhere safe – it is shown only now."
+msgstr ""
+
+#: DonePage.qml
+msgid "I have written down my recovery key"
+msgstr ""
+
+#: DonePage.qml
+msgid "Restart now"
+msgstr ""
+
+#: DonePage.qml
+msgid "Remove the USB stick when the computer turns off."
+msgstr ""
+
+#: LanguagePage.qml
+msgid "Language and keyboard"
+msgstr ""
+
+#: LanguagePage.qml
+msgid "Welcome to Glassfort. Choose your language – the keyboard layout and time zone follow, and you can change them below."
+msgstr ""
+
+#: LanguagePage.qml
+msgid "Keyboard layout:"
+msgstr ""
+
+#: LanguagePage.qml
+msgid "Try your keyboard:"
+msgstr ""
+
+#: LanguagePage.qml
+msgid "Type here to test the layout"
+msgstr ""
+
+#: LanguagePage.qml
+msgid "Time zone:"
+msgstr ""
+
+#: LookPage.qml
+msgid "Look"
+msgstr ""
+
+#: LookPage.qml
+msgid "Light"
+msgstr ""
+
+#: LookPage.qml
+msgid "Dark"
+msgstr ""
+
+#: LookPage.qml
+msgid "Automatic"
+msgstr ""
+
+#: LookPage.qml
+msgid "Automatic switches to dark in the evening. You can change this any time in System Settings."
+msgstr ""
+
+#: Main.qml installer_ui.py
+msgid "Install Glassfort"
+msgstr ""
+
+#: Main.qml
+msgid "Back"
+msgstr ""
+
+#: Main.qml
+msgid "Install"
+msgstr ""
+
+#: Main.qml
+msgid "Continue"
+msgstr ""
+
+#: NetworkPage.qml
+msgid "Wi-Fi"
+msgstr ""
+
+#: NetworkPage.qml
+msgid "You are connected to the internet."
+msgstr ""
+
+#: NetworkPage.qml
+msgid "Glassfort needs the internet to install. Choose a network."
+msgstr ""
+
+#: NetworkPage.qml
+msgid "Connected"
+msgstr ""
+
+#: NetworkPage.qml
+msgid "Password for %1"
+msgstr ""
+
+#: NetworkPage.qml
+msgid "Connect"
+msgstr ""
+
+#: ProgressPage.qml
+msgid "Preparing…"
+msgstr ""
+
+#: ProgressPage.qml
+msgid "Preparing the disk…"
+msgstr ""
+
+#: ProgressPage.qml
+msgid "Installing the system…"
+msgstr ""
+
+#: ProgressPage.qml
+msgid "Setting up the boot menu…"
+msgstr ""
+
+#: ProgressPage.qml
+msgid "Installing the desktop and apps…"
+msgstr ""
+
+#: ProgressPage.qml
+msgid "Applying settings…"
+msgstr ""
+
+#: ProgressPage.qml
+msgid "Finishing…"
+msgstr ""
+
+#: ProgressPage.qml
+msgid "Familiar"
+msgstr ""
+
+#: ProgressPage.qml
+msgid "Taskbar, Start menu and the shortcuts you know – Glassfort works the way you expect."
+msgstr ""
+
+#: ProgressPage.qml
+msgid "Beautiful"
+msgstr ""
+
+#: ProgressPage.qml
+msgid "One consistent glass design, light or dark, across the whole system."
+msgstr ""
+
+#: ProgressPage.qml
+msgid "Unbreakable"
+msgstr ""
+
+#: ProgressPage.qml
+msgid "Every change can be undone – even if your system won't start."
+msgstr ""
+
+#: ProgressPage.qml
+msgid "Secure"
+msgstr ""
+
+#: ProgressPage.qml
+msgid "Encryption, firewall and AppArmor are on from the first minute."
+msgstr ""
+
+#: ProgressPage.qml
+msgid "No excuses"
+msgstr ""
+
+#: ProgressPage.qml
+msgid "Need a Windows app? It can run in a window next to your other apps."
+msgstr ""
+
+#: ProgressPage.qml
+msgid "Open"
+msgstr ""
+
+#: ProgressPage.qml
+msgid "Open source, no hidden extras. Your computer belongs to you."
+msgstr ""
+
+#: ProgressPage.qml
+msgid "The installation failed: %1. Your data on other disks was not touched. Details: /var/log/glassfort-install.log"
+msgstr ""
+
+#: UserPage.qml
+msgid "Your account"
+msgstr ""
+
+#: UserPage.qml
+msgid "Your name:"
+msgstr ""
+
+#: UserPage.qml
+msgid "User name:"
+msgstr ""
+
+#: UserPage.qml
+msgid "Lower-case letters, digits, - and _ only."
+msgstr ""
+
+#: UserPage.qml
+msgid "Password:"
+msgstr ""
+
+#: UserPage.qml
+msgid "Repeat password:"
+msgstr ""
+
+#: UserPage.qml
+msgid "The passwords do not match."
+msgstr ""
+
+#: UserPage.qml
+msgid "Use this password to unlock the disk"
+msgstr ""
+
+#: UserPage.qml
+msgid "The disk password needs at least 8 characters."
+msgstr ""
+
+#: UserPage.qml
+msgid "Disk password:"
+msgstr ""
+
+#: UserPage.qml
+msgid "Repeat disk password:"
+msgstr ""
+
+#: installer_ui.py
+msgid "The installation stopped unexpectedly."
+msgstr ""
+
+#: installer_data.py
+msgid "English (US)"
+msgstr ""
+
+#: installer_data.py
+msgid "English (UK)"
+msgstr ""
+
+#: installer_data.py
+msgid "German"
+msgstr ""
+
+#: installer_data.py
+msgid "German (no dead keys)"
+msgstr ""
+
+#: installer_data.py
+msgid "German (Austria)"
+msgstr ""
+
+#: installer_data.py
+msgid "German (Switzerland)"
+msgstr ""
+
+#: installer_data.py
+msgid "French"
+msgstr ""
+
+#: installer_data.py
+msgid "French (Switzerland)"
+msgstr ""
+
+#: installer_data.py
+msgid "Spanish"
+msgstr ""
+
+#: installer_data.py
+msgid "Italian"
+msgstr ""
+
+#: installer_data.py
+msgid "Polish"
+msgstr ""
+
+#: installer_data.py
+msgid "Portuguese (Brazil)"
+msgstr ""
+
+#: installer_data.py
+msgid "Portuguese"
+msgstr ""
+
+#: installer_data.py
+msgid "Swedish"
+msgstr ""
+
+#: installer_data.py
+msgid "Turkish"
+msgstr ""
+
+#: installer_data.py
+msgid "English (Dvorak)"
+msgstr ""

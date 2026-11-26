@@ -15,21 +15,21 @@ Item {
     property string stage: "start"
     property string error: ""
     readonly property var stageText: ({
-        start: L10n.tr("Preparing…"),
-        disk: L10n.tr("Preparing the disk…"),
-        base: L10n.tr("Installing the system…"),
-        boot: L10n.tr("Setting up the boot menu…"),
-        desktop: L10n.tr("Installing the desktop and apps…"),
-        settings: L10n.tr("Applying settings…"),
-        finish: L10n.tr("Finishing…")
+        start: qsTr("Preparing…"),
+        disk: qsTr("Preparing the disk…"),
+        base: qsTr("Installing the system…"),
+        boot: qsTr("Setting up the boot menu…"),
+        desktop: qsTr("Installing the desktop and apps…"),
+        settings: qsTr("Applying settings…"),
+        finish: qsTr("Finishing…")
     })
     readonly property var promises: [
-        [L10n.tr("Familiar"), L10n.tr("Taskbar, Start menu and the shortcuts you know – Glassfort works the way you expect.")],
-        [L10n.tr("Beautiful"), L10n.tr("One consistent glass design, light or dark, across the whole system.")],
-        [L10n.tr("Unbreakable"), L10n.tr("Every change can be undone – even if your system won't start.")],
-        [L10n.tr("Secure"), L10n.tr("Encryption, firewall and AppArmor are on from the first minute.")],
-        [L10n.tr("No excuses"), L10n.tr("Need a Windows app? It can run in a window next to your other apps.")],
-        [L10n.tr("Open"), L10n.tr("Open source, no hidden extras. Your computer belongs to you.")]
+        [qsTr("Familiar"), qsTr("Taskbar, Start menu and the shortcuts you know – Glassfort works the way you expect.")],
+        [qsTr("Beautiful"), qsTr("One consistent glass design, light or dark, across the whole system.")],
+        [qsTr("Unbreakable"), qsTr("Every change can be undone – even if your system won't start.")],
+        [qsTr("Secure"), qsTr("Encryption, firewall and AppArmor are on from the first minute.")],
+        [qsTr("No excuses"), qsTr("Need a Windows app? It can run in a window next to your other apps.")],
+        [qsTr("Open"), qsTr("Open source, no hidden extras. Your computer belongs to you.")]
     ]
     property int slide: 0
 
@@ -85,7 +85,7 @@ Item {
             Layout.fillWidth: true
             visible: page.error !== ""
             type: Kirigami.MessageType.Error
-            text: L10n.tr("The installation failed: %1. Your data on other disks was not touched. Details: /var/log/glassfort-install.log").replace("%1", page.error)
+            text: qsTr("The installation failed: %1. Your data on other disks was not touched. Details: /var/log/glassfort-install.log").replace("%1", page.error)
         }
         QQC2.Label {
             visible: page.error === ""

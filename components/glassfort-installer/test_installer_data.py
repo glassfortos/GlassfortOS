@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 
@@ -74,3 +75,23 @@ def test_wired_connected() -> None:
     assert data.wired_connected("ethernet:connected\nwifi:disconnected\n")
     assert not data.wired_connected("ethernet:unavailable\nwifi:connected\n")
     assert not data.wired_connected("")
+
+
+def test_german_catalogue(tmp_path: Path) -> None:
+    import gettext
+    import subprocess
+
+    here = Path(__file__).resolve().parent
+    mo = tmp_path / "de" / "LC_MESSAGES" / "glassfort-installer.mo"
+    mo.parent.mkdir(parents=True)
+    subprocess.run(
+        ["msgfmt", "--check", "-o", str(mo), str(here / "glassfort-installer-de.po")], check=True
+    )
+    t = gettext.translation("glassfort-installer", tmp_path, languages=["de_DE"])
+    assert t.gettext("Continue") == "Weiter"
+    assert t.gettext("German") == "Deutsch"
+    # Every string in the template is translated.
+    pot = (here / "glassfort-installer.pot").read_text()
+    for msgid in re.findall(r'^msgid "(.+)"$', pot, re.MULTILINE):
+        text = msgid.replace('\\"', '"')
+        assert t.gettext(text) != text, text

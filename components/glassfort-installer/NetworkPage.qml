@@ -11,7 +11,7 @@ Item {
     id: page
 
     property bool active: false
-    readonly property string title: L10n.tr("Wi-Fi")
+    readonly property string title: qsTr("Wi-Fi")
     // Glassfort's packages come from the medium, but Arch's base packages
     // are downloaded: the installer needs the internet.
     readonly property bool canContinue: installer.online
@@ -36,7 +36,7 @@ Item {
             Layout.fillWidth: true
             visible: true
             type: installer.online ? Kirigami.MessageType.Positive : Kirigami.MessageType.Information
-            text: installer.online ? L10n.tr("You are connected to the internet.") : L10n.tr("Glassfort needs the internet to install. Choose a network.")
+            text: installer.online ? qsTr("You are connected to the internet.") : qsTr("Glassfort needs the internet to install. Choose a network.")
         }
 
         QQC2.ScrollView {
@@ -71,7 +71,7 @@ Item {
                         }
                         QQC2.Label {
                             visible: net.modelData.active
-                            text: L10n.tr("Connected")
+                            text: qsTr("Connected")
                             color: Kirigami.Theme.positiveTextColor
                         }
                         Kirigami.Icon {
@@ -97,12 +97,12 @@ Item {
             Kirigami.PasswordField {
                 id: password
                 Layout.fillWidth: true
-                placeholderText: L10n.tr("Password for %1").replace("%1", page.selected)
+                placeholderText: qsTr("Password for %1").replace("%1", page.selected)
                 onAccepted: connect.clicked()
             }
             QQC2.Button {
                 id: connect
-                text: L10n.tr("Connect")
+                text: qsTr("Connect")
                 enabled: password.text.length >= 8
                 onClicked: page.error = installer.connectWifi(page.selected, password.text)
             }

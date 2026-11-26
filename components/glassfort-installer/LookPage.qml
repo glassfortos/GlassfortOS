@@ -11,22 +11,22 @@ Item {
     id: page
 
     required property var plan
-    readonly property string title: L10n.tr("Look")
+    readonly property string title: qsTr("Look")
     readonly property bool canContinue: true
     readonly property var looks: [
         {
             look: "light",
-            name: L10n.tr("Light"),
+            name: qsTr("Light"),
             image: "file:///usr/share/wallpapers/Glassfort/contents/images/1920x1080.png"
         },
         {
             look: "dark",
-            name: L10n.tr("Dark"),
+            name: qsTr("Dark"),
             image: "file:///usr/share/wallpapers/Glassfort/contents/images_dark/1920x1080.png"
         },
         {
             look: "auto",
-            name: L10n.tr("Automatic"),
+            name: qsTr("Automatic"),
             image: ""
         }
     ]
@@ -40,7 +40,7 @@ Item {
         QQC2.Label {
             Layout.fillWidth: true
             wrapMode: Text.WordWrap
-            text: L10n.tr("Automatic switches to dark in the evening. You can change this any time in System Settings.")
+            text: qsTr("Automatic switches to dark in the evening. You can change this any time in System Settings.")
         }
 
         RowLayout {

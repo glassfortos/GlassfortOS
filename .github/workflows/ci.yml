@@ -41,6 +41,7 @@ jobs:
           ruff check .
           ruff format --check .
           pytest -q -p no:cacheprovider
+          ./update-po --check
 
       - name: Generated theme files up to date
         run: |

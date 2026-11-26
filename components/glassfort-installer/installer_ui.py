@@ -17,7 +17,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-from PySide6.QtCore import Property, QObject, QProcess, QUrl, Signal, Slot
+from PySide6.QtCore import Property, QObject, QProcess, QTranslator, QUrl, Signal, Slot
 from PySide6.QtGui import QGuiApplication, QIcon
 from PySide6.QtQml import QQmlApplicationEngine
 
@@ -43,15 +43,20 @@ def _run(args: list[str], timeout: int = 20) -> str:
         return ""
 
 
-class L10n(QObject):
-    """Translations for QML (gettext, docs: all UI strings translatable)."""
+class GettextTranslator(QTranslator):
+    """Serves QML's qsTr() from gettext (domain glassfort-installer), so the
+    whole installer has one translation catalogue and a language change
+    retranslates the running UI (QQmlEngine.retranslate)."""
 
-    @Slot(str, result=str)
-    def tr(self, text: str) -> str:
-        return _(text)
+    def translate(self, context, source_text, disambiguation=None, n=-1):
+        # Always return text: an empty Python string reaches Qt as an empty,
+        # non-null QString, which Qt takes as the translation (blank labels).
+        # gettext already falls back to the source text.
+        return _(source_text)
 
 
 class Installer(QObject):
+    languageChanged = Signal()
     disksChanged = Signal()
     wifiChanged = Signal()
     networkChanged = Signal()
@@ -83,7 +88,7 @@ class Installer(QObject):
             for lang in data.LANGUAGES
         ]
 
-    @Property("QVariantList", constant=True)
+    @Property("QVariantList", notify=languageChanged)
     def keyboards(self) -> list[dict]:
         return [{"keymap": k[0], "name": _(k[3])} for k in data.KEYBOARDS]
 
@@ -97,6 +102,7 @@ class Installer(QObject):
         """Switch the UI language for strings looked up from now on."""
         os.environ["LANGUAGE"] = locale
         _translation["current"] = gettext.translation(DOMAIN, languages=[locale], fallback=True)
+        self.languageChanged.emit()
 
     @Slot(str)
     def setKeyboard(self, keymap: str) -> None:
@@ -238,9 +244,11 @@ def main() -> int:
     app = QGuiApplication(sys.argv)
     app.setWindowIcon(QIcon.fromTheme("glassfort"))
     engine = QQmlApplicationEngine()
-    installer, l10n = Installer(), L10n()
+    translator = GettextTranslator(app)
+    app.installTranslator(translator)
+    installer = Installer()
+    installer.languageChanged.connect(engine.retranslate)
     engine.rootContext().setContextProperty("installer", installer)
-    engine.rootContext().setContextProperty("L10n", l10n)
     engine.load(QUrl.fromLocalFile(str(QML_DIR / "Main.qml")))
     if not engine.rootObjects():
         return 1

@@ -28,6 +28,7 @@ depends=(
     'qt6-declarative'
     'sudo'
 )
+makedepends=('gettext')
 checkdepends=('python-pytest')
 source=(
     'glassfort_install.py'
@@ -44,27 +45,36 @@ source=(
     'LookPage.qml'
     'ProgressPage.qml'
     'DonePage.qml'
+    'glassfort-installer-de.po'
     'test_install.py'
     'test_installer_data.py'
 )
-sha256sums=(
-    'fcb781e6db95cf4399093631ccd83fec0bde58141685deb1371f4d7e7ec64289'
-    '5c11e6250ae6cdb2405979859f80e5cae804888c50c97d7e0cb011e862caaf6a'
-    'd712c4236346cf17173c48a303ad95e17801ad1ac8f7bfe3db792b4b13ddb46f'
-    '35724d4a0c7164dffefd62dbf392fd9083424b54fe958658b4d52a5a85598839'
-    'd5cd2ce289937a362dc6d64bc88d12198c27aa8940f383b0e41bb0499e0da947'
-    'f26ee3ef419a656be09a9c268ba9a6b65b724a8f6794f51dd03b8f5e8a09e20d'
-    '11f2d91d80632f7eb511e486656921c94ca6ed0b91bd2592d8b22eabca87ba20'
-    '2dd4c0def572d0bdd30bdca45d1357b5d7beb9bf1bfac146d6de10ae281320a4'
-    'f74a34017287cc638824aaed368a17d65c24d2054ac6dabdd6cdd3c7e7b46527'
-    'c167475f586875424a360e323d5b7a2a1eaac750192f4ee1bdd8493ced4b4831'
-    '7631eb32ba4d59e4ca67ea59dfadd8fabcafd3ebd4c1e0608375c46d779cd167'
-    '06ff417b3b0d34fa3ba3f796269eb70db4835e1cb858274989f4e750e67141e3'
-    'dd296165b1dbf02ab0ccff58e842b3ea3d6cd34b8e72a899db88f6c96e3eb583'
-    '19a6f2431d421c54fa528cafa6b35f74ccc3b69c044d3bfffecbe2810d2de1ce'
-    '7e800eddc26ecfdd44f8e433a96df70756ac6b1954d77f0a6494e6a51b82ca81'
-    '5af99e8669569d2be866b5989f071d1cc8d32f448ffb242c9939d9cf43b5e139'
-)
+sha256sums=('fcb781e6db95cf4399093631ccd83fec0bde58141685deb1371f4d7e7ec64289'
+            '5c11e6250ae6cdb2405979859f80e5cae804888c50c97d7e0cb011e862caaf6a'
+            'd712c4236346cf17173c48a303ad95e17801ad1ac8f7bfe3db792b4b13ddb46f'
+            'd9b2c882e0a7ba6a53854a26c20b2a3422c436a0fa0e9193eb0a55ce7966bbe7'
+            'd5cd2ce289937a362dc6d64bc88d12198c27aa8940f383b0e41bb0499e0da947'
+            'f26ee3ef419a656be09a9c268ba9a6b65b724a8f6794f51dd03b8f5e8a09e20d'
+            '099f6bc0b19837e2b768ae00e62a2189798948294ba3e3fc7e384b90866a7298'
+            'fb71d6242f19e6aedd8b7af17d44875a8feb5e6f30d5a51efcb05c1c994d1d1a'
+            '9f5965c51a455a13e6dbf3b3cf052e4c51f386f089aa6e986712b8e9311c33aa'
+            'ed7f0e6f88e19d16a97a6fd6c35b7d5f286580e548ef4a999679968119839de0'
+            '66c2e7d39a1411049f2c190bd33119723886bf563189a025d2e1a36372617910'
+            'b1b32173d8ac37d3f681618a84f811118013e569bb636efeb85a7d9f7273ffcb'
+            'e0d888d429b1110fc6929126a47c738dbf6a4a2823f8d753fa06165f8b62e597'
+            '77dd2d906e2e9d54a1440e8eb02c37bffc43edf0c117535899d52a7017335536'
+            '388f3fe132b83ff5a4efcab631150bf198361b024adb6ed6d34d9ec3e4c57525'
+            '7e800eddc26ecfdd44f8e433a96df70756ac6b1954d77f0a6494e6a51b82ca81'
+            '9fe348d0cf2952ed1dc4923c2bbdf4102743876b11db035b9db350e32208c391')
+
+build() {
+    local po lang
+    for po in "${srcdir}"/glassfort-installer-*.po; do
+        lang=${po##*/glassfort-installer-}
+        lang=${lang%.po}
+        msgfmt --check -o "${srcdir}/glassfort-installer-${lang}.mo" "${po}"
+    done
+}
 
 check() {
     cd "${srcdir}"
@@ -81,6 +91,12 @@ package() {
     install -Dm755 "${srcdir}/glassfort-installer" "${pkgdir}/usr/bin/glassfort-installer"
     install -Dm644 "${srcdir}/org.glassfort.installer.desktop" \
         "${pkgdir}/usr/share/applications/org.glassfort.installer.desktop"
+    local mo lang
+    for mo in "${srcdir}"/glassfort-installer-*.mo; do
+        lang=${mo##*/glassfort-installer-}
+        lang=${lang%.mo}
+        install -Dm644 "${mo}" "${pkgdir}/usr/share/locale/${lang}/LC_MESSAGES/glassfort-installer.mo"
+    done
     local f
     for f in Main.qml LanguagePage.qml NetworkPage.qml DiskPage.qml UserPage.qml LookPage.qml ProgressPage.qml DonePage.qml; do
         install -Dm644 "${srcdir}/${f}" "${pkgdir}/usr/share/glassfort-installer/qml/${f}"
