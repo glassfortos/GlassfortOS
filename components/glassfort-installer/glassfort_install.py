@@ -457,9 +457,15 @@ def finish(plan: Plan, emit: Emitter, root: Path) -> None:
     # (EFI/BOOT/); Glassfort keeps it at the root of the ESP, the layout
     # tested with snapshot entries and rollback (tests/vm). Limine finds it
     # there as well.
+    # If glassfort-setup already made limine-entry-tool write its own
+    # /boot/limine.conf during pacstrap, archinstall's copy must go: Limine
+    # loads the file next to its EFI binary first and would ignore ours.
     esp_conf, root_conf = root / "boot/EFI/BOOT/limine.conf", root / "boot/limine.conf"
-    if esp_conf.exists() and not root_conf.exists():
-        shutil.move(esp_conf, root_conf)
+    if esp_conf.exists():
+        if root_conf.exists():
+            esp_conf.unlink()
+        else:
+            shutil.move(esp_conf, root_conf)
 
     fstab = root / "etc/fstab"
     fstab.write_text(fstab_with_snapshots(fstab.read_text()))
