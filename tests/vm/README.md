@@ -56,6 +56,33 @@ take about 4 GB.
 Needs: qemu, edk2-ovmf, libarchive (bsdtar), libisoburn (xorriso), curl,
 python, imagemagick, github-cli.
 
+## Phase 2: install from the Glassfort ISO → broken update → rollback
+
+```sh
+tests/vm/phase2                 # ISO from the newest green CI run on main
+tests/vm/phase2 --iso FILE      # or a local ISO
+tests/vm/phase2 --reuse DIR     # stage 2 only, on the disk of an earlier run
+```
+
+1. **Stage 1 (install):** boots the ISO and waits for the installer UI,
+   then runs `glassfort-install` through the QEMU guest agent with the plan
+   the UI sends (German, encrypted disk). It checks that a recovery key was
+   shown, that the ESP has only Glassfort's `limine.conf` (archinstall's
+   copy in `EFI/BOOT/` would hide the snapshot entries) and that the boot
+   menu entry is called "Glassfort". Then it prepares the installed system
+   for unattended boots: the Phase 1 test agent and, for the test only, a
+   LUKS key file in the initramfs (`cryptkey=`), so no passphrase has to be
+   typed, plus SDDM autologin.
+2. **Stage 2 (system):** the Phase 1 rollback test on the installed system
+   ([`vmdriver.py`](vmdriver.py)).
+
+The installer UI itself is not clicked through here; see below.
+
+First green run: 2026-11-26, 21 checks ok, about 20 minutes (ISO from CI
+run 45834497492). Results go to
+`~/.cache/glassfort-vm/results/phase2-<time>/`; `--keep` keeps the 60 GiB
+sparse disk. Needs the same tools as Phase 1 plus a 4 GiB VM.
+
 ## Live ISO: boot and screenshots
 
 ```sh

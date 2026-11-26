@@ -52,7 +52,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] pacman -S glassfort-desktop + glassfort-setup, boot into Plasma – run 6: all first-boot checks ok incl. AppArmor
     - [x] break an update, roll back from the Limine snapshot menu – run 8 PASSED (15/15 checks)
 - **Files expected to change:** tests/vm/*, docs/07-testing.md, PROGRESS.md
-- **Next step if interrupted:** CI 45834497492 green (all fixes). tests/vm/phase2 --keep started 2026-11-26 ~14:20 (results in ~/.cache/glassfort-vm/results/phase2-20261126-*). Check `locale -a` in its live stage; on PASS commit tests/vm/phase2 + vmctl.py + README/docs/07. images/*.jpg stay untracked.
+- **Next step if interrupted:** Phase 2 VM test committed. Open: enable GitHub Pages (ask maintainer: Impressum/privacy first?), tray network icon check, installer language switch blocks UI ~10 s, then Time Machine module / update app. images/*.jpg stay untracked.
 - **Blocked because:** –
 
 ### Website (sub-task started 2026-11-26T15:40:00+01:00, parallel to the phase2 VM run)
@@ -87,5 +87,5 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [x] glassfort-installer frontend: PySide6 + Kirigami QML, 5 screens (docs/04)
   - [x] ISO: bake [glassfort] repo into /srv/glassfort/repo, installer autostart
   - [x] VM test: install from the ISO (first install 2026-11-25; fixes committed; boots to the desktop)
-  - [ ] Automate the ISO install test end to end (UI clicks are flaky in QEMU) + rollback on the installed system
-  - [ ] Follow-ups: Limine menu label (TARGET_OS_NAME=Glassfort committed, verify in next install), tray network icon missing on installed desktop (check), UI translations (de): done, verified live in the ISO VM 2026-11-26 (language switch retranslates the running UI); new: language switch blocks the UI ~10 s (setKeyboard/kwriteconfig synchronous?), step dots look odd when the Wi-Fi page is skipped
+  - [x] ISO install test + rollback on the installed system: tests/vm/phase2 PASSED 2026-11-26 (21/21; UI clicks still manual, backend driven with the UI's plan)
+  - [ ] Follow-ups: Limine menu label "Glassfort" verified (phase2 check), tray network icon missing on installed desktop (check), UI translations (de): done, verified live in the ISO VM 2026-11-26 (language switch retranslates the running UI); new: language switch blocks the UI ~10 s (setKeyboard/kwriteconfig synchronous?), step dots look odd when the Wi-Fi page is skipped

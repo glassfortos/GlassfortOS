@@ -42,6 +42,13 @@ KEYS = {
 }
 
 
+def _recv(s: socket.socket) -> bytes:
+    data = s.recv(65536)
+    if not data:
+        raise ConnectionError("guest agent closed the connection (guest shut down?)")
+    return data
+
+
 def qga(path: Path, cmd: str, args: dict | None = None, timeout: float = 30) -> dict:
     with socket.socket(socket.AF_UNIX, socket.SOCK_STREAM) as s:
         s.connect(str(path))
@@ -50,11 +57,11 @@ def qga(path: Path, cmd: str, args: dict | None = None, timeout: float = 30) -> 
         s.sendall(json.dumps({"execute": "guest-sync", "arguments": {"id": 4711}}).encode())
         buf = b""
         while b"4711" not in buf:
-            buf += s.recv(65536)
+            buf += _recv(s)
         s.sendall(json.dumps({"execute": cmd, "arguments": args or {}}).encode())
         buf = b""
         while True:
-            buf += s.recv(65536)
+            buf += _recv(s)
             try:
                 return json.loads(buf.decode().strip().splitlines()[-1])
             except (json.JSONDecodeError, IndexError):
@@ -83,7 +90,10 @@ def guest_exec(path: Path, argv: list[str], timeout: float = 600) -> tuple[int, 
     ]["pid"]
     end = time.monotonic() + timeout
     while time.monotonic() < end:
-        st = qga(path, "guest-exec-status", {"pid": pid})["return"]
+        try:
+            st = qga(path, "guest-exec-status", {"pid": pid})["return"]
+        except (ConnectionError, OSError):
+            return -1, "guest agent gone"
         if st.get("exited"):
             out = base64.b64decode(st.get("out-data", "")).decode(errors="replace")
             err = base64.b64decode(st.get("err-data", "")).decode(errors="replace")

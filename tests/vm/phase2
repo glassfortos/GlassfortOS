@@ -1,0 +1,237 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Phase 2 VM test: install Glassfort from its own ISO, then break an update
+# and roll back from the boot menu (roadmap Phase 2 done criterion,
+# docs/09-roadmap.md).
+#
+# Usage: tests/vm/phase2 [--iso FILE] [--memory MiB] [--keep] [--reuse DIR]
+#   --iso     the ISO (default: the newest green CI run on main, cached)
+#   --memory  VM memory (default 4096)
+#   --keep    keep the VM disk afterwards
+#   --reuse   skip stage 1 and run stage 2 on the disk in DIR (the results
+#             directory of an earlier run whose stage 1 finished)
+#
+# Stage 1 boots the ISO and drives glassfort-install through the QEMU guest
+# agent with the plan the installer UI sends (encrypted disk). It then
+# prepares the installed system for unattended test boots: the Phase 1
+# test agent (guest/glassfort-vmtest) and a test-only LUKS key file in the
+# initramfs (cryptkey=), so no passphrase has to be typed. Stage 2 is the
+# Phase 1 rollback test on the installed system (vmdriver.py).
+#
+# The installer UI itself is not driven here (mouse input in QEMU is not
+# reliable enough yet); see README.md.
+#
+# Needs: qemu-system-x86_64, qemu-img, edk2-ovmf, python3, ImageMagick
+# (magick), gh (for the CI ISO).
+
+set -euo pipefail
+
+here=$(cd "$(dirname "$0")" && pwd)
+cache=${GLASSFORT_VM_CACHE:-$HOME/.cache/glassfort-vm}
+memory=4096
+keep=0
+iso=""
+reuse=""
+passphrase="glassfort-test-1"
+
+while (($#)); do
+    case $1 in
+        --iso) iso=$(realpath "$2"); shift 2 ;;
+        --memory) memory=$2; shift 2 ;;
+        --keep) keep=1; shift ;;
+        --reuse) reuse=$(realpath "$2"); keep=1; shift 2 ;;
+        -h | --help) sed -n '4,25s/^# \{0,1\}//p' "$0"; exit 0 ;;
+        *) sed -n '4,25s/^# \{0,1\}//p' "$0" >&2; exit 2 ;;
+    esac
+done
+
+for tool in qemu-system-x86_64 qemu-img python3 magick; do
+    command -v "$tool" >/dev/null || { echo "missing tool: $tool" >&2; exit 1; }
+done
+[[ -r /dev/kvm ]] || { echo "/dev/kvm is not accessible" >&2; exit 1; }
+ovmf_code=/usr/share/edk2/x64/OVMF_CODE.4m.fd
+ovmf_vars=/usr/share/edk2/x64/OVMF_VARS.4m.fd
+[[ -f $ovmf_code ]] || { echo "edk2-ovmf not installed" >&2; exit 1; }
+
+mkdir -p "$cache"
+if [[ -n $reuse ]]; then
+    results=$reuse
+    [[ -f $results/disk.qcow2 ]] || { echo "no disk.qcow2 in $results" >&2; exit 1; }
+else
+    results=$cache/results/phase2-$(date +%Y%m%d-%H%M%S)
+    mkdir -p "$results"
+fi
+log() { printf '==> %s\n' "$*" | tee -a "$results/phase2.log"; }
+vmctl() { python3 "$here/vmctl.py" "$results" "$@"; }
+
+# --- ISO ---------------------------------------------------------------------------
+if [[ -z $iso && -z $reuse ]]; then
+    run=""
+    for id in $(gh run list --branch main --limit 20 --json databaseId,conclusion \
+        -q '.[] | select(.conclusion == "success") | .databaseId'); do
+        if gh api "repos/{owner}/{repo}/actions/runs/$id/artifacts" \
+            -q '.artifacts[] | select(.name == "iso" and (.expired | not)) | .name' | grep -q .; then
+            run=$id
+            break
+        fi
+    done
+    [[ -n $run ]] || { echo "no green CI run with an ISO artifact" >&2; exit 1; }
+    dl=$cache/iso-$run
+    if [[ ! -d $dl ]]; then
+        log "downloading the ISO of CI run $run"
+        gh run download "$run" -n iso -D "$dl.part"
+        mv "$dl.part" "$dl"
+    fi
+    (cd "$dl" && sha256sum -c --quiet SHA256SUMS)
+    iso=$(find "$dl" -name '*.iso' | head -n1)
+fi
+disk=$results/disk.qcow2
+if [[ -z $reuse ]]; then
+    log "ISO: $iso"
+    qemu-img create -q -f qcow2 "$disk" 60G
+    cp "$ovmf_vars" "$results/OVMF_VARS.fd"
+fi
+qemu_pid=""
+cleanup() {
+    [[ -n $qemu_pid ]] && kill "$qemu_pid" 2>/dev/null
+    ((keep)) || rm -f "$disk"
+}
+trap cleanup EXIT
+
+start_qemu() {
+    # start_qemu NAME [qemu args...]
+    local name=$1
+    shift
+    rm -f "$results"/{monitor,qmp,qga,serial}.sock
+    # vmport=off: otherwise the VMware mouse emulation takes the pointer.
+    qemu-system-x86_64 \
+        -machine "q35,accel=kvm,vmport=off" -cpu host -smp 4 -m "$memory" \
+        -drive "if=pflash,format=raw,readonly=on,file=$ovmf_code" \
+        -drive "if=pflash,format=raw,file=$results/OVMF_VARS.fd" \
+        -drive "file=$disk,if=virtio,format=qcow2" \
+        -nic "user,model=virtio-net-pci" \
+        -vga virtio -display none -usb -device usb-tablet \
+        -chardev "socket,path=$results/qga.sock,server=on,wait=off,id=qga0" \
+        -device virtio-serial -device "virtserialport,chardev=qga0,name=org.qemu.guest_agent.0" \
+        -qmp "unix:$results/qmp.sock,server,nowait" \
+        -monitor "unix:$results/monitor.sock,server,nowait" \
+        -serial "unix:$results/serial.sock,server,nowait" \
+        "$@" >"$results/qemu-$name.log" 2>&1 &
+    qemu_pid=$!
+}
+
+stop_qemu() {
+    for _ in $(seq 60); do kill -0 "$qemu_pid" 2>/dev/null || break; sleep 2; done
+    kill "$qemu_pid" 2>/dev/null || true
+    wait "$qemu_pid" 2>/dev/null || true
+    qemu_pid=""
+}
+
+guest() { vmctl exec /bin/sh -c "$*"; }
+
+# --- Stage 1: install from the ISO ---------------------------------------------------
+stage1() {
+log "stage 1: boot the ISO"
+start_qemu iso -drive "file=$iso,media=cdrom,readonly=on"
+# The serial socket must be read, or QEMU blocks once its buffer is full.
+python3 -c '
+import socket, sys, time
+for _ in range(100):
+    try:
+        s = socket.socket(socket.AF_UNIX); s.connect(sys.argv[1]); break
+    except OSError:
+        time.sleep(0.1)
+with open(sys.argv[2], "wb") as log:
+    while (d := s.recv(65536)):
+        log.write(d); log.flush()
+' "$results/serial.sock" "$results/serial-iso.log" &
+reader=$!
+
+for _ in $(seq 120); do
+    guest "pgrep -f 'glassfort-installer/[i]nstaller_ui' >/dev/null && echo up" 2>/dev/null | grep -q up && break
+    sleep 3
+done
+vmctl shot 01-live-installer >/dev/null
+guest "sudo -u glassfort sudo -n /usr/bin/glassfort-install disks" | tee -a "$results/phase2.log"
+
+log "stage 1: install (glassfort-install with the UI's plan)"
+plan=$(printf '{"locale":"de_DE","keyboard":"de-latin1","timezone":"Europe/Berlin","disk":"/dev/vda","username":"tester","full_name":"Glassfort Tester","password":"%s","encrypt":true,"disk_passphrase":null,"hostname":"glassfort","look":"auto"}' "$passphrase")
+b64=$(printf '%s' "$plan" | base64 -w0)
+guest "pkill -f 'python3 -E -s /usr/lib/glassfort-[i]nstaller'; echo $b64 | base64 -d >/tmp/plan.json; chmod 644 /tmp/plan.json
+    nohup sudo -u glassfort sh -c 'sudo -n /usr/bin/glassfort-install install </tmp/plan.json >/tmp/events.log 2>&1' >/dev/null 2>&1 &"
+events=""
+for _ in $(seq 400); do
+    events=$(guest "cat /tmp/events.log" 2>/dev/null || true)
+    grep -qE '"event": "(done|error)"' <<<"$events" && break
+    sleep 15
+done
+printf '%s\n' "$events" | tee "$results/install-events.log" | tail -3 | tee -a "$results/phase2.log"
+guest "cat /var/log/glassfort-install.log" >"$results/install.log" 2>&1 || true
+if ! grep -q '"event": "done"' <<<"$events"; then
+    keep=1
+    log "FAILED in stage 1: installation did not finish (see $results/install.log)"
+    exit 1
+fi
+if grep -qE '"recovery_key": "[a-z]{8}(-[a-z]{8}){7}"' <<<"$events"; then
+    log "check ok recovery key"
+else
+    log "check FAIL recovery key"
+fi
+
+log "stage 1: prepare the installed system for unattended test boots"
+agent=$(base64 -w0 "$here/guest/glassfort-vmtest")
+unit=$(base64 -w0 "$here/guest/glassfort-vmtest.service")
+guest "set -e
+    printf '%s' '$passphrase' | cryptsetup open --key-file=- /dev/vda2 vmtest
+    mkdir -p /mnt/t && mount -o subvol=@ /dev/mapper/vmtest /mnt/t
+    mount -o subvol=@var_log /dev/mapper/vmtest /mnt/t/var/log
+    mount -o subvol=@snapshots /dev/mapper/vmtest /mnt/t/.snapshots
+    mount -o subvol=@home /dev/mapper/vmtest /mnt/t/home
+    mount -o subvol=@var_cache_pacman_pkg /dev/mapper/vmtest /mnt/t/var/cache/pacman/pkg
+    mount /dev/vda1 /mnt/t/boot
+    # Limine prefers a limine.conf next to its EFI binary; only ours may exist.
+    if [ -e /mnt/t/boot/EFI/BOOT/limine.conf ]; then echo 'check FAIL single limine.conf'; else echo 'check ok single limine.conf'; fi
+    if grep -q '^/+Glassfort' /mnt/t/boot/limine.conf; then echo 'check ok boot menu entry Glassfort'; else echo 'check FAIL boot menu entry Glassfort'; fi
+    echo $agent | base64 -d >/mnt/t/usr/local/bin/glassfort-vmtest
+    chmod 755 /mnt/t/usr/local/bin/glassfort-vmtest
+    echo $unit | base64 -d >/mnt/t/etc/systemd/system/glassfort-vmtest.service
+    arch-chroot /mnt/t systemctl enable glassfort-vmtest.service
+    # Test only: unlock with a key file in the initramfs (never on real systems).
+    dd if=/dev/urandom of=/mnt/t/etc/glassfort-vmtest.key bs=64 count=1 status=none
+    chmod 600 /mnt/t/etc/glassfort-vmtest.key
+    printf '%s' '$passphrase' | cryptsetup luksAddKey --key-file=- /dev/vda2 /mnt/t/etc/glassfort-vmtest.key
+    sed -i 's|^FILES=(|FILES=(/etc/glassfort-vmtest.key |' /mnt/t/etc/mkinitcpio.conf
+    sed -i '1s|\$| cryptkey=rootfs:/etc/glassfort-vmtest.key|' /mnt/t/etc/kernel/cmdline
+    # SDDM logs the test user in, as in Phase 1.
+    mkdir -p /mnt/t/etc/sddm.conf.d
+    printf '[Autologin]\nUser=tester\nSession=plasma\n' >/mnt/t/etc/sddm.conf.d/zz-vmtest.conf
+    arch-chroot /mnt/t limine-update
+    grep -E '^ */|cmdline' /mnt/t/boot/limine.conf
+    umount -R /mnt/t
+    cryptsetup close vmtest
+    sync" 2>&1 | tee -a "$results/phase2.log"
+# The guest agent goes away with the guest; do not wait for an answer.
+timeout 20 python3 "$here/vmctl.py" "$results" exec /bin/sh -c "systemctl poweroff" >/dev/null 2>&1 || true
+stop_qemu
+kill "$reader" 2>/dev/null || true
+}
+[[ -n $reuse ]] || stage1
+
+# --- Stage 2: installed system: checks, broken update, rollback ------------------------
+log "stage 2: boot the installed system, update, break, roll back"
+start_qemu system
+result=FAILED
+if python3 "$here/vmdriver.py" --serial "$results/serial.sock" --monitor "$results/monitor.sock" \
+    --log "$results/serial-system.log" --shots "$results" --until "rollback done" --timeout 2700 \
+    --snapshot-menu | tee -a "$results/phase2.log"; then
+    result=PASSED
+fi
+stop_qemu
+grep -h 'GFTEST check' "$results"/serial-*.log | sed 's/\r//' | sort -u >"$results/checks.txt" || true
+grep -h 'check ' "$results/phase2.log" | grep -v GFTEST >>"$results/checks.txt" || true
+log "checks: $(grep -c 'check ok' "$results/checks.txt" || true) ok, $(grep -c 'check FAIL' "$results/checks.txt" || true) failed"
+grep 'check FAIL' "$results/checks.txt" | sed 's/^/    /' | tee -a "$results/phase2.log" || true
+[[ $result == PASSED ]] || keep=1
+log "Phase 2 VM test $result; results in $results"
+[[ $result == PASSED ]] && ! grep -q 'check FAIL' "$results/checks.txt"
