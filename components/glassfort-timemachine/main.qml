@@ -64,7 +64,6 @@ KCM.ScrollViewKCM {
         id: list
         model: kcm.snapshots
         clip: true
-        reuseItems: true
 
         section.property: "day"
         section.delegate: Kirigami.ListSectionHeader {
@@ -136,6 +135,9 @@ KCM.ScrollViewKCM {
                 }
 
                 QQC2.Button {
+                    // Same width in every row (Breeze sizes some buttons a
+                    // few pixels narrower, which made the rows uneven).
+                    Layout.minimumWidth: Kirigami.Units.gridUnit * 8
                     text: i18n("Restore…")
                     icon.name: "edit-undo"
                     enabled: !kcm.restoring && !row.booted
