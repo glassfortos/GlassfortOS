@@ -18,10 +18,12 @@ license=('GPL-3.0-or-later')
 depends=(
     # Glassfort
     'glassfort-branding'
+    'glassfort-helper'
     'glassfort-mirrorlist'
     'glassfort-settings'
     'glassfort-shell'
     'glassfort-theme'
+    'glassfort-timemachine'
     # Plasma (curated, D-37)
     'breeze'
     'discover'

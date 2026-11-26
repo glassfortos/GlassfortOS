@@ -52,7 +52,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] pacman -S glassfort-desktop + glassfort-setup, boot into Plasma – run 6: all first-boot checks ok incl. AppArmor
     - [x] break an update, roll back from the Limine snapshot menu – run 8 PASSED (15/15 checks)
 - **Files expected to change:** tests/vm/*, docs/07-testing.md, PROGRESS.md
-- **Next step if interrupted:** Restore Points KCM committed (not yet tried in a VM). Next: commit 5 (autostart notifier after booting a snapshot opens the KCM, replaces upstream terminal notifier), commit 6 (glassfort-desktop deps + VM test through the helper), then VM run. Follow-ups: German .po for the KCM, "Show changes". images/*.jpg stay untracked.
+- **Next step if interrupted:** wait for green CI of the "Restore Points in the VM test" commit (new ISO), then run tests/vm/phase2; then look at the KCM in the VM (screenshot), German .po for the KCM. images/*.jpg stay untracked.
 - **Blocked because:** –
 
 ### Restore Points / glassfort-timemachine (sub-task started 2026-11-26T16:10:00+01:00, roadmap Phase 2)
@@ -63,7 +63,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [x] commit 3 glassfort-helper: Rust system service org.glassfort.Helper1, RestoreSnapshot(id) with polkit (auth_admin_keep), journal audit log, D-Bus activation, unit tests
   - [x] commit 4 glassfort-timemachine: KCM (C++/QML): timeline from snapper D-Bus, pin/unpin, restore via helper
   - [x] commit 5 banner after booting a snapshot ("You are running an earlier state. Restore it permanently?") opening the Time Machine; replaces upstream's terminal notifier
-  - [ ] commit 6 glassfort-desktop depends on helper + timemachine; VM test restores through the helper instead of limine-snapper-restore
+  - [x] commit 6 glassfort-desktop depends on helper + timemachine; VM test restores through the helper instead of limine-snapper-restore
   - Files: components/glassfort-timemachine/ (new), maybe components/glassfort-helper/, docs/02, docs/DECISIONS.md
 
 ### Website (sub-task started 2026-11-26T15:40:00+01:00, parallel to the phase2 VM run)

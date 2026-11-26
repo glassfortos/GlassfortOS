@@ -108,17 +108,41 @@ case $phase in
     say "limine tools: $(printf '%s ' /usr/bin/limine-*)"
     echo 2 >"$state"
     sync
-    if command -v limine-snapper-restore >/dev/null; then
-        say "restoring snapshot $num"
-        # The restore dialog asks "Restore snapshot N (method: replace)?
-        # [r] restore | [l] list | [c] cancel", then questions with sensible
-        # defaults, and finally "Reboot now? [Y/n]" – so answer "r", then
-        # take the defaults (the tool reboots by itself).
-        { printf 'r\n'; yes ''; } | limine-snapper-restore >"$state_dir/restore.log" 2>&1
-        say "restore exit $? ($(tail -5 "$state_dir/restore.log" | tr '\n' ' ' | cut -c1-300))"
+    # Restore Points (glassfort-timemachine, D-44/D-45): the desktop user
+    # (first member of wheel) reads and pins snapshots through snapper's
+    # D-Bus service, as the System Settings module does, ...
+    user=$(getent group wheel | cut -d: -f4 | cut -d, -f1)
+    snapper_call() {
+        runuser -u "$user" -- busctl --system call org.opensuse.Snapper /org/opensuse/Snapper \
+            org.opensuse.Snapper "$@"
+    }
+    check snapper-list-as-user snapper_call ListSnapshots s root
+    check snapper-pin-as-user snapper_call SetSnapshot susssa{ss} root "$num" "vmtest pinned" number 1 important yes
+    check snapshot-pinned sh -c "snapper -c root list --columns number,userdata | grep -E '^ *$num .*important=yes'"
+    # ... but may not restore without the admin password (no polkit agent
+    # here, so polkit must refuse) ...
+    if runuser -u "$user" -- busctl --system call org.glassfort.Helper1 /org/glassfort/Helper1 \
+        org.glassfort.Helper1 RestoreSnapshot u "$num" >"$state_dir/restore-user.log" 2>&1; then
+        say "check FAIL helper-refuses-user (restore ran without authorisation)"
     else
-        say "check FAIL limine-snapper-restore missing"
+        say "check ok helper-refuses-user ($(tr '\n' ' ' <"$state_dir/restore-user.log" | cut -c1-120))"
     fi
+    # ... and the login session shows the "earlier state" notification.
+    for _ in $(seq 60); do
+        pgrep -f glassfort-restore-notify >/dev/null && break
+        sleep 2
+    done
+    check restore-notification pgrep -f glassfort-restore-notify
+    # Restore as root through the helper, like "Restore…" after the
+    # password prompt.
+    say "restoring snapshot $num through glassfort-helper"
+    if busctl --system --timeout=20min call org.glassfort.Helper1 /org/glassfort/Helper1 \
+        org.glassfort.Helper1 RestoreSnapshot u "$num" >"$state_dir/restore.log" 2>&1; then
+        say "check ok restore-via-helper"
+    else
+        say "check FAIL restore-via-helper ($(tail -5 "$state_dir/restore.log" | tr '\n' ' ' | cut -c1-300))"
+    fi
+    journalctl -u glassfort-helper --no-pager -o cat | tail -15 | sed 's/^/helper: /' | while read -r l; do say "$l"; done
     sync
     systemctl reboot
     ;;

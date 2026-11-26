@@ -36,8 +36,11 @@ tests/vm/phase1 --packages out/ # or locally built packages
      snapshot of the broken update and is broken too). Keys are sent once
      the menu is on screen; in Limine, Up/Down wrap around and Right/Enter
      only open directories;
-   - booted from the snapshot: restore it with `limine-snapper-restore`
-     (its dialog is answered with `r` and the defaults), which reboots;
+   - booted from the snapshot: the desktop user lists and pins snapshots
+     through snapper's D-Bus service (as Restore Points does), cannot
+     restore without the admin password (polkit refuses), and gets the
+     "earlier state" notification; then root restores the snapshot through
+     `glassfort-helper` (`RestoreSnapshot`) and reboots;
    - normal boot again: systemd is back, the desktop runs.
 
 The host only downloads the ISO, serves files on `127.0.0.1:8642` and reads
