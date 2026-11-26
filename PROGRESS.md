@@ -55,6 +55,14 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 - **Next step if interrupted:** CI 45884008454 (34962c3) green. The Phase 2 VM run started 20:49 was killed by Claude Code because the host ran low on memory (7.1 GiB host, 4 GiB VM); not restarted, waiting for the maintainer. Rerun: tests/vm/phase2 --keep (or --memory 3072), expect 0 failed checks. Then glassfort-update, Secure Boot validation. images/*.jpg stay untracked.
 - **Blocked because:** –
 
+### Repository polish (sub-task started 2026-11-26T21:45:00+01:00, maintainer request)
+  - [x] 1 GitHub Actions to current majors (Node 24) + Dependabot (actions, cargo)
+  - [ ] 2 README: dark/light logo via <picture>, badges (CI, website, licence)
+  - [ ] 3 .gitignore: .vscode/, images/ (maintainer's reference drafts)
+  - [ ] 4 security: Dependabot alerts, secret scanning + push protection
+  - [ ] 6 topics
+  - [ ] 7 GitHub Project "Roadmap" (phases from docs/09) linked to the repo
+
 ### GitHub issues and discussions (sub-task started 2026-11-26T21:20:00+01:00, maintainer request)
   - Open (maintainer, later): GitHub Wiki stays enabled for now; options discussed: turn it off, or use a Discussions category "Hardware reports" instead
   - [x] issue forms: bug report, feature request; config.yml (no blank issues, links: Q&A discussions, private security report, website)
