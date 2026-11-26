@@ -1,0 +1,13 @@
+{
+    "KPlugin": {
+        "Description": "Go back to an earlier state of the system",
+        "Description[de]": "Zu einem früheren Zustand des Systems zurückkehren",
+        "Icon": "document-revert",
+        "Name": "Restore Points",
+        "Name[de]": "Wiederherstellungspunkte"
+    },
+    "X-KDE-Keywords": "snapshot,restore,rollback,undo,update,backup,snapper,system restore",
+    "X-KDE-Keywords[de]": "Snapshot,Wiederherstellen,Rückgängig,Update,Sicherung,Systemwiederherstellung",
+    "X-KDE-System-Settings-Parent-Category": "system-administration",
+    "X-KDE-Weight": 10
+}

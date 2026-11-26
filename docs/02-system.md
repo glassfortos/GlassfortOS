@@ -29,7 +29,7 @@ Mount options: `compress=zstd:1,noatime`.
 - Timeline snapshots for `@` are off; cleanup by number (keep the last ~20 pre/post pairs, plus important ones).
 - **limine-snapper-sync** adds snapshots to the boot menu automatically.
   - Limit boot entries (`MAX_SNAPSHOT_ENTRIES`, start with 8) and keep ESP usage well below its limit (`LIMIT_USAGE_PERCENT`).
-  - Pinning: "known good" states are marked with `snapper modify --important=yes <id>`. Snapper keeps them separately from normal cleanup (`NUMBER_LIMIT_IMPORTANT`). limine-snapper-sync (1.33) has no option to keep pinned snapshots in the boot menu beyond `MAX_SNAPSHOT_ENTRIES`, and it can only restore snapshots that have boot entries; restoring older pinned snapshots needs work in the helper (open).
+  - Pinning: "known good" states are marked with `snapper modify --userdata important=yes <id>` (Restore Points: "Keep"). Snapper keeps them separately from normal cleanup (`NUMBER_LIMIT_IMPORTANT`). limine-snapper-sync (1.33) has no option to keep pinned snapshots in the boot menu beyond `MAX_SNAPSHOT_ENTRIES`, and it can only restore snapshots that have boot entries; restoring older pinned snapshots needs work in the helper (open).
 - Boot menu labels are human-readable, e.g. `Before update · 2026-11-19 14:30`.
 - After booting into a snapshot, a banner says: *"You are running an earlier state. Restore it permanently?"* → restore via Restore Points.
 - Limitation to communicate honestly: snapshots repair a broken system; they do not undo data that has left the machine.

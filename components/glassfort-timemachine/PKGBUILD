@@ -1,0 +1,60 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Maintainer: Glassfort project <https://github.com/glassfortos/GlassfortOS>
+
+# glassfort-timemachine: the "Restore Points" module in System Settings
+# (docs/02, D-44, D-45).
+
+pkgname=glassfort-timemachine
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='Glassfort Restore Points: snapshot timeline, pin and restore in System Settings'
+arch=('x86_64')
+url='https://github.com/glassfortos/GlassfortOS'
+license=('GPL-3.0-or-later')
+depends=(
+    'gcc-libs'
+    'glibc'
+    'qt6-base'
+    'qt6-declarative'
+    'kcoreaddons'
+    'ki18n'
+    'kcmutils'
+    'kirigami'
+    'snapper'
+    'glassfort-helper'
+)
+makedepends=('cmake' 'extra-cmake-modules')
+source=(
+    'CMakeLists.txt'
+    'kcm_glassfort_timemachine.json'
+    'main.qml'
+    'restorepoints.cpp'
+    'restorepoints.h'
+    'snapshotmodel.cpp'
+    'snapshotmodel.h'
+    'snapshotmodeltest.cpp'
+)
+sha256sums=('a2f37e99dd4d6ef11ce4af67e6b26ffbfef393e18d24951c986a8ac272c4e9a3'
+            'a75c37b11d444d11a751169d29fd98740f38ae6b99da0be1d2250fcaecd35cc4'
+            '3bbebabf89370a90f5c1eac65e7eb9a0e917c7a20cd81979499fe35d32a5816c'
+            '03b839a8bcc09d8aac9e97dcf90b618ae9529235944c6b2d6f1e4215e7e3ddd5'
+            'fdd2667d20401174271b0aa2a3332b4d65add1421b379c918ab1de9ad99bb31c'
+            '99c50baeeef4ec73ce3e0ad85c8e404b335b51ba20d87d94de7598ba59239018'
+            '2e66b40e3c1c4d1d313bd8ece44e2983e64a43b538bcffb74cdd42d7ba4abf91'
+            '4058ca5659a9ddf85a45d0ed8c778d5ce7c799ff1396a12cfbcfba9fdfe10699')
+
+build() {
+    cmake -B build -S "${srcdir}" \
+        -DCMAKE_BUILD_TYPE=None \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DBUILD_TESTING=ON
+    cmake --build build
+}
+
+check() {
+    ctest --test-dir build --output-on-failure
+}
+
+package() {
+    DESTDIR="${pkgdir}" cmake --install build
+}
