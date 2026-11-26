@@ -1,0 +1,277 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Glassfort – Beautiful as glass. Strong as a fortress.</title>
+<meta name="description" content="Glassfort is a Linux system that works like Windows, looks like glass and repairs itself: every update takes a bootable snapshot. Open source, based on Arch Linux.">
+<meta name="theme-color" content="#0E1222">
+<meta property="og:title" content="Glassfort">
+<meta property="og:description" content="Beautiful as glass. Strong as a fortress. A Linux system you cannot break with an update.">
+<meta property="og:image" content="img/social-preview.png">
+<meta property="og:type" content="website">
+<link rel="icon" href="img/symbol.svg" type="image/svg+xml">
+<link rel="preload" href="fonts/InterVariable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- Frosted shapes behind everything: the desktop wallpaper, alive. -->
+<div class="field" aria-hidden="true">
+  <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
+  <span class="blob b4"></span><span class="blob b5"></span>
+</div>
+
+<header class="bar">
+  <a class="brand" href="#top" aria-label="Glassfort home">
+    <img src="img/symbol.svg" alt="" width="28" height="28">
+    <span>Glassfort</span>
+  </a>
+  <nav aria-label="Sections">
+    <a href="#vision">Vision</a>
+    <a href="#unbreakable">Unbreakable</a>
+    <a href="#look">Look</a>
+    <a href="#download">Download</a>
+    <a href="https://github.com/glassfortos/GlassfortOS/tree/main/docs">Docs</a>
+  </nav>
+  <a class="bar-gh" href="https://github.com/glassfortos/GlassfortOS" aria-label="Glassfort on GitHub">
+    <svg viewBox="0 0 16 16" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M8 0a8 8 0 0 0-2.53 15.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.72 1.22 1.88.87 2.34.66.07-.52.28-.87.5-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 8 0Z"/></svg>
+  </a>
+</header>
+
+<main id="main">
+
+<section class="hero" id="top">
+  <div class="hero-inner">
+    <svg class="tower" viewBox="0 0 256 256" role="img" aria-label="The Glassfort logo: a tower of glass">
+      <defs>
+        <linearGradient id="gcrown" gradientUnits="userSpaceOnUse" x1="46" y1="40" x2="210" y2="100"><stop offset="0" stop-color="#3DD6C6"/><stop offset="1" stop-color="#4C4FE0"/></linearGradient>
+        <linearGradient id="gbody" gradientUnits="userSpaceOnUse" x1="70" y1="92" x2="190" y2="226"><stop offset="0" stop-color="#3DD6C6"/><stop offset="1" stop-color="#4C4FE0"/></linearGradient>
+        <linearGradient id="gfrost" gradientUnits="userSpaceOnUse" x1="0" y1="92" x2="0" y2="170"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.18"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/></linearGradient>
+        <linearGradient id="gpane" gradientUnits="userSpaceOnUse" x1="0" y1="98" x2="0" y2="214"><stop offset="0" stop-color="#FFFFFF" stop-opacity="0.34"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0.12"/></linearGradient>
+        <linearGradient id="gsheen" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+        <clipPath id="ctower"><path d="M46,46C46,40.5 50.5,36 56,36L80,36C85.5,36 90,40.5 90,46L90,58C90,61.3 92.7,64 96,64L100,64C103.3,64 106,61.3 106,58L106,46C106,40.5 110.5,36 116,36L140,36C145.5,36 150,40.5 150,46L150,58C150,61.3 152.7,64 156,64L160,64C163.3,64 166,61.3 166,58L166,46C166,40.5 170.5,36 176,36L200,36C205.5,36 210,40.5 210,46L210,94C210,99.5 205.5,104 200,104L195,104L204.9,210.05C205.5,216.62 200.6,222 194,222L62,222C55.4,222 50.5,216.62 51.1,210.05L61,104L56,104C50.5,104 46,99.5 46,94Z"/></clipPath>
+      </defs>
+      <g class="part crown"><path d="M46,46C46,40.5 50.5,36 56,36L80,36C85.5,36 90,40.5 90,46L90,58C90,61.3 92.7,64 96,64L100,64C103.3,64 106,61.3 106,58L106,46C106,40.5 110.5,36 116,36L140,36C145.5,36 150,40.5 150,46L150,58C150,61.3 152.7,64 156,64L160,64C163.3,64 166,61.3 166,58L166,46C166,40.5 170.5,36 176,36L200,36C205.5,36 210,40.5 210,46L210,94C210,99.5 205.5,104 200,104L56,104C50.5,104 46,99.5 46,94Z" fill="url(#gcrown)"/></g>
+      <g class="part body">
+        <path d="M61.08,101.96C61.59,96.48 66.5,92 72,92L184,92C189.5,92 194.41,96.48 194.92,101.96L204.9,210.05C205.5,216.62 200.6,222 194,222L62,222C55.4,222 50.5,216.62 51.1,210.05Z" fill="url(#gbody)"/>
+        <path d="M61.08,101.96C61.59,96.48 66.5,92 72,92L184,92C189.5,92 194.41,96.48 194.92,101.96L204.9,210.05C205.5,216.62 200.6,222 194,222L62,222C55.4,222 50.5,216.62 51.1,210.05Z" fill="url(#gfrost)"/>
+        <path d="M61.42,98C61.74,94.7 66.5,92 72,92L184,92C189.5,92 194.26,94.7 194.57,98L195.15,104L60.85,104Z" fill="#FFFFFF" fill-opacity="0.22"/>
+      </g>
+      <g class="part pane">
+        <path d="M109.28,104.96C109.68,101.13 113.15,98 117,98L139,98C142.85,98 146.32,101.13 146.72,104.96L157.07,205.05C157.58,209.97 153.95,214 149,214L107,214C102.05,214 98.42,209.97 98.93,205.05Z" fill="url(#gpane)"/>
+        <path d="M109.28,104.96C109.68,101.13 113.15,98 117,98L139,98C142.85,98 146.32,101.13 146.72,104.96L157.07,205.05C157.58,209.97 153.95,214 149,214L107,214C102.05,214 98.42,209.97 98.93,205.05Z" fill="none" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="1.5"/>
+      </g>
+      <g clip-path="url(#ctower)"><rect class="sheen" x="-120" y="20" width="90" height="220" fill="url(#gsheen)" transform="skewX(-18)"/></g>
+    </svg>
+
+    <h1 class="slogan">
+      <span class="line glass">Beautiful as glass.</span>
+      <span class="line fort">Strong as a fortress.</span>
+    </h1>
+    <p class="lede">Glassfort is a Linux system that works the way Windows taught you, looks like frosted glass, and takes a bootable snapshot before every change. A bad update becomes one click in the boot menu.</p>
+    <div class="cta">
+      <a class="btn primary" href="#download">Get Glassfort</a>
+      <a class="btn" href="https://github.com/glassfortos/GlassfortOS/tree/main/docs">Read the docs</a>
+    </div>
+    <p class="status-pill"><span class="dot" aria-hidden="true"></span>In development: the first installable ISO is in testing</p>
+  </div>
+</section>
+
+<section class="vision" id="vision">
+  <div class="wrap">
+    <h2 class="big">Switching away from Windows should not feel like a downgrade, a hobby or a risk.</h2>
+    <div class="vision-cols">
+      <p>Glassfort keeps the habits you already have: a taskbar, a Start menu, the same shortcuts, windows that float. It wraps them in one calm glass design, from the boot screen to the last settings page.</p>
+      <p>Underneath, it is built to survive you. Every system change is a snapshot you can boot. The disk is encrypted, the firewall is on, and if you still need a Windows program, it will run in a window next to your Linux apps.</p>
+    </div>
+  </div>
+</section>
+
+<section class="promises" aria-labelledby="promises-title">
+  <div class="wrap">
+    <h2 id="promises-title" class="sub">Six promises</h2>
+    <div class="pane-sheet">
+      <dl>
+        <div><dt>Familiar</dt><dd>Taskbar, Start menu, floating windows and the Windows shortcuts you know.</dd></div>
+        <div><dt>Beautiful</dt><dd>One frosted-glass design and one accent colour, everywhere.</dd></div>
+        <div><dt>Unbreakable</dt><dd>Every change creates a bootable snapshot, and a fallback kernel is always installed.</dd></div>
+        <div><dt>Secure</dt><dd>Full-disk encryption, firewall and AppArmor are on from the first boot.</dd></div>
+        <div><dt>No excuses</dt><dd>Windows apps can run in a VM, shown as normal windows. <em class="tag">Planned</em></dd></div>
+        <div><dt>Open</dt><dd>Open source. No bundled proprietary images, no keys, no telemetry.</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section class="unbreakable" id="unbreakable" aria-labelledby="unb-title">
+  <div class="wrap">
+    <h2 id="unb-title" class="big">Go on. Break it.</h2>
+    <p class="intro">This is what happens on a real Glassfort system, tested the same way in our VM test suite: an update removes something the system needs, the next boot fails, and the snapshot from before the update brings everything back.</p>
+
+    <div class="demo" data-state="ok">
+      <div class="screen">
+        <img src="img/desktop-dark.webp" alt="The Glassfort desktop in dark mode" width="1280" height="800" loading="lazy">
+        <svg class="cracks" viewBox="0 0 1280 800" preserveAspectRatio="none" aria-hidden="true">
+          <g fill="none" stroke="#F5F7FA" stroke-linecap="round" stroke-linejoin="round">
+            <path pathLength="1" stroke-width="3" d="M640 380 L520 250 L470 120 L430 0"/>
+            <path pathLength="1" stroke-width="2.5" d="M640 380 L780 300 L900 140 L960 0"/>
+            <path pathLength="1" stroke-width="3" d="M640 380 L840 440 L1060 420 L1280 470"/>
+            <path pathLength="1" stroke-width="2.5" d="M640 380 L700 560 L660 700 L700 800"/>
+            <path pathLength="1" stroke-width="2.5" d="M640 380 L470 470 L260 520 L0 600"/>
+            <path pathLength="1" stroke-width="2" d="M640 380 L430 360 L200 300 L0 250"/>
+            <path pathLength="1" stroke-width="1.5" d="M520 250 L600 200 M780 300 L860 360 M700 560 L800 600 M470 470 L520 600 M430 360 L380 430 M900 140 L1000 200"/>
+            <path pathLength="1" stroke-width="1.2" d="M600 330 L680 320 L700 400 L620 440 L580 390 Z"/>
+          </g>
+        </svg>
+        <div class="console" aria-hidden="true">
+          <p>ERROR: Root device mounted successfully, but /sbin/init does not exist.</p>
+          <p>Bailing out, you are on your own. Good luck.</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <p class="demo-msg" aria-live="polite">Your system is fine. Install an update that goes wrong.</p>
+        <ol class="timeline" aria-label="Snapshots in the boot menu">
+          <li><button type="button" data-snap="good" disabled><time>08:14</time><span>Before update: 214 packages</span></button></li>
+          <li><button type="button" data-snap="bad" disabled><time>08:16</time><span>After update: systemd removed</span></button></li>
+        </ol>
+        <div class="demo-actions">
+          <button type="button" class="btn primary" data-act="break">Run a bad update</button>
+          <button type="button" class="btn" data-act="reset" hidden>Start over</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="look" id="look" aria-labelledby="look-title">
+  <div class="wrap">
+    <h2 id="look-title" class="big">Calm by default.</h2>
+    <p class="intro">A floating dock, a top bar and wallpapers made of frosted shapes. Glassfort follows your light or dark setting, from the boot splash to the login screen.</p>
+
+    <figure class="hero-shot">
+      <div class="mode-switch" role="group" aria-label="Appearance">
+        <button type="button" data-mode="dark" aria-pressed="true">Dark</button>
+        <button type="button" data-mode="light" aria-pressed="false">Light</button>
+      </div>
+      <div class="shot-stack" data-mode="dark">
+        <img class="m-dark" src="img/desktop-dark.webp" alt="Glassfort desktop, dark appearance, with the floating dock" width="1280" height="800" loading="lazy">
+        <img class="m-light" src="img/desktop-light.webp" alt="Glassfort desktop, light appearance, with the floating dock" width="1280" height="800" loading="lazy">
+      </div>
+    </figure>
+
+    <div class="shots">
+      <figure>
+        <img src="img/startmenu.webp" alt="The Start menu with search, pinned apps and recent files" width="1280" height="800" loading="lazy">
+        <figcaption><strong>Start menu.</strong> Search apps, files and settings. Pin what you use.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/installer.webp" alt="The Glassfort installer, first screen: language and keyboard" width="1280" height="800" loading="lazy">
+        <figcaption><strong>Installer.</strong> Five screens: language, network, disk, account, look.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/boot.webp" alt="The Glassfort boot splash: the tower logo on a dark background" width="1280" height="800" loading="lazy">
+        <figcaption><strong>Boot.</strong> Branded from the first frame, with the disk password prompt in the same style.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="inside" aria-labelledby="inside-title">
+  <div class="wrap">
+    <h2 id="inside-title" class="big">What's inside</h2>
+    <div class="inside-grid">
+      <div>
+        <h3>Ready now in the preview</h3>
+        <ul>
+          <li>KDE Plasma, curated: own Start menu, dock with live window previews and jump lists, control center</li>
+          <li>Btrfs snapshots before every package change, bootable from the menu, one-step restore</li>
+          <li>Encrypted disk by default, with a recovery key to write down</li>
+          <li>Firewall, AppArmor, hardened kernel settings, compressed swap in RAM</li>
+          <li>Firefox, Thunderbird, LibreOffice and the KDE apps preinstalled</li>
+          <li>A five-screen installer in English and German</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Coming next</h3>
+        <ul>
+          <li>A snapshot timeline in System Settings</li>
+          <li>Snap layouts like on Windows 11</li>
+          <li>An update app that reads the news before it upgrades</li>
+          <li>Secure Boot with your own keys, TPM unlock</li>
+          <li>An optional assistant that can change settings for you, off by default and local first</li>
+          <li>Windows apps in a VM, as normal windows</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="roadmap" aria-labelledby="road-title">
+  <div class="wrap">
+    <h2 id="road-title" class="sub">Where we are</h2>
+    <ol class="phases">
+      <li class="done"><span class="ph">Phase 1</span><span class="what">Glassfort on top of Arch: look, shell, snapshots, rollback</span><span class="st">Done</span></li>
+      <li class="now"><span class="ph">Phase 2</span><span class="what">Own ISO and installer, snapshot timeline, update app</span><span class="st">In progress</span></li>
+      <li><span class="ph">Phase 3</span><span class="what">Assistant</span><span class="st">Planned</span></li>
+      <li><span class="ph">Phase 4</span><span class="what">First-boot setup</span><span class="st">Planned</span></li>
+      <li><span class="ph">Phase 5</span><span class="what">Windows apps</span><span class="st">Planned</span></li>
+    </ol>
+  </div>
+</section>
+
+<section class="download" id="download" aria-labelledby="dl-title">
+  <div class="wrap">
+    <div class="dl-card">
+      <img class="dl-mark" src="img/symbol.svg" alt="" width="96" height="96">
+      <h2 id="dl-title" class="big">Download Glassfort</h2>
+
+      <div class="dl-pending" data-dl="pending">
+        <p>There is no public ISO yet. The first one is being tested in virtual machines right now; it will appear here as soon as it installs and rolls back reliably.</p>
+        <div class="cta">
+          <a class="btn primary" href="https://github.com/glassfortos/GlassfortOS/releases">Watch releases on GitHub</a>
+          <a class="btn" href="https://github.com/glassfortos/GlassfortOS/tree/main/docs">Read the docs</a>
+        </div>
+      </div>
+
+      <div class="dl-ready" data-dl="ready" hidden>
+        <p class="dl-version">Version <span data-field="version"></span>, released <span data-field="date"></span></p>
+        <div class="cta">
+          <a class="btn primary" data-field="url" href="#"><span>Download the ISO (<span data-field="size"></span>)</span></a>
+          <a class="btn" href="https://github.com/glassfortos/GlassfortOS/tree/main/docs">Installation guide</a>
+        </div>
+        <dl class="dl-meta">
+          <div><dt>SHA-256</dt><dd><code data-field="sha256"></code></dd></div>
+          <div data-optional="signature"><dt>Signature</dt><dd><a data-field="signature" href="#">.sig file</a></dd></div>
+        </dl>
+      </div>
+
+      <p class="req">Needs a 64-bit PC with UEFI, 4 GB RAM and 40 GB of disk. The installer erases the whole disk you choose.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-inner">
+    <div class="foot-brand">
+      <img src="img/symbol.svg" alt="" width="24" height="24">
+      <span>Glassfort</span>
+    </div>
+    <nav aria-label="Project">
+      <a href="https://github.com/glassfortos/GlassfortOS">Source code</a>
+      <a href="https://github.com/glassfortos/GlassfortOS/tree/main/docs">Documentation</a>
+      <a href="https://github.com/glassfortos/GlassfortOS/issues">Report a problem</a>
+      <a href="https://github.com/glassfortos/GlassfortOS/blob/main/TRADEMARKS.md">Trademarks</a>
+    </nav>
+    <p class="fine">Open source under the GPL. Based on Arch Linux; not affiliated with or endorsed by Arch Linux. This site sets no cookies and loads nothing from other servers.</p>
+  </div>
+</footer>
+
+<script src="main.js" defer></script>
+</body>
+</html>

@@ -27,6 +27,7 @@ Every source file carries an SPDX header, e.g. `# SPDX-License-Identifier: GPL-3
 ## Hosting
 
 - Code, issues, CI: GitHub
+- Website: static page in `website/`, GitHub Pages until `glassfort.org` exists (D-43, Proposed). No trackers, no cookies, no third-party requests. The ISO download link comes from `website/release.json`.
 - ISO: SourceForge and/or own mirror (GitHub Releases has a 2 GiB per-file limit)
 - `[glassfort]` repository: primary server + mirrors
 

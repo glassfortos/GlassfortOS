@@ -51,7 +51,7 @@ If you are blocked (missing information, failing tool, decision needed), set sta
 
 - Format: [Conventional Commits](https://www.conventionalcommits.org/) – `type(scope): summary`
   - Types: `feat`, `fix`, `docs`, `refactor`, `test`, `build`, `ci`, `chore`, `perf`, `style`
-  - Scopes = components: `settings`, `theme`, `shell`, `timemachine`, `update`, `assistant`, `helper`, `windows`, `installer`, `firstboot`, `iso`, `repo`, `ci`, `docs`, `progress`
+  - Scopes = components: `settings`, `theme`, `shell`, `timemachine`, `update`, `assistant`, `helper`, `windows`, `installer`, `firstboot`, `iso`, `repo`, `ci`, `docs`, `website`, `progress`
 - Summary: English, imperative mood, at most 72 characters.
 - Body (required for everything except trivial docs fixes):
   - what changed and **why**

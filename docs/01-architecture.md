@@ -51,6 +51,7 @@ glassfort/
 ├── repo/                      # scripts: build, sign, publish [glassfort]
 ├── scripts/                   # dev tools (validate-registry, vm-test, …)
 ├── tests/                     # unit tests, VM tests, openQA
+├── website/                   # static website, published to GitHub Pages (D-43)
 └── .github/workflows/         # CI
 ```
 

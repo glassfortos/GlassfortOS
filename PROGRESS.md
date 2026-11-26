@@ -52,8 +52,16 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] pacman -S glassfort-desktop + glassfort-setup, boot into Plasma – run 6: all first-boot checks ok incl. AppArmor
     - [x] break an update, roll back from the Limine snapshot menu – run 8 PASSED (15/15 checks)
 - **Files expected to change:** tests/vm/*, docs/07-testing.md, PROGRESS.md
-- **Next step if interrupted:** limine fix pushed (d429c1c), CI builds ISO. Live check of German UI found: (a) GettextTranslator returned "" -> blank English labels (fixed in installer_ui.py, verified live); (b) `nmcli networking connectivity check` not authorized for live user -> stuck on Wi-Fi page; (c) iso locale.gen hook writes literal "\1" -> no locales. Commit order: translations, (b), (c), then tests/vm/phase2 + vmctl.py; then fresh phase2 run with the new CI ISO. images/*.jpg stay untracked.
+- **Next step if interrupted:** CI 45834497492 green (all fixes). tests/vm/phase2 --keep started 2026-11-26 ~14:20 (results in ~/.cache/glassfort-vm/results/phase2-20261126-*). Check `locale -a` in its live stage; on PASS commit tests/vm/phase2 + vmctl.py + README/docs/07. images/*.jpg stay untracked.
 - **Blocked because:** –
+
+### Website (sub-task started 2026-11-26T15:40:00+01:00, parallel to the phase2 VM run)
+  - [x] PROGRESS note; D-43 (Proposed): static site in website/, GitHub Pages via Actions, no trackers, no external requests, self-hosted Inter (OFL)
+  - [x] website/: hero with logo + animated glass shapes, vision, six promises, features, screenshots, download (from website/release.json; "coming soon" until an ISO is published), docs link, footer
+  - [x] Pages workflow (.github/workflows/pages.yml), CLAUDE.md scope `website`, docs/01 layout, docs/08 hosting
+  - [x] check locally (headless Chromium screenshots, link check), commit, push
+  - [ ] enable GitHub Pages (Actions source) – ask maintainer
+  - Open: Impressum/privacy page (docs/08, legal; maintainer's data needed)
 
 ### Follow-ups (sub-task started 2026-11-25, maintainer: open items first)
   - [x] qmllint in CI (scripts/check-qml, CI job qml in an Arch container, allowlist)
