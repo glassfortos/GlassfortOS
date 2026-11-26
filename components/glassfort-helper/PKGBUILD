@@ -1,0 +1,73 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Maintainer: Glassfort project <https://github.com/glassfortos/GlassfortOS>
+
+# glassfort-helper: privileged D-Bus service behind polkit (docs/02, docs/05,
+# D-44). Phase 2: snapshot restore for the Time Machine.
+
+pkgname=glassfort-helper
+pkgver=0.1.0
+pkgrel=1
+pkgdesc='Glassfort privileged helper: validated system actions behind polkit'
+arch=('x86_64')
+url='https://github.com/glassfortos/GlassfortOS'
+license=('GPL-3.0-or-later')
+depends=(
+    'gcc-libs'
+    'glibc'
+    'dbus'
+    'polkit'
+    'limine-snapper-sync>=1.33.0-2'
+)
+makedepends=('cargo')
+options=(!lto)
+source=(
+    'Cargo.toml'
+    'Cargo.lock'
+    'main.rs'
+    'restore.rs'
+    'glassfort-helper.service'
+    'org.glassfort.Helper1.conf'
+    'org.glassfort.Helper1.service'
+    'org.glassfort.helper.policy'
+)
+sha256sums=('16b8203c6d07d6108685d16d37960990c10ef832f73250c9f0906524616ed5a1'
+            'd856ca23961a39b36280c504bbc6872a007ccf30590b721df9bbd43f8d4c7c40'
+            '0835c9381b63d9d16906df598cd0776c0b710bc0f3a4f0dced699a320937b35a'
+            '10d5ba62c84a3660826018c35f75c6775a8711e4206f2793b0fd9a60faf8b951'
+            'faf4776264a1c06d60044e82caa281855cddb432d1142a356f22c75b75ce9857'
+            '13d3185873127b8d68d1bedd2e298d9d1f949182687c71b48ca362653781b8d3'
+            '1a80797bd7e46e8032e3c1a9224785279fbbdb93c2361337af114225bb6300fe'
+            'afa6d02c6f7203b188d02060fa387d75c3963c2be0741d5a61c3d39128c32af5')
+
+prepare() {
+    cd "${srcdir}"
+    export RUSTUP_TOOLCHAIN=stable
+    cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+    cd "${srcdir}"
+    export RUSTUP_TOOLCHAIN=stable
+    export CARGO_TARGET_DIR=target
+    cargo build --frozen --release
+}
+
+check() {
+    cd "${srcdir}"
+    export RUSTUP_TOOLCHAIN=stable
+    export CARGO_TARGET_DIR=target
+    cargo test --frozen --release
+}
+
+package() {
+    install -Dm755 "${srcdir}/target/release/glassfort-helper" \
+        "${pkgdir}/usr/lib/glassfort-helper/glassfort-helper"
+    install -Dm644 "${srcdir}/glassfort-helper.service" \
+        "${pkgdir}/usr/lib/systemd/system/glassfort-helper.service"
+    install -Dm644 "${srcdir}/org.glassfort.Helper1.conf" \
+        "${pkgdir}/usr/share/dbus-1/system.d/org.glassfort.Helper1.conf"
+    install -Dm644 "${srcdir}/org.glassfort.Helper1.service" \
+        "${pkgdir}/usr/share/dbus-1/system-services/org.glassfort.Helper1.service"
+    install -Dm644 "${srcdir}/org.glassfort.helper.policy" \
+        "${pkgdir}/usr/share/polkit-1/actions/org.glassfort.helper.policy"
+}

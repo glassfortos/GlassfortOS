@@ -1,0 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+[D-BUS Service]
+Name=org.glassfort.Helper1
+Exec=/bin/false
+User=root
+SystemdService=glassfort-helper.service

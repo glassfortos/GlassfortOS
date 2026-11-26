@@ -1,0 +1,21 @@
+[package]
+name = "glassfort-helper"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0-or-later"
+description = "Glassfort's privileged helper: validated system actions behind polkit"
+repository = "https://github.com/glassfortos/GlassfortOS"
+publish = false
+
+# Flat layout: makepkg takes local sources from the PKGBUILD folder only.
+[[bin]]
+name = "glassfort-helper"
+path = "main.rs"
+
+[dependencies]
+tokio = { version = "1", default-features = false, features = ["rt", "macros", "process", "sync", "time", "signal"] }
+zbus = { version = "6", default-features = false, features = ["tokio", "proxy", "service"] }
+
+[profile.release]
+lto = true
+codegen-units = 1
