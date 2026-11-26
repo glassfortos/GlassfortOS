@@ -98,12 +98,6 @@ KCM.ScrollViewKCM {
             contentItem: RowLayout {
                 spacing: Kirigami.Units.largeSpacing
 
-                Kirigami.Icon {
-                    source: row.kind === "before" ? "go-previous" : row.kind === "after" ? "go-next" : "camera-photo"
-                    implicitWidth: Kirigami.Units.iconSizes.medium
-                    implicitHeight: implicitWidth
-                }
-
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 0

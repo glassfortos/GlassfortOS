@@ -62,13 +62,22 @@ uint SnapshotModel::snapshotFromCmdline(const QString &cmdline)
     return m.hasMatch() ? m.captured(1).toUInt() : 0;
 }
 
-QString SnapshotModel::title(const SnapperSnapshot &s)
+namespace
 {
-    // snap-pac describes its pre/post snapshots with the pacman command line,
-    // e.g. "pacman -Syu" or "pacman -S --noconfirm firefox".
-    QString what = s.description.trimmed();
+QString packageList(const QStringList &packages)
+{
+    return packages.size() > 3 ? i18np("%2 and %1 more", "%2 and %1 more", packages.size() - 2, packages.mid(0, 2).join(QStringLiteral(", ")))
+                               : packages.join(QStringLiteral(", "));
+}
+}
+
+QString SnapshotModel::what(const QString &description)
+{
+    const QString text = description.trimmed();
+    // snap-pac describes pre snapshots with the pacman command line, e.g.
+    // "pacman -Syu" or "pacman -S --noconfirm firefox" ...
     static const QRegularExpression pacman(QStringLiteral("^(?:/usr/bin/)?pacman\\s+(.*)$"));
-    const auto m = pacman.match(what);
+    const auto m = pacman.match(text);
     if (m.hasMatch()) {
         const QStringList args = m.captured(1).split(QLatin1Char(' '), Qt::SkipEmptyParts);
         QStringList packages;
@@ -84,29 +93,41 @@ QString SnapshotModel::title(const SnapperSnapshot &s)
             }
             packages << a;
         }
-        const QString list = packages.size() > 3
-            ? i18np("%2 and %1 more", "%2 and %1 more", packages.size() - 2, packages.mid(0, 2).join(QStringLiteral(", ")))
-            : packages.join(QStringLiteral(", "));
         if (upgrade) {
-            what = packages.isEmpty() ? i18n("System update") : i18n("System update and installing %1", list);
-        } else if ((op == QLatin1Char('S') || op == QLatin1Char('U')) && !packages.isEmpty()) {
-            what = i18n("Installing %1", list);
-        } else if (op == QLatin1Char('R') && !packages.isEmpty()) {
-            what = i18n("Removing %1", list);
-        } else {
-            what = i18n("Package change");
+            return packages.isEmpty() ? i18n("System update") : i18n("System update and installing %1", packageList(packages));
         }
-    } else if (what.isEmpty()) {
-        what = i18n("Snapshot");
+        if ((op == QLatin1Char('S') || op == QLatin1Char('U')) && !packages.isEmpty()) {
+            return i18n("Installing %1", packageList(packages));
+        }
+        if (op == QLatin1Char('R') && !packages.isEmpty()) {
+            return i18n("Removing %1", packageList(packages));
+        }
+        return i18n("Package change");
     }
+    // ... limine-snapper-sync names the copy of the state it replaces ...
+    static const QRegularExpression backup(QStringLiteral("^backup before restore #\\d+$"));
+    if (backup.match(text).hasMatch()) {
+        return i18n("Backup before a restore");
+    }
+    // ... and snap-pac's post snapshots list the changed packages.
+    static const QRegularExpression packageNames(QStringLiteral("^[a-z0-9@._+-]+(?: [a-z0-9@._+-]+)*$"));
+    if (packageNames.match(text).hasMatch()) {
+        return i18n("Software change: %1", packageList(text.split(QLatin1Char(' '))));
+    }
+    return text.isEmpty() ? i18n("Restore point") : text;
+}
 
+QString SnapshotModel::title(const SnapperSnapshot &s, const SnapperSnapshot *pre)
+{
     switch (s.type) {
     case 1:
-        return i18nc("snapshot taken before a change", "Before: %1", what);
+        return i18nc("snapshot taken before a change", "Before: %1", what(s.description));
     case 2:
-        return i18nc("snapshot taken after a change", "After: %1", what);
+        // The post snapshot only lists package names; its pre snapshot
+        // knows what was done.
+        return i18nc("snapshot taken after a change", "After: %1", what(pre ? pre->description : s.description));
     default:
-        return what;
+        return what(s.description);
     }
 }
 
@@ -120,7 +141,7 @@ QVariant SnapshotModel::data(const QModelIndex &index, int role) const
     switch (role) {
     case Qt::DisplayRole:
     case TitleRole:
-        return title(s);
+        return title(s, s.type == 2 ? find(s.preNumber) : nullptr);
     case NumberRole:
         return s.number;
     case KindRole:

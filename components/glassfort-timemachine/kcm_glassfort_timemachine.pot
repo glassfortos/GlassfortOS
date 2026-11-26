@@ -68,88 +68,88 @@ msgstr ""
 msgid "Yesterday"
 msgstr ""
 
-#: main.qml:121
+#: main.qml:115
 msgid "%1 · running now"
 msgstr ""
 
-#: main.qml:122
+#: main.qml:116
 msgid "%1 · kept"
 msgstr ""
 
-#: main.qml:135
+#: main.qml:129
 msgid "Do not keep"
 msgstr ""
 
-#: main.qml:135
+#: main.qml:129
 msgid "Keep"
 msgstr ""
 
-#: main.qml:136
+#: main.qml:130
 msgid "Allow this restore point to be removed when it gets old"
 msgstr ""
 
-#: main.qml:136
+#: main.qml:130
 msgid "Keep this restore point when older ones are removed"
 msgstr ""
 
-#: main.qml:143
+#: main.qml:137
 msgid "Restore…"
 msgstr ""
 
-#: main.qml:156
+#: main.qml:150
 msgid "No restore points yet"
 msgstr ""
 
-#: main.qml:157
+#: main.qml:151
 msgid ""
 "A restore point is saved automatically before and after the next software "
 "change."
 msgstr ""
 
-#: main.qml:175
+#: main.qml:169
 msgid "Restore an earlier state?"
 msgstr ""
 
-#: main.qml:176
+#: main.qml:170
 msgid ""
 "The system goes back to %1. Programs and settings installed after it are "
 "undone; your personal files stay as they are. The current state is kept as a "
 "restore point, so you can come back."
 msgstr ""
 
-#: main.qml:180
+#: main.qml:174
 msgid "Restore"
 msgstr ""
 
-#: main.qml:188
+#: main.qml:182
 msgid "Cancel"
 msgstr ""
 
-#: main.qml:197
+#: main.qml:191
 msgid "Restoring…"
 msgstr ""
 
-#: main.qml:198
+#: main.qml:192
 msgid "This takes a few seconds. Please do not turn off the computer."
 msgstr ""
 
-#: main.qml:207
+#: main.qml:201
 msgid "Restart to finish"
 msgstr ""
 
-#: main.qml:208
+#: main.qml:202
 msgid "The earlier state is restored. It is used from the next restart on."
 msgstr ""
 
-#: main.qml:212
+#: main.qml:206
 msgid "Restart now"
 msgstr ""
 
-#: main.qml:217
+#: main.qml:211
 msgid "Later"
 msgstr ""
 
-#: main.qml:226
+#: main.qml:220
 msgid "Not restored"
 msgstr ""
 
@@ -165,42 +165,50 @@ msgstr ""
 msgid "The restore was cancelled or not allowed."
 msgstr ""
 
-#: snapshotmodel.cpp:88
+#: snapshotmodel.cpp:69
 msgid "%2 and %1 more"
 msgid_plural "%2 and %1 more"
 msgstr[0] ""
 msgstr[1] ""
 
-#: snapshotmodel.cpp:91
+#: snapshotmodel.cpp:97
 msgid "System update"
 msgstr ""
 
-#: snapshotmodel.cpp:91
+#: snapshotmodel.cpp:97
 msgid "System update and installing %1"
 msgstr ""
 
-#: snapshotmodel.cpp:93
+#: snapshotmodel.cpp:100
 msgid "Installing %1"
 msgstr ""
 
-#: snapshotmodel.cpp:95
+#: snapshotmodel.cpp:103
 msgid "Removing %1"
 msgstr ""
 
-#: snapshotmodel.cpp:97
+#: snapshotmodel.cpp:105
 msgid "Package change"
 msgstr ""
 
-#: snapshotmodel.cpp:100
-msgid "Snapshot"
+#: snapshotmodel.cpp:110
+msgid "Backup before a restore"
 msgstr ""
 
-#: snapshotmodel.cpp:105
+#: snapshotmodel.cpp:115
+msgid "Software change: %1"
+msgstr ""
+
+#: snapshotmodel.cpp:117
+msgid "Restore point"
+msgstr ""
+
+#: snapshotmodel.cpp:124
 msgctxt "snapshot taken before a change"
 msgid "Before: %1"
 msgstr ""
 
-#: snapshotmodel.cpp:107
+#: snapshotmodel.cpp:128
 msgctxt "snapshot taken after a change"
 msgid "After: %1"
 msgstr ""

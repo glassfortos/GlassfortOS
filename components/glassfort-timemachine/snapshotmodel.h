@@ -53,8 +53,10 @@ public:
     void setSnapshots(QVector<SnapperSnapshot> snapshots, uint booted);
     const SnapperSnapshot *find(uint number) const;
 
-    // Human-readable title for a snapshot, also used by tests.
-    static QString title(const SnapperSnapshot &s);
+    // Human-readable title; for a post snapshot pass its pre snapshot.
+    static QString title(const SnapperSnapshot &s, const SnapperSnapshot *pre = nullptr);
+    // What a snapper description stands for, in words.
+    static QString what(const QString &description);
     static bool isPinned(const SnapperSnapshot &s);
     // Snapshot number booted by a kernel command line, 0 for the normal system.
     static uint snapshotFromCmdline(const QString &cmdline);
