@@ -2,6 +2,8 @@
 
 Order of priority: first what everything is judged by (look and usability), then the unique selling point (unbreakable), then assistant and Windows Apps.
 
+Board view: [Glassfort Roadmap](https://github.com/orgs/glassfortos/projects/1) (GitHub Project). This file stays the source of truth; when a phase or deliverable changes here, update the board as well.
+
 **v0.1 scope: Open.** Proposal: v0.1 = Phase 1 complete (installable on top of a plain Arch install).
 
 ## Phase 0 – Repository foundation

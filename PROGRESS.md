@@ -59,9 +59,9 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [x] 1 GitHub Actions to current majors (Node 24) + Dependabot (actions, cargo)
   - [x] 2 README: dark/light logo via <picture>, badges (CI, website, licence)
   - [x] 3 .gitignore: .vscode/, images/ (maintainer's reference drafts)
-  - [ ] 4 security: Dependabot alerts, secret scanning + push protection
-  - [ ] 6 topics
-  - [ ] 7 GitHub Project "Roadmap" (phases from docs/09) linked to the repo
+  - [x] 4 security: Dependabot alerts, secret scanning + push protection
+  - [x] 6 topics
+  - [x] 7 GitHub Project "Glassfort Roadmap" (https://github.com/orgs/glassfortos/projects/1, public, linked; 23 draft items with Phase + Status; keep in sync with docs/09) (phases from docs/09) linked to the repo
 
 ### GitHub issues and discussions (sub-task started 2026-11-26T21:20:00+01:00, maintainer request)
   - Open (maintainer, later): GitHub Wiki stays enabled for now; options discussed: turn it off, or use a Discussions category "Hardware reports" instead
