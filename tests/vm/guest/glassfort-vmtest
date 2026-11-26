@@ -150,6 +150,8 @@ case $phase in
     sleep 30
     check systemd-back test -x /usr/lib/systemd/systemd
     check not-on-snapshot test -z "$(snapshot_root)"
+    # The restored snapshot contained pacman's lock (snap-pac); it must be gone.
+    check pacman-unlocked test ! -e /var/lib/pacman/db.lck
     check sddm systemctl is-active sddm.service
     check plasmashell pgrep -x plasmashell
     say "rollback done"

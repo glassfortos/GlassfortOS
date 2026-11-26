@@ -32,6 +32,7 @@ Mount options: `compress=zstd:1,noatime`.
   - Pinning: "known good" states are marked with `snapper modify --userdata important=yes <id>` (Restore Points: "Keep"). Snapper keeps them separately from normal cleanup (`NUMBER_LIMIT_IMPORTANT`). limine-snapper-sync (1.33) has no option to keep pinned snapshots in the boot menu beyond `MAX_SNAPSHOT_ENTRIES`, and it can only restore snapshots that have boot entries; restoring older pinned snapshots needs work in the helper (open).
 - Boot menu labels are human-readable, e.g. `Before update · 2026-11-19 14:30`.
 - After booting into a snapshot, a banner says: *"You are running an earlier state. Restore it permanently?"* → restore via Restore Points.
+- snap-pac snapshots are taken while pacman holds its lock, so each contains `/var/lib/pacman/db.lck`; after a restore, `glassfort-pacman-unlock.service` (glassfort-settings) removes the stale lock at boot.
 - Limitation to communicate honestly: snapshots repair a broken system; they do not undo data that has left the machine.
 
 ### Restore Points (System Settings module, `glassfort-timemachine`)

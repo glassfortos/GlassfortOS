@@ -52,7 +52,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] pacman -S glassfort-desktop + glassfort-setup, boot into Plasma – run 6: all first-boot checks ok incl. AppArmor
     - [x] break an update, roll back from the Limine snapshot menu – run 8 PASSED (15/15 checks)
 - **Files expected to change:** tests/vm/*, docs/07-testing.md, PROGRESS.md
-- **Next step if interrupted:** wait for green CI of the "Restore Points in the VM test" commit (new ISO), then run tests/vm/phase2; then look at the KCM in the VM (screenshot), German .po for the KCM. images/*.jpg stay untracked.
+- **Next step if interrupted:** phase2 run 2026-11-26 17:02: rollback via helper ok; UI restore end-to-end ok in VM (confirm, polkit password, restore, reboot, cowsay gone). Fix list: (1) stale /var/lib/pacman/db.lck in every snap-pac snapshot -> boot-time unlock service in glassfort-settings; (2) KCM polish: post titles from pre, translate "backup before restore #N", icons; (3) polkit message German; (4) phase2 prints PASSED despite failed checks; agent prints output of failed checks; snapper-as-user fails only when booted into a snapshot (works on normal boot). images/*.jpg stay untracked.
 - **Blocked because:** –
 
 ### Restore Points / glassfort-timemachine (sub-task started 2026-11-26T16:10:00+01:00, roadmap Phase 2)

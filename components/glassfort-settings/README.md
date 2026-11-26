@@ -21,6 +21,7 @@ partitions, formats or replaces a bootloader.
 | `91-glassfort-zram.conf` | `/usr/lib/sysctl.d/` | VM tuning for swap on zram |
 | `zram-generator.conf` | `/usr/lib/systemd/` | zram swap: half of RAM, max. 8 GiB, zstd |
 | `glassfort-root` | `/usr/share/snapper/config-templates/` | Snapper template for `/`: no timeline, about 20 pre/post pairs, 10 pinned |
+| `glassfort-pacman-unlock.service` | `/usr/lib/systemd/system/` (always active via `sysinit.target.wants`) | Removes a stale `/var/lib/pacman/db.lck` at boot: snap-pac snapshots contain pacman's lock, so a restored system would refuse updates |
 | `50-glassfort.conf` | `/etc/limine-entry-tool.d/` | Limine: BLAKE2B verification, entry order, keep `BOOTX64.EFI` in sync (D-08) |
 | `glassfort-public.xml`, `glassfort-private.xml` | `/usr/lib/firewalld/zones/` | "Public network" (default, nothing incoming) and "Private network" (discovery, KDE Connect, sharing) |
 | `glassfort.conf` | `/etc/keyd/` | Copilot key (`Meta+Shift+F23`) → `Meta+A` (assistant) |

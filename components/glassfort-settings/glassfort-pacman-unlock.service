@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# snap-pac takes its snapshots while pacman holds its database lock, so
+# every snapshot contains /var/lib/pacman/db.lck. After restoring one,
+# pacman would refuse to run ("unable to lock database"). At boot no
+# pacman can be running yet, so a lock found then is stale (docs/02).
+[Unit]
+Description=Remove a stale pacman database lock
+Documentation=https://github.com/glassfortos/GlassfortOS/blob/main/docs/02-system.md
+DefaultDependencies=no
+After=local-fs.target
+Before=sysinit.target shutdown.target
+Conflicts=shutdown.target
+ConditionPathExists=/var/lib/pacman/db.lck
+# Booted read-only snapshots keep their lock; nothing installs there.
+ConditionPathIsReadWrite=/var/lib/pacman
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/rm -f /var/lib/pacman/db.lck
+
+[Install]
+WantedBy=sysinit.target
