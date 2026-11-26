@@ -27,6 +27,16 @@ cache/
 *~
 *.swp
 .DS_Store
+.vscode/
+.idea/
+
+# Rust and CMake build directories
+target/
+build/
+
+# The maintainer's raster logo drafts: reference only, never shipped
+# (docs/03-desktop-design.md, Logo)
+/images/
 
 # Python tooling
 __pycache__/

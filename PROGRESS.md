@@ -58,7 +58,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 ### Repository polish (sub-task started 2026-11-26T21:45:00+01:00, maintainer request)
   - [x] 1 GitHub Actions to current majors (Node 24) + Dependabot (actions, cargo)
   - [x] 2 README: dark/light logo via <picture>, badges (CI, website, licence)
-  - [ ] 3 .gitignore: .vscode/, images/ (maintainer's reference drafts)
+  - [x] 3 .gitignore: .vscode/, images/ (maintainer's reference drafts)
   - [ ] 4 security: Dependabot alerts, secret scanning + push protection
   - [ ] 6 topics
   - [ ] 7 GitHub Project "Roadmap" (phases from docs/09) linked to the repo
