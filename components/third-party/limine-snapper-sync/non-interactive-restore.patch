@@ -1,0 +1,159 @@
+diff --git a/install/arch-linux/usr/bin/limine-snapper-sync b/install/arch-linux/usr/bin/limine-snapper-sync
+index 806f388..4129d38 100755
+--- a/install/arch-linux/usr/bin/limine-snapper-sync
++++ b/install/arch-linux/usr/bin/limine-snapper-sync
+@@ -17,6 +17,7 @@ ENABLE_MUTEX=true
+ ENABLE_HOOKS=true
+ ENABLE_DEBOUNCE=false
+ RESTORE_MODE=false
++NON_INTERACTIVE=false
+ ARGS=()
+ 
+ for arg in "$@"; do
+@@ -36,6 +37,11 @@ for arg in "$@"; do
+ 	--debounce)
+ 		ENABLE_DEBOUNCE=true
+ 		;;
++	--non-interactive)
++		# Glassfort: no prompts (also passed on to the restore program).
++		NON_INTERACTIVE=true
++		ARGS+=("$arg")
++		;;
+ 	--restore | --restore-kernels)
+ 		RESTORE_MODE=true
+ 		ARGS+=("$arg")
+@@ -253,7 +259,15 @@ if $ENABLE_HOOKS; then
+ 	run_boot_hooks post || post_failed=$?
+ fi
+ 
+-if $RESTORE_MODE; then
++if $RESTORE_MODE && $NON_INTERACTIVE; then
++	# Glassfort: the caller asks about the reboot. Report failure unless the
++	# restore really finished (some errors only print a message and exit 0).
++	if [[ ! -f "$RESTORE_LOCKFILE" || "$(<"$RESTORE_LOCKFILE")" != "restored" ]]; then
++		[[ $exit_code -eq 0 ]] && exit_code=1
++	elif [[ $post_failed -ne 0 ]]; then
++		exit_code=3
++	fi
++elif $RESTORE_MODE; then
+ 	prompt_reboot_after_restore "$RESTORE_LOCKFILE" "$post_failed"
+ fi
+ 
+diff --git a/src/main/java/org/limine/snapper/Main.java b/src/main/java/org/limine/snapper/Main.java
+index 9faeb4b..9d39809 100644
+--- a/src/main/java/org/limine/snapper/Main.java
++++ b/src/main/java/org/limine/snapper/Main.java
+@@ -35,8 +35,22 @@ public class Main {
+             switch (a) {
+                 case "--info":
+                 case "--list":
++                    cmd = a;
++                    break;
++                case "--non-interactive":
++                    Config.NON_INTERACTIVE = true;
++                    break;
+                 case "--restore":
+                     cmd = a;
++                    // Glassfort: optional snapshot ID, used with --non-interactive.
++                    if (it.hasNext()) {
++                        String next = it.next();
++                        if (next.equals("--non-interactive")) {
++                            Config.NON_INTERACTIVE = true;
++                        } else if (!next.startsWith("--")) {
++                            params.add(next);
++                        }
++                    }
+                     break;
+                 case "--add":
+                 case "--restore-kernels":
+@@ -84,6 +98,14 @@ public class Main {
+                 }
+                 break;
+             case "--restore":
++                if (Config.NON_INTERACTIVE) {
++                    // Glassfort: a non-interactive restore needs an explicit, numeric snapshot ID.
++                    if (params.isEmpty() || !params.getFirst().matches("[0-9]{1,9}")) {
++                        Utility.exitWithError("--restore --non-interactive requires a snapshot ID.", false);
++                        return;
++                    }
++                    Config.RESTORE_ID = params.getFirst();
++                }
+                 restore();
+                 break;
+             case "--info":
+@@ -385,7 +407,7 @@ public class Main {
+         HistoryReader.loadSubvolPaths(manifest);
+ 
+         // Check if your target OS name is found in limine.conf
+-        LimineReader limine = new LimineReader(config, true);
++        LimineReader limine = new LimineReader(config, !Config.NON_INTERACTIVE);
+         if (limine.isTargetOsNotFound()) {
+             String errMessage = Messages.get("text.please-set-target_os_name", Config.DEFAULT_CONFIG_FILE_PATH);
+             if (Config.TARGET_OS_NAME != null) {
+diff --git a/src/main/java/org/limine/snapper/objects/Config.java b/src/main/java/org/limine/snapper/objects/Config.java
+index adedb0c..1eab85d 100644
+--- a/src/main/java/org/limine/snapper/objects/Config.java
++++ b/src/main/java/org/limine/snapper/objects/Config.java
+@@ -37,6 +37,9 @@ public record Config(String machineID, String espPath, String bootPath) {
+     public static RestoreMethod RESTORE_METHOD;
+     public static boolean ENABLE_TMP_CONFIG = false;
+     public static boolean RESTORE_MODE = false; // If true, it will disable some error messages.
++    // Glassfort: --non-interactive (with --restore <ID>) never reads from the terminal.
++    public static boolean NON_INTERACTIVE = false;
++    public static String RESTORE_ID = null;
+     public static String SNAPPER_CONFIG_NAME = null;
+     public static String SNAPPER_LIST_CMDLINE = null;
+     public static String TARGET_OS_NAME = null;
+diff --git a/src/main/java/org/limine/snapper/processes/SnapshotManager.java b/src/main/java/org/limine/snapper/processes/SnapshotManager.java
+index e9a16cd..f7c3e01 100644
+--- a/src/main/java/org/limine/snapper/processes/SnapshotManager.java
++++ b/src/main/java/org/limine/snapper/processes/SnapshotManager.java
+@@ -289,6 +289,14 @@ public class SnapshotManager {
+      * User is prompted to confirm the snapshot ID or select a different snapshot ID for restoring.
+      */
+     private SnapshotEntry confirmOrSelectSnapshot(Manifest manifest) {
++        if (Config.NON_INTERACTIVE) {
++            // Glassfort: the caller chose the snapshot; no prompts.
++            SnapshotEntry chosen = getSnapshotEntry(manifest, Integer.parseInt(Config.RESTORE_ID));
++            if (chosen == null) {
++                Utility.errorMessage(Messages.get("text.no-snapshot-is-found", Config.RESTORE_ID));
++            }
++            return chosen;
++        }
+         int snapshotID = Utility.getSnapshotIdFromKernelCmdline();
+         // Check the snapshot ID if it is present in the manifest.
+         SnapshotEntry snapshotEntry = getSnapshotEntry(manifest, snapshotID);
+@@ -380,6 +388,10 @@ public class SnapshotManager {
+         }
+ 
+         if (!verifySnapshotFiles(snapshotEntry, false, manifest.getSnapshotEntries())) {
++            if (Config.NON_INTERACTIVE) {
++                // Glassfort: never restore a snapshot whose boot files do not verify.
++                return null;
++            }
+             if (Utility.askUser(Messages.get("prompt.select-snapshot-action"),
+                     Messages.get("prompt.choice-s-r-c"),
+                     Messages.get("prompt.select"), Messages.get("prompt.restore"), Messages.get("prompt.cancel"))
+@@ -410,7 +422,7 @@ public class SnapshotManager {
+                 return null;
+             }
+ 
+-            String backupDescription = Utility.userInput(Messages.get("prompt.backup-subvolume-description", subvolumePath));
++            String backupDescription = Config.NON_INTERACTIVE ? "" : Utility.userInput(Messages.get("prompt.backup-subvolume-description", subvolumePath));
+             if (backupDescription.isBlank()) {
+                 backupDescription = Messages.get("text.backup-before-restore", snapshotEntry.snapperEntry().snapshotID());
+             }
+diff --git a/src/main/java/org/limine/snapper/processes/Utility.java b/src/main/java/org/limine/snapper/processes/Utility.java
+index 6776c34..e89400e 100644
+--- a/src/main/java/org/limine/snapper/processes/Utility.java
++++ b/src/main/java/org/limine/snapper/processes/Utility.java
+@@ -606,6 +606,9 @@ public class Utility {
+         errorMessage(message, output);
+         if (hold || Config.RESTORE_MODE) {
+             deleteFile(Config.RESTORE_LOCK_FILE, false);
++        }
++        // Glassfort: without a terminal, waiting for "close the terminal" would spin forever.
++        if ((hold || Config.RESTORE_MODE) && !Config.NON_INTERACTIVE) {
+             // Prevent any terminal GUI from closing automatically on restore failure.
+             infoMessage(Messages.get("info.review-error-before-closing-terminal"), null);
+             while (!yesOrNo(Messages.get("prompt.close-the-terminal-when-ready"), false)) {

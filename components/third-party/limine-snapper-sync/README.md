@@ -27,6 +27,7 @@ pinned by SHA-256), only at build time.
 | Change | Why |
 |---|---|
 | `logger-no-shell.patch` | Call `logger` directly instead of via `bash -c`, so log messages are never interpreted by a shell (the tool runs as root). To be reported upstream. |
+| `non-interactive-restore.patch` | `limine-snapper-sync --restore <ID> --non-interactive` restores one snapshot without any prompt, for `glassfort-helper` (D-44). Upstream reads answers from the terminal and, on end of input, loops forever; the wrapper's "Reboot now? [Y/n]" takes an empty answer as yes. In this mode the ID must be numeric, unverifiable boot files abort, errors exit at once, no reboot happens, and the wrapper exits non-zero unless the restore finished (some upstream errors only print a message and exit 0). Interactive use is unchanged. To be offered upstream. |
 | Glassfort defaults in `/etc/limine-snapper-sync.conf` | `MAX_SNAPSHOT_ENTRIES=8`, labels `date│description` (format 8), `kitty` as terminal, `run0` for privileges. The file has no drop-in directory (docs/02-system.md). |
 | `x86_64` only | Glassfort is x86_64 only (D-01). |
 | Optional `b3sum`/`xxhash`/dracut entries dropped | Not used by Glassfort (mkinitcpio, BLAKE2B hashes in `limine.conf`). |
