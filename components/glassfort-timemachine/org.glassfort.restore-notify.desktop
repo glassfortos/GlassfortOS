@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Name=Restore Points notification
+Name[de]=Hinweis zu Wiederherstellungspunkten
+Comment=Offers to keep the restore point the computer was started from
+Comment[de]=Bietet an, den Wiederherstellungspunkt zu behalten, von dem der Computer gestartet wurde
+Icon=document-revert
+Exec=/usr/lib/glassfort-timemachine/glassfort-restore-notify
+Terminal=false
+NoDisplay=true
+OnlyShowIn=KDE;
+X-KDE-autostart-phase=2

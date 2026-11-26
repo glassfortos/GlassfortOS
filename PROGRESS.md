@@ -62,7 +62,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [x] commit 2 third-party/limine-snapper-sync: patch for non-interactive `--restore <id>` (no prompts), reviewed
   - [x] commit 3 glassfort-helper: Rust system service org.glassfort.Helper1, RestoreSnapshot(id) with polkit (auth_admin_keep), journal audit log, D-Bus activation, unit tests
   - [x] commit 4 glassfort-timemachine: KCM (C++/QML): timeline from snapper D-Bus, pin/unpin, restore via helper
-  - [ ] commit 5 banner after booting a snapshot ("You are running an earlier state. Restore it permanently?") opening the Time Machine; replaces upstream's terminal notifier
+  - [x] commit 5 banner after booting a snapshot ("You are running an earlier state. Restore it permanently?") opening the Time Machine; replaces upstream's terminal notifier
   - [ ] commit 6 glassfort-desktop depends on helper + timemachine; VM test restores through the helper instead of limine-snapper-restore
   - Files: components/glassfort-timemachine/ (new), maybe components/glassfort-helper/, docs/02, docs/DECISIONS.md
 

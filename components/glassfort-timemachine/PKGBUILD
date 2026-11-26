@@ -22,6 +22,11 @@ depends=(
     'kirigami'
     'snapper'
     'glassfort-helper'
+    # glassfort-restore-notify
+    'bash'
+    'gettext'
+    'libnotify'
+    'systemsettings'
 )
 makedepends=('cmake' 'extra-cmake-modules')
 source=(
@@ -33,6 +38,8 @@ source=(
     'snapshotmodel.cpp'
     'snapshotmodel.h'
     'snapshotmodeltest.cpp'
+    'glassfort-restore-notify'
+    'org.glassfort.restore-notify.desktop'
 )
 sha256sums=('a2f37e99dd4d6ef11ce4af67e6b26ffbfef393e18d24951c986a8ac272c4e9a3'
             'a75c37b11d444d11a751169d29fd98740f38ae6b99da0be1d2250fcaecd35cc4'
@@ -41,7 +48,9 @@ sha256sums=('a2f37e99dd4d6ef11ce4af67e6b26ffbfef393e18d24951c986a8ac272c4e9a3'
             'fdd2667d20401174271b0aa2a3332b4d65add1421b379c918ab1de9ad99bb31c'
             '99c50baeeef4ec73ce3e0ad85c8e404b335b51ba20d87d94de7598ba59239018'
             '2e66b40e3c1c4d1d313bd8ece44e2983e64a43b538bcffb74cdd42d7ba4abf91'
-            '4058ca5659a9ddf85a45d0ed8c778d5ce7c799ff1396a12cfbcfba9fdfe10699')
+            '4058ca5659a9ddf85a45d0ed8c778d5ce7c799ff1396a12cfbcfba9fdfe10699'
+            '50a9e2e95ce464d45d2decfec0b1ed8ee5c5c817cbbed96f0acd1c51c67a4db4'
+            '22d10bcdaa2e4621d44c9013a0e8f65e967124b752e770d6f257efb83d4d36ac')
 
 build() {
     cmake -B build -S "${srcdir}" \
@@ -57,4 +66,8 @@ check() {
 
 package() {
     DESTDIR="${pkgdir}" cmake --install build
+    install -Dm755 "${srcdir}/glassfort-restore-notify" \
+        "${pkgdir}/usr/lib/glassfort-timemachine/glassfort-restore-notify"
+    install -Dm644 "${srcdir}/org.glassfort.restore-notify.desktop" \
+        "${pkgdir}/etc/xdg/autostart/org.glassfort.restore-notify.desktop"
 }

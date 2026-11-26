@@ -16,6 +16,9 @@ the timeline of snapper snapshots of `/`, with keep (pin) and restore
   admin password), then "Restart now / Later". Only snapshots that still
   have boot entries can be restored (limine-snapper-sync); others report
   the error.
+- **Notification:** `glassfort-restore-notify` (autostart, Plasma only) tells
+  the user after booting a snapshot and opens this module; it replaces
+  limine-snapper-sync's notifier, which opened a terminal.
 - **Banner:** when the system was booted from a snapshot in the boot menu
   (`rootflags=…subvol=/@snapshots/<n>/snapshot`), a banner offers to restore
   that state.

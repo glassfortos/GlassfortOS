@@ -7,7 +7,7 @@
 
 pkgname=limine-snapper-sync
 pkgver=1.33.0
-pkgrel=2
+pkgrel=3
 pkgdesc='Integrates Limine boot entries with Snapper snapshots'
 arch=('x86_64')
 url='https://gitlab.com/Zesko/limine-snapper-sync'
@@ -69,6 +69,9 @@ package() {
     install -Dm644 README.md CHANGELOG.md -t "${pkgdir}/usr/share/doc/${pkgname}/"
 
     cp -a "${src}/etc" "${src}/usr" "${pkgdir}/"
+    # Glassfort: glassfort-timemachine's notifier replaces this one, which
+    # opens a terminal (docs/02, Restore Points).
+    rm "${pkgdir}/etc/xdg/autostart/limine-restore-notify.desktop"
 
     # Glassfort defaults (docs/02-system.md, "Snapshots"). The config has no
     # drop-in directory, so they are set here; /etc/default/limine still

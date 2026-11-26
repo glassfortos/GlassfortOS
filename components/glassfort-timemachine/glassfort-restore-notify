@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# After booting a snapshot from the boot menu, tell the user and offer to
+# open Restore Points, where the state can be kept (docs/02). Replaces
+# limine-snapper-sync's notifier, which opens a terminal.
+# Runs at login (autostart); does nothing on a normal boot.
+
+set -u
+
+cmdline=$(</proc/cmdline)
+[[ $cmdline =~ (^|[[:space:]])rootflags=[^[:space:]]*subvol=/?@snapshots/([0-9]+)/snapshot([,[:space:]]|$) ]] || exit 0
+
+export TEXTDOMAIN=kcm_glassfort_timemachine
+title=$(gettext "You are running an earlier state")
+body=$(gettext "This computer was started from a restore point. Restore it to keep it; otherwise the next restart goes back to the current state.")
+open=$(gettext "Open Restore Points")
+
+action=$(notify-send --app-name="$(gettext "Restore Points")" --icon=document-revert \
+    --urgency=critical --expire-time=0 --wait \
+    --action="open=$open" "$title" "$body")
+if [[ $action == open ]]; then
+    exec systemsettings kcm_glassfort_timemachine
+fi
