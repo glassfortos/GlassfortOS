@@ -19,7 +19,7 @@ jobs:
 
       - name: shellcheck
         run: |
-          mapfile -t scripts < <(git ls-files scripts repo tests | while read -r f; do
+          mapfile -t scripts < <(git ls-files scripts repo tests components iso | while read -r f; do
             head -n1 "$f" | grep -qE '^#!.*\b(ba)?sh\b' && echo "$f"
           done)
           if ((${#scripts[@]})); then

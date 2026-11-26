@@ -19,7 +19,7 @@ tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 
 common=(--from-code=UTF-8 --package-name=glassfort-timemachine --sort-by-file)
-kde=(-ki18n:1 -ki18nc:1c,2 -ki18np:1,2 -ki18ncp:1c,2,3)
+kde=('-ki18n:1' '-ki18nc:1c,2' '-ki18np:1,2' '-ki18ncp:1c,2,3')
 xgettext "${common[@]}" -C "${kde[@]}" -o "$tmp/cpp.pot" restorepoints.cpp snapshotmodel.cpp
 xgettext "${common[@]}" -L JavaScript "${kde[@]}" -o "$tmp/qml.pot" main.qml
 xgettext "${common[@]}" -L Shell -o "$tmp/sh.pot" glassfort-restore-notify
