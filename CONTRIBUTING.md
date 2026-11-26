@@ -9,6 +9,10 @@ Security problems are reported privately – see [`SECURITY.md`](SECURITY.md).
 
 ## Where to go
 
+- **Using Glassfort:** the [user guide](https://github.com/glassfortos/GlassfortOS/wiki)
+  in the wiki. It only describes what is built and tested; the
+  specification is in [`docs/`](docs/) (D-47). If your change alters what a
+  wiki page says, update the page too.
 - **Questions and help:** [Discussions → Q&A](https://github.com/glassfortos/GlassfortOS/discussions/categories/q-a).
   Glassfort is based on Arch Linux but is not supported by the Arch
   community, so please do not ask the Arch forums about it.

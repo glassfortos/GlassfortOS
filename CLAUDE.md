@@ -131,7 +131,7 @@ If a tool is not available in your environment, write `Not run: <check> (<reason
 | `docs/09-roadmap.md` | Phases, deliverables, done criteria |
 | `docs/DECISIONS.md` | All decisions with status (Decided / Proposed / Open) |
 
-When you change architecture or behaviour, update the matching doc **in the same commit**. New decisions go into `docs/DECISIONS.md` as `Proposed` until the maintainer confirms them.
+When you change architecture or behaviour, update the matching doc **in the same commit**. If the change alters what the user guide in the GitHub Wiki says (D-47; clone `https://github.com/glassfortos/GlassfortOS.wiki.git`), update the wiki page in the same piece of work. New decisions go into `docs/DECISIONS.md` as `Proposed` until the maintainer confirms them.
 
 ---
 

@@ -66,6 +66,8 @@ channels.
 
 ## Help and feedback
 
+How to install and use Glassfort is explained in the
+[user guide (wiki)](https://github.com/glassfortos/GlassfortOS/wiki).
 Questions and ideas go to [Discussions](https://github.com/glassfortos/GlassfortOS/discussions),
 bugs to [Issues](https://github.com/glassfortos/GlassfortOS/issues/new/choose),
 security problems privately (see [`SECURITY.md`](SECURITY.md)). More in

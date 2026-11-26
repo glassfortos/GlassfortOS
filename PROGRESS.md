@@ -55,6 +55,12 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 - **Next step if interrupted:** CI 45884008454 (34962c3) green. The Phase 2 VM run started 20:49 was killed by Claude Code because the host ran low on memory (7.1 GiB host, 4 GiB VM); not restarted, waiting for the maintainer. Rerun: tests/vm/phase2 --keep (or --memory 3072), expect 0 failed checks. Then glassfort-update, Secure Boot validation. images/*.jpg stay untracked.
 - **Blocked because:** –
 
+### Wiki as user guide (sub-task started 2026-11-26T22:00:00+01:00, maintainer request)
+  - [x] D-47 (Proposed): Wiki = user guide for stable, user-facing topics; docs/ stays the specification
+  - [x] pages: Home, sidebar/footer, Installing, Restore Points, Desktop, Security, Getting help, FAQ, Glossary, For contributors
+  - [x] only what is built and unlikely to change; each page says which version it applies to
+  - [x] link wiki from README, website, CONTRIBUTING; remove the open wiki question
+
 ### Repository polish (sub-task started 2026-11-26T21:45:00+01:00, maintainer request)
   - [x] 1 GitHub Actions to current majors (Node 24) + Dependabot (actions, cargo)
   - [x] 2 README: dark/light logo via <picture>, badges (CI, website, licence)
@@ -64,7 +70,6 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [x] 7 GitHub Project "Glassfort Roadmap" (https://github.com/orgs/glassfortos/projects/1, public, linked; 23 draft items with Phase + Status; keep in sync with docs/09) (phases from docs/09) linked to the repo
 
 ### GitHub issues and discussions (sub-task started 2026-11-26T21:20:00+01:00, maintainer request)
-  - Open (maintainer, later): GitHub Wiki stays enabled for now; options discussed: turn it off, or use a Discussions category "Hardware reports" instead
   - [x] issue forms: bug report, feature request; config.yml (no blank issues, links: Q&A discussions, private security report, website)
   - [x] discussion category forms (Q&A, Ideas); enable Discussions (gh api); labels triage + area labels
   - [x] D-46 (Proposed): GitHub Discussions as the support channel for now (docs/08 "Support channel" was Open); CONTRIBUTING, README links
