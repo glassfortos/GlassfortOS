@@ -23,8 +23,12 @@ the timeline of snapper snapshots of `/`, with keep (pin) and restore
   (`rootflags=…subvol=/@snapshots/<n>/snapshot`), a banner offers to restore
   that state.
 
-Open: package diff between snapshots ("Show changes"), German translation
-of the UI, restoring pinned snapshots without boot entries.
+Translations: `kcm_glassfort_timemachine-<lang>.po` (C++, QML and the
+notifier share the domain `kcm_glassfort_timemachine`); `./update-po`
+refreshes them, CI runs `./update-po --check`.
+
+Open: package diff between snapshots ("Show changes"), restoring pinned
+snapshots without boot entries.
 
 ## Build and test
 

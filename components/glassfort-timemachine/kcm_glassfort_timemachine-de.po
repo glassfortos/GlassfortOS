@@ -1,0 +1,206 @@
+# German translations for glassfort-timemachine package
+# German translation for glassfort-timemachine.
+# Copyright (C) 2026 THE glassfort-timemachine'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the glassfort-timemachine package.
+# Automatically generated, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: glassfort-timemachine\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2026-11-26 16:45+0100\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: glassfort-restore-notify:15
+msgid "You are running an earlier state"
+msgstr "Du verwendest einen früheren Zustand"
+
+#: glassfort-restore-notify:16
+msgid ""
+"This computer was started from a restore point. Restore it to keep it; "
+"otherwise the next restart goes back to the current state."
+msgstr "Dieser Computer wurde von einem Wiederherstellungspunkt gestartet. Stelle ihn wieder her, um ihn zu behalten – sonst kehrt der nächste Neustart zum aktuellen Zustand zurück."
+
+#: glassfort-restore-notify:17
+msgid "Open Restore Points"
+msgstr "Wiederherstellungspunkte öffnen"
+
+#: glassfort-restore-notify:19
+msgid "Restore Points"
+msgstr "Wiederherstellungspunkte"
+
+#: main.qml:28
+msgid ""
+"You are running an earlier state of the system. Restore it to keep it; "
+"otherwise the next restart goes back to the current state."
+msgstr "Du verwendest einen früheren Zustand des Systems. Stelle ihn wieder her, um ihn zu behalten – sonst kehrt der nächste Neustart zum aktuellen Zustand zurück."
+
+#: main.qml:31
+msgid "Restore this state"
+msgstr "Diesen Zustand wiederherstellen"
+
+#: main.qml:34
+msgid "the state you are running now"
+msgstr "den Zustand, den du gerade verwendest"
+
+#: main.qml:46
+msgid "Try again"
+msgstr "Erneut versuchen"
+
+#: main.qml:57
+msgid ""
+"Glassfort saves a restore point before and after every software change. If "
+"something stops working, go back to a point from before the change. Your "
+"personal files are not affected."
+msgstr "Glassfort speichert vor und nach jeder Softwareänderung einen Wiederherstellungspunkt. Wenn etwas nicht mehr funktioniert, kehre zu einem Punkt vor der Änderung zurück. Deine persönlichen Dateien bleiben unberührt."
+
+#: main.qml:77
+msgid "Today"
+msgstr "Heute"
+
+#: main.qml:79
+msgid "Yesterday"
+msgstr "Gestern"
+
+#: main.qml:121
+msgid "%1 · running now"
+msgstr "%1 · gerade in Verwendung"
+
+#: main.qml:122
+msgid "%1 · kept"
+msgstr "%1 · behalten"
+
+#: main.qml:135
+msgid "Do not keep"
+msgstr "Nicht behalten"
+
+#: main.qml:135
+msgid "Keep"
+msgstr "Behalten"
+
+#: main.qml:136
+msgid "Allow this restore point to be removed when it gets old"
+msgstr "Diesen Wiederherstellungspunkt entfernen lassen, wenn er alt wird"
+
+#: main.qml:136
+msgid "Keep this restore point when older ones are removed"
+msgstr "Diesen Wiederherstellungspunkt behalten, wenn ältere entfernt werden"
+
+#: main.qml:143
+msgid "Restore…"
+msgstr "Wiederherstellen …"
+
+#: main.qml:156
+msgid "No restore points yet"
+msgstr "Noch keine Wiederherstellungspunkte"
+
+#: main.qml:157
+msgid ""
+"A restore point is saved automatically before and after the next software "
+"change."
+msgstr "Vor und nach der nächsten Softwareänderung wird automatisch ein Wiederherstellungspunkt gespeichert."
+
+#: main.qml:175
+msgid "Restore an earlier state?"
+msgstr "Früheren Zustand wiederherstellen?"
+
+#: main.qml:176
+msgid ""
+"The system goes back to %1. Programs and settings installed after it are "
+"undone; your personal files stay as they are. The current state is kept as a "
+"restore point, so you can come back."
+msgstr "Das System kehrt zurück zu: %1. Programme und Systemänderungen danach werden rückgängig gemacht; deine persönlichen Dateien bleiben, wie sie sind. Der aktuelle Zustand wird als Wiederherstellungspunkt behalten, du kannst also zurück."
+
+#: main.qml:180
+msgid "Restore"
+msgstr "Wiederherstellen"
+
+#: main.qml:188
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: main.qml:197
+msgid "Restoring…"
+msgstr "Wird wiederhergestellt …"
+
+#: main.qml:198
+msgid "This takes a few seconds. Please do not turn off the computer."
+msgstr "Das dauert einige Sekunden. Bitte schalte den Computer nicht aus."
+
+#: main.qml:207
+msgid "Restart to finish"
+msgstr "Zum Abschließen neu starten"
+
+#: main.qml:208
+msgid "The earlier state is restored. It is used from the next restart on."
+msgstr "Der frühere Zustand ist wiederhergestellt. Er wird ab dem nächsten Neustart verwendet."
+
+#: main.qml:212
+msgid "Restart now"
+msgstr "Jetzt neu starten"
+
+#: main.qml:217
+msgid "Later"
+msgstr "Später"
+
+#: main.qml:226
+msgid "Not restored"
+msgstr "Nicht wiederhergestellt"
+
+#: restorepoints.cpp:67
+msgid "The list of restore points could not be read: %1"
+msgstr "Die Liste der Wiederherstellungspunkte konnte nicht gelesen werden: %1"
+
+#: restorepoints.cpp:94
+msgid "The restore point could not be changed: %1"
+msgstr "Der Wiederherstellungspunkt konnte nicht geändert werden: %1"
+
+#: restorepoints.cpp:119
+msgid "The restore was cancelled or not allowed."
+msgstr "Die Wiederherstellung wurde abgebrochen oder nicht erlaubt."
+
+#: snapshotmodel.cpp:88
+msgid "%2 and %1 more"
+msgid_plural "%2 and %1 more"
+msgstr[0] "%2 und %1 weiteres"
+msgstr[1] "%2 und %1 weitere"
+
+#: snapshotmodel.cpp:91
+msgid "System update"
+msgstr "Systemaktualisierung"
+
+#: snapshotmodel.cpp:91
+msgid "System update and installing %1"
+msgstr "Systemaktualisierung und Installation von %1"
+
+#: snapshotmodel.cpp:93
+msgid "Installing %1"
+msgstr "Installation von %1"
+
+#: snapshotmodel.cpp:95
+msgid "Removing %1"
+msgstr "Entfernen von %1"
+
+#: snapshotmodel.cpp:97
+msgid "Package change"
+msgstr "Paketänderung"
+
+#: snapshotmodel.cpp:100
+msgid "Snapshot"
+msgstr "Wiederherstellungspunkt"
+
+#: snapshotmodel.cpp:105
+msgctxt "snapshot taken before a change"
+msgid "Before: %1"
+msgstr "Vorher: %1"
+
+#: snapshotmodel.cpp:107
+msgctxt "snapshot taken after a change"
+msgid "After: %1"
+msgstr "Nachher: %1"

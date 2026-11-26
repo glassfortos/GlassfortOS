@@ -35,3 +35,20 @@ enable_testing()
 add_executable(snapshotmodeltest snapshotmodeltest.cpp snapshotmodel.cpp)
 target_link_libraries(snapshotmodeltest PRIVATE Qt6::DBus Qt6::Test KF6::I18n)
 add_test(NAME snapshotmodeltest COMMAND snapshotmodeltest)
+
+# Translations: kcm_glassfort_timemachine-<lang>.po -> <lang>/LC_MESSAGES
+# (the QML engine of a KCM uses the plugin id as its i18n domain).
+find_program(MSGFMT msgfmt REQUIRED)
+file(GLOB _po_files CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/kcm_glassfort_timemachine-*.po")
+foreach(_po ${_po_files})
+    get_filename_component(_name "${_po}" NAME_WE)
+    string(REPLACE "kcm_glassfort_timemachine-" "" _lang "${_name}")
+    set(_mo "${CMAKE_CURRENT_BINARY_DIR}/${_lang}/kcm_glassfort_timemachine.mo")
+    add_custom_command(OUTPUT "${_mo}"
+        COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/${_lang}"
+        COMMAND ${MSGFMT} --check -o "${_mo}" "${_po}"
+        DEPENDS "${_po}")
+    list(APPEND _mo_files "${_mo}")
+    install(FILES "${_mo}" DESTINATION "${KDE_INSTALL_LOCALEDIR}/${_lang}/LC_MESSAGES")
+endforeach()
+add_custom_target(translations ALL DEPENDS ${_mo_files})

@@ -1,0 +1,206 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the glassfort-timemachine package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: glassfort-timemachine\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: glassfort-restore-notify:15
+msgid "You are running an earlier state"
+msgstr ""
+
+#: glassfort-restore-notify:16
+msgid ""
+"This computer was started from a restore point. Restore it to keep it; "
+"otherwise the next restart goes back to the current state."
+msgstr ""
+
+#: glassfort-restore-notify:17
+msgid "Open Restore Points"
+msgstr ""
+
+#: glassfort-restore-notify:19
+msgid "Restore Points"
+msgstr ""
+
+#: main.qml:28
+msgid ""
+"You are running an earlier state of the system. Restore it to keep it; "
+"otherwise the next restart goes back to the current state."
+msgstr ""
+
+#: main.qml:31
+msgid "Restore this state"
+msgstr ""
+
+#: main.qml:34
+msgid "the state you are running now"
+msgstr ""
+
+#: main.qml:46
+msgid "Try again"
+msgstr ""
+
+#: main.qml:57
+msgid ""
+"Glassfort saves a restore point before and after every software change. If "
+"something stops working, go back to a point from before the change. Your "
+"personal files are not affected."
+msgstr ""
+
+#: main.qml:77
+msgid "Today"
+msgstr ""
+
+#: main.qml:79
+msgid "Yesterday"
+msgstr ""
+
+#: main.qml:121
+msgid "%1 · running now"
+msgstr ""
+
+#: main.qml:122
+msgid "%1 · kept"
+msgstr ""
+
+#: main.qml:135
+msgid "Do not keep"
+msgstr ""
+
+#: main.qml:135
+msgid "Keep"
+msgstr ""
+
+#: main.qml:136
+msgid "Allow this restore point to be removed when it gets old"
+msgstr ""
+
+#: main.qml:136
+msgid "Keep this restore point when older ones are removed"
+msgstr ""
+
+#: main.qml:143
+msgid "Restore…"
+msgstr ""
+
+#: main.qml:156
+msgid "No restore points yet"
+msgstr ""
+
+#: main.qml:157
+msgid ""
+"A restore point is saved automatically before and after the next software "
+"change."
+msgstr ""
+
+#: main.qml:175
+msgid "Restore an earlier state?"
+msgstr ""
+
+#: main.qml:176
+msgid ""
+"The system goes back to %1. Programs and settings installed after it are "
+"undone; your personal files stay as they are. The current state is kept as a "
+"restore point, so you can come back."
+msgstr ""
+
+#: main.qml:180
+msgid "Restore"
+msgstr ""
+
+#: main.qml:188
+msgid "Cancel"
+msgstr ""
+
+#: main.qml:197
+msgid "Restoring…"
+msgstr ""
+
+#: main.qml:198
+msgid "This takes a few seconds. Please do not turn off the computer."
+msgstr ""
+
+#: main.qml:207
+msgid "Restart to finish"
+msgstr ""
+
+#: main.qml:208
+msgid "The earlier state is restored. It is used from the next restart on."
+msgstr ""
+
+#: main.qml:212
+msgid "Restart now"
+msgstr ""
+
+#: main.qml:217
+msgid "Later"
+msgstr ""
+
+#: main.qml:226
+msgid "Not restored"
+msgstr ""
+
+#: restorepoints.cpp:67
+msgid "The list of restore points could not be read: %1"
+msgstr ""
+
+#: restorepoints.cpp:94
+msgid "The restore point could not be changed: %1"
+msgstr ""
+
+#: restorepoints.cpp:119
+msgid "The restore was cancelled or not allowed."
+msgstr ""
+
+#: snapshotmodel.cpp:88
+msgid "%2 and %1 more"
+msgid_plural "%2 and %1 more"
+msgstr[0] ""
+msgstr[1] ""
+
+#: snapshotmodel.cpp:91
+msgid "System update"
+msgstr ""
+
+#: snapshotmodel.cpp:91
+msgid "System update and installing %1"
+msgstr ""
+
+#: snapshotmodel.cpp:93
+msgid "Installing %1"
+msgstr ""
+
+#: snapshotmodel.cpp:95
+msgid "Removing %1"
+msgstr ""
+
+#: snapshotmodel.cpp:97
+msgid "Package change"
+msgstr ""
+
+#: snapshotmodel.cpp:100
+msgid "Snapshot"
+msgstr ""
+
+#: snapshotmodel.cpp:105
+msgctxt "snapshot taken before a change"
+msgid "Before: %1"
+msgstr ""
+
+#: snapshotmodel.cpp:107
+msgctxt "snapshot taken after a change"
+msgid "After: %1"
+msgstr ""

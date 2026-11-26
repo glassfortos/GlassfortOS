@@ -46,6 +46,9 @@ jobs:
           pytest -q -p no:cacheprovider
           ./update-po --check
 
+      - name: Translations (Restore Points)
+        run: components/glassfort-timemachine/update-po --check
+
       - name: Rust (helper)
         working-directory: components/glassfort-helper
         run: |

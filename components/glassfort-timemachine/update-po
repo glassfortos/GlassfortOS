@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Refresh the translation catalogue of Restore Points (domain
+# kcm_glassfort_timemachine): collect the strings from the C++ (i18n…),
+# QML (i18n…) and the notifier script (gettext), write
+# kcm_glassfort_timemachine.pot and merge it into every
+# kcm_glassfort_timemachine-<lang>.po.
+#
+# Usage: ./update-po [--check]    --check: fail if the template is not current
+
+set -euo pipefail
+shopt -s nullglob
+cd "$(dirname "$0")"
+export LC_ALL=C.UTF-8
+domain=kcm_glassfort_timemachine
+pot=$domain.pot
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+
+common=(--from-code=UTF-8 --package-name=glassfort-timemachine --sort-by-file)
+kde=(-ki18n:1 -ki18nc:1c,2 -ki18np:1,2 -ki18ncp:1c,2,3)
+xgettext "${common[@]}" -C "${kde[@]}" -o "$tmp/cpp.pot" restorepoints.cpp snapshotmodel.cpp
+xgettext "${common[@]}" -L JavaScript "${kde[@]}" -o "$tmp/qml.pot" main.qml
+xgettext "${common[@]}" -L Shell -o "$tmp/sh.pot" glassfort-restore-notify
+for f in "$tmp"/cpp.pot "$tmp"/qml.pot "$tmp"/sh.pot; do
+    sed -i 's/charset=CHARSET/charset=UTF-8/' "$f"
+done
+# The creation date changes on every run; leave it out so --check is stable.
+msgcat --use-first --sort-by-file "$tmp"/cpp.pot "$tmp"/qml.pot "$tmp"/sh.pot | sed '/^"POT-Creation-Date:/d' >"$tmp/$pot"
+
+if [[ ${1:-} == --check ]]; then
+    if ! diff -q "$tmp/$pot" "$pot" >/dev/null 2>&1; then
+        echo "$pot is out of date; run ./update-po" >&2
+        exit 1
+    fi
+    for po in "$domain"-*.po; do
+        msgfmt --check -o /dev/null "$po"
+        untranslated=$(msgattrib --untranslated --no-obsolete "$po" | grep -c '^msgid "' || true)
+        fuzzy=$(msgattrib --only-fuzzy --no-obsolete "$po" | grep -c '^msgid "' || true)
+        # msgattrib prints the header entry as well.
+        if ((untranslated > 1 || fuzzy > 0)); then
+            echo "$po: $((untranslated - 1)) untranslated, $fuzzy fuzzy" >&2
+            exit 1
+        fi
+    done
+    exit 0
+fi
+
+cp "$tmp/$pot" "$pot"
+for po in "$domain"-*.po; do
+    msgmerge --quiet --update --backup=none "$po" "$pot"
+done
