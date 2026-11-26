@@ -135,7 +135,10 @@ class Installer(QObject):
     @Slot()
     def refreshNetwork(self) -> None:
         self._wired = data.wired_connected(_run(["nmcli", "-t", "-f", "TYPE,STATE", "device"]))
-        self._online = _run(["nmcli", "networking", "connectivity", "check"]).strip() == "full"
+        # Without "check": a recheck needs a polkit permission the live user
+        # does not have ("Not authorized"); NetworkManager rechecks by itself
+        # and the page polls every 10 seconds.
+        self._online = _run(["nmcli", "networking", "connectivity"]).strip() == "full"
         self.networkChanged.emit()
 
     @Slot()

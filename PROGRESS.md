@@ -80,4 +80,4 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [x] ISO: bake [glassfort] repo into /srv/glassfort/repo, installer autostart
   - [x] VM test: install from the ISO (first install 2026-11-25; fixes committed; boots to the desktop)
   - [ ] Automate the ISO install test end to end (UI clicks are flaky in QEMU) + rollback on the installed system
-  - [ ] Follow-ups: Limine menu label (TARGET_OS_NAME=Glassfort committed, verify in next install), tray network icon missing on installed desktop (check), UI translations (de): done, verified live in the ISO VM 2026-11-26 (language switch retranslates the running UI)
+  - [ ] Follow-ups: Limine menu label (TARGET_OS_NAME=Glassfort committed, verify in next install), tray network icon missing on installed desktop (check), UI translations (de): done, verified live in the ISO VM 2026-11-26 (language switch retranslates the running UI); new: language switch blocks the UI ~10 s (setKeyboard/kwriteconfig synchronous?), step dots look odd when the Wi-Fi page is skipped
