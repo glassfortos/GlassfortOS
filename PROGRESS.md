@@ -56,6 +56,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 - **Blocked because:** –
 
 ### GitHub issues and discussions (sub-task started 2026-11-26T21:20:00+01:00, maintainer request)
+  - Open (maintainer, later): GitHub Wiki stays enabled for now; options discussed: turn it off, or use a Discussions category "Hardware reports" instead
   - [x] issue forms: bug report, feature request; config.yml (no blank issues, links: Q&A discussions, private security report, website)
   - [x] discussion category forms (Q&A, Ideas); enable Discussions (gh api); labels triage + area labels
   - [x] D-46 (Proposed): GitHub Discussions as the support channel for now (docs/08 "Support channel" was Open); CONTRIBUTING, README links
