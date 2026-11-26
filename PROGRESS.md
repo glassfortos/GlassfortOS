@@ -52,7 +52,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
     - [x] pacman -S glassfort-desktop + glassfort-setup, boot into Plasma – run 6: all first-boot checks ok incl. AppArmor
     - [x] break an update, roll back from the Limine snapshot menu – run 8 PASSED (15/15 checks)
 - **Files expected to change:** tests/vm/*, docs/07-testing.md, PROGRESS.md
-- **Next step if interrupted:** Phase 2 VM test committed. Open: enable GitHub Pages (ask maintainer: Impressum/privacy first?), tray network icon check, installer language switch blocks UI ~10 s, then Time Machine module / update app. images/*.jpg stay untracked.
+- **Next step if interrupted:** Phase 2 VM test committed. Open: Impressum/privacy page for the website (needs maintainer's data), tray network icon check, installer language switch blocks UI ~10 s, then Time Machine module / update app. images/*.jpg stay untracked.
 - **Blocked because:** –
 
 ### Website (sub-task started 2026-11-26T15:40:00+01:00, parallel to the phase2 VM run)
@@ -60,7 +60,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
   - [x] website/: hero with logo + animated glass shapes, vision, six promises, features, screenshots, download (from website/release.json; "coming soon" until an ISO is published), docs link, footer
   - [x] Pages workflow (.github/workflows/pages.yml), CLAUDE.md scope `website`, docs/01 layout, docs/08 hosting
   - [x] check locally (headless Chromium screenshots, link check), commit, push
-  - [ ] enable GitHub Pages (Actions source) – ask maintainer
+  - [x] enable GitHub Pages (Actions source), maintainer approved 2026-11-26: live at https://glassfortos.github.io/GlassfortOS/
   - Open: Impressum/privacy page (docs/08, legal; maintainer's data needed)
 
 ### Follow-ups (sub-task started 2026-11-25, maintainer: open items first)
