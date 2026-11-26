@@ -38,7 +38,8 @@ Mount options: `compress=zstd:1,noatime`.
 
 - Timeline of snapshots (date, description, which update, pinned or not)
 - Actions: *Restore this state* (with confirmation), *Pin*, *Show changes* (package diff between snapshots)
-- Talks to snapper's D-Bus service; restore actions go through the helper and polkit.
+- Talks to snapper's D-Bus service for the timeline and pinning (members of `wheel` may do that, `ALLOW_GROUPS` in the root config); restore actions go through the helper and polkit (D-44: the helper is built in Phase 2 with snapshot actions only).
+- Restore runs `limine-snapper-sync --restore` for the chosen snapshot without prompts (Glassfort patch, see `components/third-party/limine-snapper-sync`), then asks for a restart.
 
 ## Boot: Limine
 

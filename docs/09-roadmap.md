@@ -23,14 +23,14 @@ Order of priority: first what everything is judged by (look and usability), then
 
 - archiso profile, ISO built in CI
 - `glassfort-installer` (QML/Kirigami + archinstall), moved forward from Phase 4 (D-12: no interim Calamares)
-- `glassfort-timemachine`
+- `glassfort-timemachine`, with a first `glassfort-helper` that only restores snapshots (D-44)
 - `glassfort-update`
 - Secure Boot with Limine validated on 3–4 firmware vendors
 - **Done when:** a user can install from the ISO and recover from a broken update without a terminal.
 
 ## Phase 3 – Assistant (MVP)
 
-- `glassfort-helper` (Rust) + polkit actions + audit log
+- `glassfort-helper` (Rust) extended for the assistant: polkit actions + audit log for settings and packages
 - MCP server
 - `glassfort-assistant` service + chat Plasmoid
 - Tools: search/install packages, system update with snapshot, 10 settings
