@@ -38,7 +38,7 @@ Test where distros typically break (NVIDIA, scaling, Secure Boot), automatically
 
 - [ ] All CI checks green
 - [ ] Install test (UEFI, Secure Boot on/off, TPM unlock on/off)
-- [ ] Rollback test from boot menu and Time Machine
+- [ ] Rollback test from boot menu and Restore Points
 - [ ] LTS fallback boots
 - [ ] Thunderbird / Microsoft 365 status checked (see `03-desktop-design.md`)
 - [ ] Checksums and signatures published

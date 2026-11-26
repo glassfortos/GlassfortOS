@@ -38,7 +38,7 @@ The Copilot key sends `Meta+Shift+F23`; KDE's shortcut recorder cannot capture F
 
 ## System Settings curation
 
-- Glassfort modules: Time Machine, Updates, Assistant, Windows Apps, Appearance.
+- Glassfort modules: Restore Points, Updates, Assistant, Windows Apps, Appearance.
 - Rarely needed modules are hidden; critical options are locked with KDE's Kiosk framework where changing them would break promises (e.g. disabling snapshots without a warning).
 - Every visible option must be understandable by a Windows switcher.
 

@@ -55,7 +55,7 @@ Claude Code updates it **before** changing any other file (see `CLAUDE.md` §2).
 - **Next step if interrupted:** helper committed; next: CI step for cargo fmt/clippy (Lint job), then commit 4 glassfort-timemachine KCM. images/*.jpg stay untracked.
 - **Blocked because:** –
 
-### Time Machine (sub-task started 2026-11-26T16:10:00+01:00, roadmap Phase 2)
+### Restore Points / glassfort-timemachine (sub-task started 2026-11-26T16:10:00+01:00, roadmap Phase 2)
   - [x] research (2026-11-26): snapper root config already has ALLOW_GROUPS="wheel" (list/pin via snapper D-Bus without root); `limine-snapper-sync --restore` can restore any snapshot in its manifest, also from the normal system, but only interactively (stdin prompts) -> needs a small non-interactive patch (`--restore <id> --yes`); no Rust/cmake/ECM on this host. Was: research: snapper D-Bus permissions, limine-snapper-restore (non-interactive?), helper/polkit per docs/02, tooling here (Rust, KF6 dev)
   - [x] maintainer decided 2026-11-26: minimal glassfort-helper now (Rust, D-Bus + polkit, snapshot actions only) -> D-44; maintainer installs rust, cmake, extra-cmake-modules on the host
   - [ ] commit 1 docs: D-44, docs/02 (helper scope for Phase 2), docs/09 (helper partly in Phase 2)

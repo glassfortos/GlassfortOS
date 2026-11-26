@@ -15,7 +15,7 @@ optional VM.
 
 **Phase 1 (foundation on plain Arch) is complete** – but Glassfort is not
 ready for users yet: there is no public package repository and no
-installer image. Phase 2 brings the own ISO, Time Machine, the update app
+installer image. Phase 2 brings the own ISO, Restore Points, the update app
 and Secure Boot ([roadmap](docs/09-roadmap.md)).
 
 What works today, tested end to end in a VM (`tests/vm/phase1`): on a plain
@@ -33,7 +33,7 @@ menu.
 | **Windows-style shell** | Own Plasma widgets: start menu (search, pinned apps, recent files), dock (pinned and running apps, live previews, jump lists), control center (Wi-Fi, Bluetooth, volume, brightness, night light, dark mode, Do Not Disturb, screen recording). |
 | **Curated Plasma** | KDE Plasma 6 with a curated set of apps: Firefox, Thunderbird, LibreOffice, Dolphin, kitty and more. |
 
-Planned: Time Machine and update app (Phase 2), an AI assistant that can only
+Planned: Restore Points and update app (Phase 2), an AI assistant that can only
 use typed, validated tools (Phase 3), own installer and first boot
 (Phase 4), Windows apps in a VM (Phase 5).
 

@@ -50,7 +50,7 @@ Not the primary target: users who want to configure everything themselves (they 
 | Term | Meaning |
 |---|---|
 | `[glassfort]` | Our signed pacman repository with all Glassfort packages |
-| Time Machine | Snapshot timeline and restore module in System Settings |
+| Restore Points | Snapshot timeline and restore module in System Settings (package `glassfort-timemachine`; not called "Time Machine" in the UI, an Apple trademark, D-45) |
 | Update app | Glassfort's system update tool (news check → snapshot → upgrade) |
 | Assistant | Optional AI chat that can operate the system through typed tools |
 | Helper | Root-privileged service without AI that validates and executes assistant actions |

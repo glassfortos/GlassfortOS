@@ -19,7 +19,7 @@ Order of priority: first what everything is judged by (look and usability), then
 - Meta package `glassfort-desktop`
 - **Done when:** on a fresh Arch install, `pacman -S glassfort-desktop` (after adding the repo) turns it into Glassfort, and a broken update can be rolled back from the boot menu.
 
-## Phase 2 – Own ISO, Time Machine, update app
+## Phase 2 – Own ISO, Restore Points, update app
 
 - archiso profile, ISO built in CI
 - `glassfort-installer` (QML/Kirigami + archinstall), moved forward from Phase 4 (D-12: no interim Calamares)

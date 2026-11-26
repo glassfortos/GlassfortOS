@@ -83,7 +83,7 @@ Each component folder contains its source, a `PKGBUILD`, a short `README.md` and
   - snapshot before every pacman transaction (snap-pac),
   - `linux-lts` always installed as fallback kernel,
   - update app checks Arch news for manual interventions before upgrading,
-  - one-click rollback from the Time Machine or the boot menu.
+  - one-click rollback from Restore Points or the boot menu.
 - `[glassfort]` is listed **before** `[core]` in `pacman.conf`. It may only contain packages that do not exist in the official Arch repositories, except for overrides explicitly documented in `docs/DECISIONS.md`.
 - Partial upgrades are forbidden everywhere: installing a package always happens on a fully upgraded system (`pacman -Syu <pkg>` or no sync at all).
 - A delayed or tested channel may be reconsidered later (see `DECISIONS.md`); it is not part of v1.
