@@ -1,8 +1,18 @@
 <p align="center">
-  <img src="components/glassfort-branding/glassfort-lockup-horizontal.svg" alt="Glassfort" width="360">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="components/glassfort-branding/glassfort-lockup-horizontal-dark.svg">
+    <img src="components/glassfort-branding/glassfort-lockup-horizontal.svg" alt="Glassfort" width="360">
+  </picture>
 </p>
 
 <p align="center"><em>Beautiful as glass. Strong as a fortress.</em></p>
+
+<p align="center">
+  <a href="https://github.com/glassfortos/GlassfortOS/actions/workflows/ci.yml"><img src="https://github.com/glassfortos/GlassfortOS/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI"></a>
+  <a href="https://glassfortos.github.io/GlassfortOS/"><img src="https://img.shields.io/badge/website-glassfortos.github.io-3DD6C6" alt="Website"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/licence-GPL--3.0--or--later-4C4FE0" alt="Licence: GPL-3.0-or-later"></a>
+  <a href="https://github.com/glassfortos/GlassfortOS/discussions"><img src="https://img.shields.io/badge/discussions-ask%20%26%20share-8B93A7" alt="Discussions"></a>
+</p>
 
 Glassfort is an Arch-based Linux distribution with Windows-style usability, a
 macOS-inspired glass design, security by default and bootable snapshots that
