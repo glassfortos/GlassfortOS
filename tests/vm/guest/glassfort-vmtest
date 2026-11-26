@@ -114,19 +114,12 @@ case $phase in
     say "limine tools: $(printf '%s ' /usr/bin/limine-*)"
     echo 2 >"$state"
     sync
-    # Restore Points (glassfort-timemachine, D-44/D-45): the desktop user
-    # (first member of wheel) reads and pins snapshots through snapper's
-    # D-Bus service, as the System Settings module does, ...
+    # Restore Points (glassfort-timemachine, D-44/D-45). snapper does not
+    # work while a snapshot is booted (its / is not the configured
+    # subvolume); listing and pinning are checked after the restore.
     user=$(getent group wheel | cut -d: -f4 | cut -d, -f1)
-    snapper_call() {
-        runuser -u "$user" -- busctl --system call org.opensuse.Snapper /org/opensuse/Snapper \
-            org.opensuse.Snapper "$@"
-    }
-    check snapper-list-as-user snapper_call ListSnapshots s root
-    check snapper-pin-as-user snapper_call SetSnapshot 'susssa{ss}' root "$num" "vmtest pinned" number 1 important yes
-    check snapshot-pinned sh -c "snapper -c root list --columns number,userdata | grep -E '^ *$num .*important=yes'"
-    # ... but may not restore without the admin password (no polkit agent
-    # here, so polkit must refuse) ...
+    # The desktop user may not restore without the admin password (no
+    # polkit agent here, so polkit must refuse) ...
     if runuser -u "$user" -- busctl --system call org.glassfort.Helper1 /org/glassfort/Helper1 \
         org.glassfort.Helper1 RestoreSnapshot u "$num" >"$state_dir/restore-user.log" 2>&1; then
         say "check FAIL helper-refuses-user (restore ran without authorisation)"
@@ -158,6 +151,16 @@ case $phase in
     check not-on-snapshot test -z "$(snapshot_root)"
     # The restored snapshot contained pacman's lock (snap-pac); it must be gone.
     check pacman-unlocked test ! -e /var/lib/pacman/db.lck
+    # The desktop user (first member of wheel) reads and pins snapshots
+    # through snapper's D-Bus service, as the Restore Points module does.
+    user=$(getent group wheel | cut -d: -f4 | cut -d, -f1)
+    snapper_call() {
+        runuser -u "$user" -- busctl --system call org.opensuse.Snapper /org/opensuse/Snapper \
+            org.opensuse.Snapper "$@"
+    }
+    check snapper-list-as-user snapper_call ListSnapshots s root
+    check snapper-pin-as-user snapper_call SetSnapshot 'sussa{ss}' root 2 "vmtest pinned" number 1 important yes
+    check snapshot-pinned sh -c "snapper -c root list --columns number,userdata | grep -E '^ *2 .*important=yes'"
     check sddm systemctl is-active sddm.service
     check plasmashell pgrep -x plasmashell
     say "rollback done"
