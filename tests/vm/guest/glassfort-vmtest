@@ -26,7 +26,13 @@ check() {
     # check NAME COMMAND...: report ok/FAIL for one condition
     local name=$1
     shift
-    if "$@" >/dev/null 2>&1; then say "check ok $name"; else say "check FAIL $name"; fi
+    local out
+    if out=$("$@" 2>&1); then
+        say "check ok $name"
+    else
+        # The first line of the error says why, e.g. a D-Bus error name.
+        say "check FAIL $name: $(printf '%s' "$out" | tr '\n' ' ' | cut -c1-200)"
+    fi
 }
 snapshot_root() {
     # Prints the snapshot number if this boot is a snapper snapshot, else

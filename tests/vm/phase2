@@ -232,6 +232,8 @@ grep -h 'GFTEST check' "$results"/serial-*.log | sed 's/\r//' | sort -u >"$resul
 grep -h 'check ' "$results/phase2.log" | grep -v GFTEST >>"$results/checks.txt" || true
 log "checks: $(grep -c 'check ok' "$results/checks.txt" || true) ok, $(grep -c 'check FAIL' "$results/checks.txt" || true) failed"
 grep 'check FAIL' "$results/checks.txt" | sed 's/^/    /' | tee -a "$results/phase2.log" || true
+# The boot sequence can pass while single checks fail; both count.
+grep -q 'check FAIL' "$results/checks.txt" && result=FAILED
 [[ $result == PASSED ]] || keep=1
 log "Phase 2 VM test $result; results in $results"
 [[ $result == PASSED ]] && ! grep -q 'check FAIL' "$results/checks.txt"
