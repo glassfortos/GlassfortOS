@@ -46,6 +46,13 @@ jobs:
           pytest -q -p no:cacheprovider
           ./update-po --check
 
+      - name: Rust (helper)
+        working-directory: components/glassfort-helper
+        run: |
+          cargo fmt --check
+          cargo clippy --locked -- -D warnings
+          cargo test --locked
+
       - name: Generated theme files up to date
         run: |
           components/glassfort-theme/generate --check
